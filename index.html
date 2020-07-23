@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>AI Tournaments</title>
+		<style>
+			body {
+				overflow: hidden;
+				background-color: black;
+				margin: 0px;
+			}
+		
+			#wrapper, a {
+				margin: 0;
+				color: green;
+				line-height: 1em;
+				text-align: center;
+				font-family: consolas, "Courier New", Courier, Monaco, monospace;
+			}
+			
+			.force-new-row {
+				white-space: pre-wrap;		/* CSS3 */
+				white-space: -moz-pre-wrap;	/* Firefox */
+				white-space: -pre-wrap;		/* Opera <7 */
+				white-space: -o-pre-wrap;	/* Opera 7 */
+				word-wrap: break-word;		/* IE */
+			}
+		</style>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-173346924-1"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-173346924-1');</script>
+		<script>
+			'use strict'
+
+			var _wrapper;
+			var _noise;
+			var _window = [];
+
+			var _message = {
+				header: 'AI Tournaments (.io)',
+				body: [
+					'Sorry, nothing to see here at the moment.',
+					'But get back here soon™ because awesome stuff are coming!',
+					'Read more about aitournaments.io over at <a href="https://github.com/AI-Tournaments" target="_blank">GitHub</a>.',
+					'        (right click if link doesn\'t work. ↑)']
+			}
+
+			document.title = _message.header;
+			formatWindow();
+
+			function onload(){
+				_wrapper = document.getElementById('wrapper');
+				calcSize();
+				window.onresize = calcSize;
+				play();
+			}
+
+			function formatWindow(){
+				let charLineVertical = '┃';
+				let charLineHorizontal = '━';
+
+				let charTopLeftCorner = '┏';
+				let charTopRightCorner = '┓';
+				let charBottomLeftCorner = '┗';
+				let charBottomRightCorner = '┛';
+
+				let charLineVerticalRight = '┣';
+				let charLineVerticalLeft = '┫';
+
+				_window[0] = '';
+				_window[2] = '';
+				_window[3 + _message.body.length] = '';
+
+				// Add space on both side of strings and get highest length.
+				_message.header = ' ' + _message.header + ' ';
+				let messageLength = _message.header.length;
+				for(let m = 0; m < _message.body.length; m++){
+					_message.body[m] = ' ' + _message.body[m] + ' ';
+					messageLength = Math.max(messageLength, strip(_message.body[m]).length);
+				}
+
+				for(let i = 0; i < messageLength; i++){
+					_window[0] += charLineHorizontal;
+					_window[2] += charLineHorizontal;
+					_window[3 + _message.body.length] += charLineHorizontal;
+				}
+
+				let addOnRightSide = false;
+				while(_message.header.length < messageLength){
+					addOnRightSide ? _message.header = ' ' + _message.header : _message.header = _message.header + ' ';
+					addOnRightSide = !addOnRightSide;
+				}
+
+				for(let m = 0; m < _message.body.length; m++){
+					while(strip(_message.body[m]).length < messageLength){
+						_message.body[m] = _message.body[m] + ' ';
+					}
+				}
+
+				_window[0] = charTopLeftCorner + _window[0] + charTopRightCorner;
+				_window[1] = charLineVertical + _message.header + charLineVertical;
+				_window[2] = charLineVerticalRight + _window[2] + charLineVerticalLeft;
+				_window[3 + _message.body.length] = charBottomLeftCorner + _window[3 + _message.body.length] + charBottomRightCorner;
+
+				for(let m = 0; m < _message.body.length; m++)
+				{
+					_window[3 + m] = charLineVertical + _message.body[m] + charLineVertical;
+				}
+			}
+
+			function calcSize(){
+				_wrapper.className = 'force-new-row';
+				let charsPerRow = 0;
+				_wrapper.innerHTML = '0';
+				let height = _wrapper.offsetHeight;
+
+				while(_wrapper.offsetHeight === height){
+					_wrapper.innerHTML = _wrapper.innerHTML + '0';
+					charsPerRow++;
+				}
+
+				height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+				let rows = 2;
+
+				let charsOnFirstRow = _wrapper.innerHTML;
+				while(_wrapper.offsetHeight < height){
+					rows++;
+					_wrapper.innerHTML = _wrapper.innerHTML + charsOnFirstRow;
+				}
+
+				_wrapper.className = '';
+				initNoise(rows, charsPerRow);
+			}
+
+			function initNoise(rows, charsPerRow){
+				_noise = new Array(rows);
+				for(let r = 0; r < rows; r++){
+					let chars = '';
+					for(let c = 0; c < charsPerRow; c++){
+						if(Math.random() < .5){
+							chars += '0';
+						}else{
+							chars += '1';
+						}
+					}
+					_noise[r] = chars;
+				}
+			}
+
+			function play(){
+				let noise = getNoise();
+				noise = addWindow(noise);
+				_wrapper.innerHTML = parsToString(noise);
+				window.requestAnimationFrame(play);
+			}
+
+			function getNoise(){
+				let numberOfChanges = (_noise.length*_noise[0].length)/100;
+				for(let c = 0; c < numberOfChanges; c++){
+					let row = Math.floor(Math.random()*_noise.length);
+					let index = Math.floor(Math.random() * _noise[row].length);
+					let chars = _noise[row];
+					let _char;
+					if(Math.random() < .5){
+						_char = '0';
+					}else{
+						_char = '1';
+					}
+					_noise[row] = chars.substr(0, index) + _char + chars.substr(index + 1);
+				}
+				return _noise.slice();
+			}
+
+			function addWindow(noise){
+				let row = Math.floor(noise.length/2 - (_window.length)/2);
+				let messageStart = Math.floor((noise[0].length - _window[0].length)/2);
+				for(let m = 0; m < _window.length; m++){
+					let chars = noise[row + m];
+					chars = chars.substr(0, messageStart) + _window[m] + chars.substr(messageStart + _window.length);
+					noise[row + m] = chars;
+				}
+				return noise;
+			}
+
+			function parsToString(noise){
+				let chars = '';
+				for(let n = 0; n < noise.length; n++){
+					if(0 < n){
+						chars += '\n';
+					}
+					chars += noise[n];
+				}
+				return chars;
+			}
+
+			function strip(html){
+				var output = '';
+				do{
+					var tempString = output;
+					var element = document.createElement('div');
+					element.innerHTML = html;
+					output = element.textContent || element.innerText || '';
+				}
+				while(tempString !== output && output !== '');
+				return output;
+			}
+		</script>
+	</head>
+	<body onload="onload()">
+		<pre id="wrapper" class="force-new-row"></pre>
+	</body>
+</html>
