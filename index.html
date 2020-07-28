@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>AI Tournaments</title>
+		<title>AI Tournaments (.io)</title>
 		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-173346924-1"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-173346924-1');</script>
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
 		<meta content="yes" name="mobile-web-app-capable">
@@ -12,15 +12,35 @@
 				background-color: black;
 				margin: 0px;
 			}
-		
-			#wrapper, a {
+
+			#wrapper, a, .window, pre {
 				margin: 0;
 				color: green;
 				line-height: 1em;
 				text-align: center;
 				font-family: consolas, "Courier New", Courier, Monaco, monospace;
 			}
-			
+
+			.window {
+				position: absolute;
+				top: 1em;
+				background-color: rgba(0, 0, 0, .75)
+			}
+			.window>.message {
+				text-align: left;
+			}
+			.window>.border {
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+			.window>.border>.cross-close {
+				position: absolute;
+				top: 1em;
+				right: .65em;
+				cursor: pointer;
+			}
+
 			.force-new-row {
 				white-space: pre-wrap;		/* CSS3 */
 				white-space: -moz-pre-wrap;	/* Firefox */
@@ -31,107 +51,136 @@
 		</style>
 		<script>
 			'use strict'
-
+			var charLineVertical = '┃';
+			var charLineHorizontal = '━';
+			var charTopLeftCorner = '┏';
+			var charTopRightCorner = '┓';
+			var charBottomLeftCorner = '┗';
+			var charBottomRightCorner = '┛';
+			var charLineVerticalRight = '┣';
+			var charLineVerticalLeft = '┫';
+			var charBoxDown = '┳';
+			var charBoxUp = '┻';
+			var charCross = '✖';
 			var _wrapper;
 			var _noise;
-			var _window = [];
-
-			var _message = {
-				header: 'AI Tournaments (.io)',
-				body: [
-					'Sorry, nothing to see here at the moment.',
-					'But get back here soon™ because awesome stuff are coming!',
-					'Read more about aitournaments.io over at <a href="https://github.com/AI-Tournaments" target="_blank">GitHub</a>.',
-					'    (right click if the link doesn\'t work. ↑)']
-			}
-
-			document.title = _message.header;
-			formatWindow();
-
 			function onload(){
 				_wrapper = document.getElementById('wrapper');
 				calcSize();
 				window.onresize = calcSize;
 				play();
+				addMessage('Work in progress', [
+					'Sorry, nothing to see here at the moment.',
+					'But get back here soon™ because awesome stuff are coming!',
+					'Read more about aitournaments.io over at <a href="https://github.com/AI-Tournaments" target="_blank">GitHub</a>.'
+				], true);
 			}
-
-			function formatWindow(){
-				let charLineVertical = '┃';
-				let charLineHorizontal = '━';
-
-				let charTopLeftCorner = '┏';
-				let charTopRightCorner = '┓';
-				let charBottomLeftCorner = '┗';
-				let charBottomRightCorner = '┛';
-
-				let charLineVerticalRight = '┣';
-				let charLineVerticalLeft = '┫';
-
-				_window[0] = '';
-				_window[2] = '';
-				_window[3 + _message.body.length] = '';
-
-				// Add space on both side of strings and get highest length.
-				_message.header = ' ' + _message.header + ' ';
-				let messageLength = _message.header.length;
-				for(let m = 0; m < _message.body.length; m++){
-					_message.body[m] = ' ' + _message.body[m] + ' ';
-					messageLength = Math.max(messageLength, strip(_message.body[m]).length);
+			function addMessage(header='', message=[], center=false){
+				function addEmptyRow(element){
+					let emptyRow = document.createElement('pre');
+					emptyRow.innerHTML = ' ';
+					element.appendChild(emptyRow);
 				}
-
-				for(let i = 0; i < messageLength; i++){
-					_window[0] += charLineHorizontal;
-					_window[2] += charLineHorizontal;
-					_window[3 + _message.body.length] += charLineHorizontal;
-				}
-
-				let addOnRightSide = false;
-				while(_message.header.length < messageLength){
-					addOnRightSide ? _message.header = ' ' + _message.header : _message.header = _message.header + ' ';
-					addOnRightSide = !addOnRightSide;
-				}
-
-				for(let m = 0; m < _message.body.length; m++){
-					while(strip(_message.body[m]).length < messageLength){
-						_message.body[m] = _message.body[m] + ' ';
+				function addWindowBorder(element, longestLine, rows){
+					let borderWrapper = document.createElement('div');
+					borderWrapper.classList.add('border');
+					element.appendChild(borderWrapper);
+					let border = document.createElement('pre');
+					border.innerHTML = charTopLeftCorner;
+					for(let i = 0; i < longestLine; i++){
+						if(i === longestLine-3){
+							border.innerHTML += charBoxDown;
+						}else{
+							border.innerHTML += charLineHorizontal;
+						}
 					}
+					border.innerHTML += charTopRightCorner;
+					borderWrapper.appendChild(border);
+					border = document.createElement('pre');
+					border.innerHTML = charLineVertical;
+					for(let i = 0; i < longestLine; i++){
+						if(i === longestLine-3){
+							border.innerHTML += charLineVertical;
+						}else{
+							border.innerHTML += ' ';
+						}
+					}
+					border.innerHTML += charLineVertical;
+					borderWrapper.appendChild(border);
+					border = document.createElement('pre');
+					border.innerHTML = charLineVerticalRight;
+					for(let i = 0; i < longestLine; i++){
+						if(i === longestLine-3){
+							border.innerHTML += charBoxUp;
+						}else{
+							border.innerHTML += charLineHorizontal;
+						}
+					}
+					border.innerHTML += charLineVerticalLeft;
+					borderWrapper.appendChild(border);
+					for(let r = 0; r < rows; r++){
+						border = document.createElement('pre');
+						border.innerHTML = charLineVertical;
+						for(let i = 0; i < longestLine; i++){
+							border.innerHTML += ' ';
+						}
+						border.innerHTML += charLineVertical;
+						borderWrapper.appendChild(border);
+					}
+					border = document.createElement('pre');
+					border.innerHTML = charBottomLeftCorner;
+					for(let i = 0; i < longestLine; i++){
+						border.innerHTML += charLineHorizontal;
+					}
+					border.innerHTML += charBottomRightCorner;
+					borderWrapper.appendChild(border);
+					let cross = document.createElement('pre');
+					cross.innerHTML = charCross;
+					cross.classList.add('cross-close');
+					cross.onclick = () => {
+						element.parentNode.removeChild(element);
+					};
+					borderWrapper.appendChild(cross);
 				}
-
-				_window[0] = charTopLeftCorner + _window[0] + charTopRightCorner;
-				_window[1] = charLineVertical + _message.header + charLineVertical;
-				_window[2] = charLineVerticalRight + _window[2] + charLineVerticalLeft;
-				_window[3 + _message.body.length] = charBottomLeftCorner + _window[3 + _message.body.length] + charBottomRightCorner;
-
-				for(let m = 0; m < _message.body.length; m++)
-				{
-					_window[3 + m] = charLineVertical + _message.body[m] + charLineVertical;
+				let messageWrapper = document.createElement('div');
+				messageWrapper.classList.add('window');
+				addEmptyRow(messageWrapper);
+				let headerDiv = document.createElement('pre');
+				headerDiv.innerHTML = header;
+				messageWrapper.appendChild(headerDiv);
+				addEmptyRow(messageWrapper);
+				let longestLine = 0
+				for(const row of message){
+					let messageDiv = document.createElement('pre');
+					messageDiv.classList.add('message');
+					messageDiv.innerHTML = '  ' + row + '  ';
+					messageWrapper.appendChild(messageDiv);
+					longestLine = Math.max(longestLine, strip(messageDiv.innerHTML).length);
 				}
+				addEmptyRow(messageWrapper);
+				longestLine -= 2;
+				addWindowBorder(messageWrapper, longestLine, message.length);
+				document.body.appendChild(messageWrapper);
 			}
-
 			function calcSize(){
 				_wrapper.className = 'force-new-row';
 				let charsPerRow = 0;
 				_wrapper.innerHTML = '0';
 				let height = _wrapper.offsetHeight;
-
 				while(_wrapper.offsetHeight === height){
 					_wrapper.innerHTML = _wrapper.innerHTML + '0';
 					charsPerRow++;
 				}
-
 				height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 				let rows = 2;
-
 				let charsOnFirstRow = _wrapper.innerHTML;
 				while(_wrapper.offsetHeight < height){
 					rows++;
 					_wrapper.innerHTML = _wrapper.innerHTML + charsOnFirstRow;
 				}
-
 				_wrapper.className = '';
 				initNoise(rows, charsPerRow);
 			}
-
 			function initNoise(rows, charsPerRow){
 				_noise = new Array(rows);
 				for(let r = 0; r < rows; r++){
@@ -146,14 +195,10 @@
 					_noise[r] = chars;
 				}
 			}
-
 			function play(){
-				let noise = getNoise();
-				noise = addWindow(noise);
-				_wrapper.innerHTML = parsToString(noise);
+				_wrapper.innerHTML = parsToString(getNoise());
 				window.requestAnimationFrame(play);
 			}
-
 			function getNoise(){
 				let numberOfChanges = (_noise.length*_noise[0].length)/100;
 				for(let c = 0; c < numberOfChanges; c++){
@@ -170,18 +215,6 @@
 				}
 				return _noise.slice();
 			}
-
-			function addWindow(noise){
-				let row = Math.floor(noise.length/2 - (_window.length)/2);
-				let messageStart = Math.floor((noise[0].length - _window[0].length)/2);
-				for(let m = 0; m < _window.length; m++){
-					let chars = noise[row + m];
-					chars = chars.substr(0, messageStart) + _window[m] + chars.substr(messageStart + _window.length);
-					noise[row + m] = chars;
-				}
-				return noise;
-			}
-
 			function parsToString(noise){
 				let chars = '';
 				for(let n = 0; n < noise.length; n++){
@@ -192,7 +225,6 @@
 				}
 				return chars;
 			}
-
 			function strip(html){
 				var output = '';
 				do{
