@@ -13,12 +13,26 @@
 				margin: 0px;
 			}
 
-			#wrapper, a, .window, pre {
+			#wrapper, a, .window, pre, body>.header {
 				margin: 0;
 				color: green;
 				line-height: 1em;
 				font-family: consolas, "Courier New", Courier, Monaco, monospace;
 				user-select: none;
+			}
+
+			#header-content-row {
+				display: flex;
+			}
+
+			body>.header {
+				position: fixed;
+				width: 100%;
+				background-color: black;
+			}
+
+			.dropdown::after {
+				content: " ▼|";
 			}
 
 			#wrapper {
@@ -73,6 +87,7 @@
 			var _charsPerRow = 0;
 			function onload(){
 				_wrapper = document.getElementById('wrapper');
+				document.getElementById('header-title').innerHTML = charLineVertical + document.title + charLineVertical;
 				calcSize();
 				window.onresize = calcSize;
 				play();
@@ -215,6 +230,17 @@
 					charsPerRow++;
 				}
 				charsPerRow++;
+				let contentLength = document.getElementById('header-title').innerHTML.length-2;
+				let seperator = document.getElementById('header-seperator-up');
+				seperator.innerHTML = charTopLeftCorner;
+				for(let index = 0; index < charsPerRow; index++){
+					seperator.innerHTML += index === contentLength ? charBoxDown : charLineHorizontal;
+				}
+				seperator = document.getElementById('header-seperator-bottom');
+				seperator.innerHTML = charBottomLeftCorner;
+				for(let index = 0; index < charsPerRow; index++){
+					seperator.innerHTML += index === contentLength ? charBoxUp : charLineHorizontal;
+				}
 				height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 				let rows = 2;
 				let charsOnFirstRow = _wrapper.innerHTML;
@@ -284,6 +310,14 @@
 		</script>
 	</head>
 	<body onload="onload()">
+		<div class="header">
+			<div id="header-seperator-up"></div>
+			<div id="header-content-row">
+				<div id="header-title"></div>
+				<div class="dropdown">Arenas</div>
+			</div>
+			<div id="header-seperator-bottom"></div>
+		</div>
 		<pre id="wrapper"></pre>
 	</body>
 </html>
