@@ -17,22 +17,24 @@
 				margin: 0;
 				color: green;
 				line-height: 1em;
-				text-align: center;
 				font-family: consolas, "Courier New", Courier, Monaco, monospace;
+				user-select: none;
 			}
 
 			.window {
 				position: absolute;
-				top: 1em;
 				background-color: rgba(0, 0, 0, .75)
 			}
-			.window>.message {
-				text-align: left;
+			.window>.header {
+				text-align: center;
 			}
 			.window>.border {
 				position: absolute;
 				top: 0;
 				left: 0;
+			}
+			.dragable {
+				cursor: move;
 			}
 			.window>.border>.cross-close {
 				position: absolute;
@@ -64,6 +66,7 @@
 			var charCross = '✖';
 			var _wrapper;
 			var _noise;
+			var _charsPerRow = 0;
 			function onload(){
 				_wrapper = document.getElementById('wrapper');
 				calcSize();
@@ -74,6 +77,32 @@
 					'But get back here soon™ because awesome stuff are coming!',
 					'Read more about aitournaments.io over at <a href="https://github.com/AI-Tournaments" target="_blank">GitHub</a>.'
 				], true);
+			}
+			function makeDragable(trigger, dragable=trigger){
+				var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+				trigger.onmousedown = dragMouseDown;
+				function dragMouseDown(e) {
+					e = e || window.event;
+					e.preventDefault();
+					pos3 = e.clientX;
+					pos4 = e.clientY;
+					document.onmouseup = closeDragElement;
+					document.onmousemove = elementDrag;
+				}
+				function elementDrag(e) {
+					e = e || window.event;
+					e.preventDefault();
+					pos1 = pos3 - e.clientX;
+					pos2 = pos4 - e.clientY;
+					pos3 = e.clientX;
+					pos4 = e.clientY;
+					dragable.style.top = (dragable.offsetTop - pos2) + 'px';
+					dragable.style.left = (dragable.offsetLeft - pos1) + 'px';
+				}
+				function closeDragElement() {
+					document.onmouseup = null;
+					document.onmousemove = null;
+				}
 			}
 			function addMessage(header='', message=[], center=false){
 				function addEmptyRow(element){
@@ -97,15 +126,20 @@
 					border.innerHTML += charTopRightCorner;
 					borderWrapper.appendChild(border);
 					border = document.createElement('pre');
-					border.innerHTML = charLineVertical;
+					let innerHTML = charLineVertical;
+					let dragTrigger = document.createElement('span');
 					for(let i = 0; i < longestLine; i++){
 						if(i === longestLine-3){
-							border.innerHTML += charLineVertical;
+							innerHTML += '</span>'+charLineVertical;
 						}else{
-							border.innerHTML += ' ';
+							innerHTML += ' ';
+							if(i === 0){
+								innerHTML += '<span class="dragable">';
+							}
 						}
 					}
-					border.innerHTML += charLineVertical;
+					border.innerHTML = innerHTML + charLineVertical;
+					makeDragable(border.getElementsByClassName('dragable')[0], element);
 					borderWrapper.appendChild(border);
 					border = document.createElement('pre');
 					border.innerHTML = charLineVerticalRight;
@@ -147,6 +181,7 @@
 				addEmptyRow(messageWrapper);
 				let headerDiv = document.createElement('pre');
 				headerDiv.innerHTML = header;
+				headerDiv.classList.add('header');
 				messageWrapper.appendChild(headerDiv);
 				addEmptyRow(messageWrapper);
 				let longestLine = 0
@@ -160,6 +195,10 @@
 				addEmptyRow(messageWrapper);
 				longestLine -= 2;
 				addWindowBorder(messageWrapper, longestLine, message.length);
+				if(center){
+					messageWrapper.style.top = (_noise.length/2 - (message.length+4)/2) + 'em';
+					messageWrapper.style.left = (_charsPerRow/2 - longestLine/2)/2 + 'em';
+				}
 				document.body.appendChild(messageWrapper);
 			}
 			function calcSize(){
@@ -171,6 +210,7 @@
 					_wrapper.innerHTML = _wrapper.innerHTML + '0';
 					charsPerRow++;
 				}
+				charsPerRow++;
 				height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 				let rows = 2;
 				let charsOnFirstRow = _wrapper.innerHTML;
@@ -182,6 +222,7 @@
 				initNoise(rows, charsPerRow);
 			}
 			function initNoise(rows, charsPerRow){
+				_charsPerRow = charsPerRow;
 				_noise = new Array(rows);
 				for(let r = 0; r < rows; r++){
 					let chars = '';
@@ -239,6 +280,6 @@
 		</script>
 	</head>
 	<body onload="onload()">
-		<pre id="wrapper" class="force-new-row"></pre>
+		<pre id="wrapper"></pre>
 	</body>
 </html>
