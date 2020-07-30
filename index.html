@@ -43,18 +43,21 @@
 				position: absolute;
 				background-color: rgba(0, 0, 0, .75)
 			}
-			.window>.header {
+			.window .header {
 				text-align: center;
+				border-bottom: 2px solid green;
+				height: 23px;
+				margin-bottom: 7px;
 			}
-			.window>.border {
-				position: absolute;
-				top: 0;
-				left: 0;
+			.window .border {
+				border: 2px solid green;
+				margin: 7px 3px 7px 3px;
+				padding: 7px 13px 7px 13px;
 			}
 			.dragable {
 				cursor: move;
 			}
-			.window>.border>.cross-close {
+			.window .border .cross-close {
 				position: absolute;
 				top: 1em;
 				right: .65em;
@@ -91,11 +94,7 @@
 				calcSize();
 				window.onresize = calcSize;
 				play();
-				addMessage('Work in progress', [
-					'Sorry, nothing to see here at the moment.',
-					'But get back here soon™ because awesome stuff are coming!',
-					'Read more about aitournaments.io over at <a href="https://github.com/AI-Tournaments" target="_blank">GitHub</a>.'
-				], true);
+				addMessage('Work in progress', 'Sorry, nothing to see here at the moment.\nBut get back here soon™ because awesome stuff are coming!\nRead more about aitournaments.io over at <a href="https://github.com/AI-Tournaments" target="_blank">GitHub</a>.', true);
 			}
 			function makeDragable(trigger, dragable=trigger){
 				var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
@@ -123,12 +122,7 @@
 					document.onmousemove = null;
 				}
 			}
-			function addMessage(header='', message=[], center=false){
-				function addEmptyRow(element){
-					let emptyRow = document.createElement('pre');
-					emptyRow.innerHTML = ' ';
-					element.appendChild(emptyRow);
-				}
+			function addMessage(header='', message='', center=false){
 				function addWindowBorder(element, longestLine, rows){
 					let borderWrapper = document.createElement('div');
 					borderWrapper.classList.add('border');
@@ -195,30 +189,31 @@
 					};
 					borderWrapper.appendChild(cross);
 				}
+				let windowWrapper = document.createElement('div');
+				windowWrapper.classList.add('window');
 				let messageWrapper = document.createElement('div');
-				messageWrapper.classList.add('window');
-				addEmptyRow(messageWrapper);
+				windowWrapper.appendChild(messageWrapper);
+				messageWrapper.classList.add('border');
 				let headerDiv = document.createElement('pre');
 				headerDiv.innerHTML = header;
 				headerDiv.classList.add('header');
 				messageWrapper.appendChild(headerDiv);
-				addEmptyRow(messageWrapper);
-				let longestLine = 0
-				for(const row of message){
-					let messageDiv = document.createElement('pre');
-					messageDiv.classList.add('message');
-					messageDiv.innerHTML = '  ' + row + '  ';
-					messageWrapper.appendChild(messageDiv);
-					longestLine = Math.max(longestLine, strip(messageDiv.innerHTML).length);
+				let messageDiv = document.createElement('pre');
+				messageDiv.classList.add('message');
+				messageDiv.innerHTML = message;
+				messageWrapper.appendChild(messageDiv);
+				let longestLine = 0;
+				let rows = message.split('\n');
+				for(const row of rows){
+					longestLine = Math.max(longestLine, strip(row).length);
 				}
-				addEmptyRow(messageWrapper);
-				longestLine -= 2;
-				addWindowBorder(messageWrapper, longestLine, message.length);
+				longestLine += 2;
+			//	addWindowBorder(messageWrapper, longestLine, message.length);
 				if(center){
-					messageWrapper.style.top = (_noise.length/2 - (message.length+4)/2) + 'em';
-					messageWrapper.style.left = (_charsPerRow/2 - longestLine/2)/2 + 'em';
+					windowWrapper.style.top = (_noise.length/2 - (rows.length+4)/2) + 'em';
+					windowWrapper.style.left = (_charsPerRow/2 - longestLine/2)/2 + 'em';
 				}
-				document.body.appendChild(messageWrapper);
+				document.body.appendChild(windowWrapper);
 			}
 			function calcSize(){
 				_wrapper.className = 'force-new-row';
