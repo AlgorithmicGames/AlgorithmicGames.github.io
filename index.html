@@ -7,36 +7,65 @@
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
 		<meta content="yes" name="mobile-web-app-capable">
 		<style>
+			:root {
+				--main-color: green;
+				--main-background-color: black;
+				--secondary-background-color: darkgreen;
+			}
+			
 			body {
 				overflow: hidden;
-				background-color: black;
+				background-color: var(--main-background-color);
 				margin: 0px;
 			}
 
-			#wrapper, a, .window, pre, body>.header {
+			body>.header-wrapper>.header {
+				border: 2px solid var(--main-color);
+			}
+
+			#wrapper, a, .window, pre, body>.header-wrapper {
 				margin: 0;
-				color: green;
+				color: var(--main-color);
 				line-height: 1em;
 				font-family: consolas, "Courier New", Courier, Monaco, monospace;
 				user-select: none;
+			}
+
+			.header-wrapper {
+				background-color: var(--main-background-color);
+				position: fixed;
+				width: 100%;
+			}
+
+			.header {
+				margin-top: 7px;
+				margin-left: 3px;
+				padding-left: 4px;
+				margin-bottom: 3px;
+				margin-right: 3px;
+			}
+
+			#header-content-row>div {
+				margin-right: 3px;
+				padding-top: 7px;
+				padding-right: 4px;
+				padding-bottom: 7px;
+			}
+
+			#header-content-row>div:not(:last-child) {
+				border-right: 2px solid var(--main-color);
 			}
 
 			#header-content-row {
 				display: flex;
 			}
 
-			body>.header {
-				position: fixed;
-				width: 100%;
-				background-color: black;
-			}
-
 			.dropdown::after {
-				content: " ▼|";
+				content: " ▼";
 			}
 
 			#wrapper {
-				color: darkgreen;
+				color: var(--secondary-background-color);
 			}
 
 			.window {
@@ -44,7 +73,7 @@
 				background-color: rgba(0, 0, 0, .75)
 			}
 			.window .border {
-				border: 2px solid green;
+				border: 2px solid var(--main-color);
 				margin: 7px 3px 7px 3px;
 			}
 			.window .border .header {
@@ -54,7 +83,7 @@
 			}
 			.window .border .message {
 				padding: 7px 13px 7px 13px;
-				border-top: 2px solid green;
+				border-top: 2px solid var(--main-color);
 			}
 			.dragable {
 				cursor: move;
@@ -65,7 +94,7 @@
 				right: 11px;
 				cursor: pointer;
 				padding-left: 6px;
-				border-left: 2px solid green;
+				border-left: 2px solid var(--main-color);
 				padding-top: 7px;
 				padding-bottom: 7px;
 			}
@@ -80,23 +109,13 @@
 		</style>
 		<script>
 			'use strict'
-			var charLineVertical = '┃';
-			var charLineHorizontal = '━';
-			var charTopLeftCorner = '┏';
-			var charTopRightCorner = '┓';
-			var charBottomLeftCorner = '┗';
-			var charBottomRightCorner = '┛';
-			var charLineVerticalRight = '┣';
-			var charLineVerticalLeft = '┫';
-			var charBoxDown = '┳';
-			var charBoxUp = '┻';
 			var charCross = '✖';
 			var _wrapper;
 			var _noise;
 			var _charsPerRow = 0;
 			function onload(){
 				_wrapper = document.getElementById('wrapper');
-				document.getElementById('header-title').innerHTML = charLineVertical + document.title + charLineVertical;
+				document.getElementById('header-title').innerHTML = document.title;
 				calcSize();
 				window.onresize = calcSize;
 				play();
@@ -129,72 +148,6 @@
 				}
 			}
 			function addMessage(header='', message='', center=false){
-				function addWindowBorder(element, longestLine, rows){
-					let borderWrapper = document.createElement('div');
-					borderWrapper.classList.add('border');
-					element.appendChild(borderWrapper);
-					let border = document.createElement('pre');
-					border.innerHTML = charTopLeftCorner;
-					for(let i = 0; i < longestLine; i++){
-						if(i === longestLine-3){
-							border.innerHTML += charBoxDown;
-						}else{
-							border.innerHTML += charLineHorizontal;
-						}
-					}
-					border.innerHTML += charTopRightCorner;
-					borderWrapper.appendChild(border);
-					border = document.createElement('pre');
-					let innerHTML = charLineVertical;
-					let dragTrigger = document.createElement('span');
-					for(let i = 0; i < longestLine; i++){
-						if(i === longestLine-3){
-							innerHTML += '</span>'+charLineVertical;
-						}else{
-							innerHTML += ' ';
-							if(i === 0){
-								innerHTML += '<span class="dragable">';
-							}
-						}
-					}
-					border.innerHTML = innerHTML + charLineVertical;
-					makeDragable(border.getElementsByClassName('dragable')[0], element);
-					borderWrapper.appendChild(border);
-					border = document.createElement('pre');
-					border.innerHTML = charLineVerticalRight;
-					for(let i = 0; i < longestLine; i++){
-						if(i === longestLine-3){
-							border.innerHTML += charBoxUp;
-						}else{
-							border.innerHTML += charLineHorizontal;
-						}
-					}
-					border.innerHTML += charLineVerticalLeft;
-					borderWrapper.appendChild(border);
-					for(let r = 0; r < rows; r++){
-						border = document.createElement('pre');
-						border.innerHTML = charLineVertical;
-						for(let i = 0; i < longestLine; i++){
-							border.innerHTML += ' ';
-						}
-						border.innerHTML += charLineVertical;
-						borderWrapper.appendChild(border);
-					}
-					border = document.createElement('pre');
-					border.innerHTML = charBottomLeftCorner;
-					for(let i = 0; i < longestLine; i++){
-						border.innerHTML += charLineHorizontal;
-					}
-					border.innerHTML += charBottomRightCorner;
-					borderWrapper.appendChild(border);
-					let cross = document.createElement('pre');
-					cross.innerHTML = charCross;
-					cross.classList.add('cross-close');
-					cross.onclick = () => {
-						element.parentNode.removeChild(element);
-					};
-					borderWrapper.appendChild(cross);
-				}
 				let windowWrapper = document.createElement('div');
 				windowWrapper.classList.add('window');
 				let messageWrapper = document.createElement('div');
@@ -223,8 +176,6 @@
 					longestLine = Math.max(longestLine, strip(row).length);
 				}
 				longestLine += 4;
-				longestLine += -2; // TEMP
-			//	addWindowBorder(messageWrapper, longestLine, message.length);
 				if(center){
 					windowWrapper.style.top = (_noise.length/2 - (rows.length+4)/2) + 'em';
 					windowWrapper.style.left = (_charsPerRow/2 - longestLine/2)/2 + 'em';
@@ -241,17 +192,6 @@
 					charsPerRow++;
 				}
 				charsPerRow++;
-				let contentLength = document.getElementById('header-title').innerHTML.length-2;
-				let seperator = document.getElementById('header-seperator-up');
-				seperator.innerHTML = charTopLeftCorner;
-				for(let index = 0; index < charsPerRow; index++){
-					seperator.innerHTML += index === contentLength ? charBoxDown : charLineHorizontal;
-				}
-				seperator = document.getElementById('header-seperator-bottom');
-				seperator.innerHTML = charBottomLeftCorner;
-				for(let index = 0; index < charsPerRow; index++){
-					seperator.innerHTML += index === contentLength ? charBoxUp : charLineHorizontal;
-				}
 				height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 				let rows = 2;
 				let charsOnFirstRow = _wrapper.innerHTML;
@@ -321,13 +261,13 @@
 		</script>
 	</head>
 	<body onload="onload()">
-		<div class="header">
-			<div id="header-seperator-up"></div>
-			<div id="header-content-row">
-				<div id="header-title"></div>
-				<div class="dropdown">Arenas</div>
+		<div class="header-wrapper">
+			<div class="header">
+				<div id="header-content-row">
+					<div id="header-title"></div>
+					<div class="dropdown">Arenas</div>
+				</div>
 			</div>
-			<div id="header-seperator-bottom"></div>
 		</div>
 		<pre id="wrapper"></pre>
 	</body>
