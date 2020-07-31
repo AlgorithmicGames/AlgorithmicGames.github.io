@@ -43,25 +43,31 @@
 				position: absolute;
 				background-color: rgba(0, 0, 0, .75)
 			}
-			.window .header {
-				text-align: center;
-				border-bottom: 2px solid green;
-				height: 23px;
-				margin-bottom: 7px;
-			}
 			.window .border {
 				border: 2px solid green;
 				margin: 7px 3px 7px 3px;
+			}
+			.window .border .header {
+				text-align: center;
+				margin: 7px 0 7px 0;
+				padding: 0px 13px 0px 13px;
+			}
+			.window .border .message {
 				padding: 7px 13px 7px 13px;
+				border-top: 2px solid green;
 			}
 			.dragable {
 				cursor: move;
 			}
-			.window .border .cross-close {
+			.window .cross-close {
 				position: absolute;
-				top: 1em;
-				right: .65em;
+				top: 9px;
+				right: 11px;
 				cursor: pointer;
+				padding-left: 6px;
+				border-left: 2px solid green;
+				padding-top: 7px;
+				padding-bottom: 7px;
 			}
 
 			.force-new-row {
@@ -192,11 +198,20 @@
 				let windowWrapper = document.createElement('div');
 				windowWrapper.classList.add('window');
 				let messageWrapper = document.createElement('div');
-				windowWrapper.appendChild(messageWrapper);
 				messageWrapper.classList.add('border');
+				windowWrapper.appendChild(messageWrapper);
+				let cross = document.createElement('pre');
+				cross.innerHTML = charCross;
+				cross.classList.add('cross-close');
+				cross.onclick = () => {
+					windowWrapper.parentNode.removeChild(windowWrapper);
+				};
+				windowWrapper.appendChild(cross);
 				let headerDiv = document.createElement('pre');
 				headerDiv.innerHTML = header;
 				headerDiv.classList.add('header');
+				headerDiv.classList.add('dragable');
+				makeDragable(headerDiv, windowWrapper);
 				messageWrapper.appendChild(headerDiv);
 				let messageDiv = document.createElement('pre');
 				messageDiv.classList.add('message');
@@ -207,7 +222,8 @@
 				for(const row of rows){
 					longestLine = Math.max(longestLine, strip(row).length);
 				}
-				longestLine += 2;
+				longestLine += 4;
+				longestLine += -2; // TEMP
 			//	addWindowBorder(messageWrapper, longestLine, message.length);
 				if(center){
 					windowWrapper.style.top = (_noise.length/2 - (rows.length+4)/2) + 'em';
