@@ -26,7 +26,7 @@ function a(){
 		repos.forEach(repo => {
 			if(repo.full_name.endsWith('-Arena')){
 				fetch('https://raw.githubusercontent.com/GAME-Arena/master/properties.json'.replace('GAME-Arena', repo.full_name)).then(response => response.json()).then(arenaProperties => {
-					if(arenaProperties.limits.participants.max === 1 || arenaProperties.limits.participantsPerTeam.max === 1){
+					if(arenaProperties.header.limits.participants.max === 1 || arenaProperties.header.limits.participantsPerTeam.max === 1){
 						let option = document.createElement('option');
 						option.value = repo.full_name.replace(/.*\/|-Arena/g, '');
 						option.dataset.full_name = repo.full_name;
