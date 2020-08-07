@@ -11,7 +11,8 @@ function a(){
 		button.onclick = transferTo;
 	}
 	let contentWindows = {
-		arena: []
+		arena: [],
+		iFrameLog: []
 	};
 	document.getElementById('arena').onchange = event => {
 		let option = getOption(arenaList, event);
@@ -41,6 +42,8 @@ function a(){
 	window.onmessage = messageEvent => {
 		if(contentWindows.arena.includes(messageEvent.source)){
 			getArenaLog(messageEvent);
+		}else if(messageEvent.data.type === 'log'){
+			document.getElementById(messageEvent.data.value.id + '_output').innerHTML = JSON.stringify(messageEvent.data.value.log,null,'\t');
 		}else{
 			console.error('Source element not defined!');
 			console.error(messageEvent.source.frameElement);
@@ -176,10 +179,6 @@ function a(){
 			})
 		});
 	}
-	function getIFrameLog(iframe){
-		contentWindows.iFrameLog.push(iframe.contentWindow);
-		iframe.contentWindow.postMessage(iframe.id, '*');
-	}
 	function start(){
 		let participants = [];
 		for(const option of participantsSelected.options){
@@ -189,7 +188,30 @@ function a(){
 			});
 		}
 		let brackets = buildBrackets(participants, arenaProperties.header);
-		console.log(brackets);
+		brackets.forEach(bracket => {
+			let div = document.createElement('div');
+			document.getElementById('logContainer').appendChild(div);
+			let iframe = document.createElement('iframe');
+			iframe.src = '../Arena/index.html';
+			iframe.style.display = 'none';
+			iframe.id = Date() + '_' +  Math.random();
+			div.appendChild(iframe);
+			let output = document.createElement('pre');
+			output.id = iframe.id + '_output';
+			output.style.display = 'none';
+			output.classList.add('log');
+			div.appendChild(output);
+			contentWindows.iFrameLog.push(iframe.contentWindow);
+			iframe.contentWindow.addEventListener('load', () => {
+				iframe.contentWindow.postMessage({
+					type: 'auto-run',
+					id: iframe.id,
+					bracket: bracket,
+					settings: arenaProperties.settings,
+					title: document.title
+				}, '*');
+			});
+		});
 	}
 	function buildBrackets(participants=[], arenaHeader={}){ // TODO: Add support for dynamic team amount.
 		let brackets = [];
@@ -200,11 +222,11 @@ function a(){
 					let dontAdd = false;
 					if(arenaHeader.symmetric){
 						brackets.forEach(bracket => {
-							dontAdd |= bracket.includes(a) && bracket.includes(b);
+							dontAdd |= bracket[0].includes(a) && bracket[0].includes(b);
 						});
 					}
 					if(!dontAdd){
-						brackets.push([a, b]);
+						brackets.push([[a], [b]]);
 					}
 				}
 			});
