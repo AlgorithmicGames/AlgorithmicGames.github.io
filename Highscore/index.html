@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>AI Tournaments Highscore</title>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-173346924-1"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-173346924-1');</script>
+		<meta content="width=device-width, initial-scale=1.0" name="viewport">
+		<meta content="yes" name="mobile-web-app-capable">
+		<link rel="stylesheet" href="../Arena/log.css">
+		<style>
+			iframe {
+				width: 100%;
+				border: 0;
+			}
+			input[type="button" i]:disabled{
+				visibility: hidden;
+			}
+		</style>
+		<script src="index.js"></script>
+	</head>
+	<body onload="onload()">
+		<label for="arena">Arena:</label>
+		<input list="arena-datalist" name="arena" id="arena"/>
+		<datalist id="arena-datalist"></datalist>
+		<input type="button" id="add-team" value="Add team" onclick="createTeam()" disabled>
+		<div id="participant-groups">
+			<div>
+				<input type="button" class="transfer-button" data-select="participants-selectable" value="Transfer here">
+				<label for="participants-selectable">Available participants</label>
+				<select id="participants-selectable" class="participants" multiple></select>
+			</div>
+			<div>
+				<input type="button" class="transfer-button" data-select="participants-selected" value="Transfer here">
+				<label for="participants-selected">Selected participants</label>
+				<select id="participants-selected" class="participants" multiple></select>
+			</div>
+		</div>
+	</body>
+</html>

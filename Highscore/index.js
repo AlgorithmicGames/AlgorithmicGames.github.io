@@ -2,31 +2,15 @@
 let arenaList = undefined;
 let arenaProperties = undefined;
 let participantList = undefined;
-let settingsIframe = undefined;
-let btnAddTeam = undefined;
-let btnTransfer = undefined;
 let logContainer = undefined;
 let outputSum = undefined;
 let btnStart = undefined;
 let contentWindows = {
-	iFrameLog: [],
-	settingsIframe: undefined
+	arena: []
 };
 window.onmessage = messageEvent => {
-	if(contentWindows.iFrameLog.includes(messageEvent.source)){
+	if(contentWindows.arena.includes(messageEvent.source)){
 		getArenaLog(messageEvent);
-	}else if(contentWindows.settingsIframe === messageEvent.source){
-		switch(messageEvent.data.type){
-			case 'properties':
-				arenaProperties = messageEvent.data.value.properties;
-				settingsIframe.style.height = messageEvent.data.value.height + 'px';
-				for(let i = 0; i < Math.max(1, arenaProperties.limits.teams.min); i++){
-					createTeam();
-				}
-				break;
-			case 'settings': begin(messageEvent.data.value); break;
-		}
-		
 	}else{
 		console.error('Source element not defined!');
 		console.error(messageEvent.source.frameElement);
@@ -119,22 +103,7 @@ function sortOptions(selectElement){
 		selectElement.add(option);
 	}
 }
-function validateTeams(){
-	let selectElements = document.getElementsByClassName('participant-team');
-	return arenaProperties.limits.teams.min <= selectElements.length && selectElements.length <= arenaProperties.limits.teams.max;
-}
-function validateStart(){
-	let selectElements = document.getElementsByClassName('participant-team');
-	let allValid = validateTeams();
-	let total = 0;
-	for(const selectElement of selectElements){
-		total += selectElement.length;
-		allValid &= arenaProperties.limits.participantsPerTeam.min <= selectElement.length && selectElement.length <= arenaProperties.limits.participantsPerTeam.max;
-	}
-	allValid &= arenaProperties.limits.participants.min <= total && total <= arenaProperties.limits.participants.max;
-	return allValid;
-}
-function transferToTeam(event){
+function transferTo(event){
 	let selectElement_moveTo = document.getElementById(event.target.dataset.select);
 	let selectElements = document.getElementsByClassName('participants');
 	for(const selectElement of selectElements){
@@ -143,39 +112,38 @@ function transferToTeam(event){
 			option.selected = false;
 		}
 	}
-	btnStart.disabled = !validateStart();
 	sortOptions(selectElement_moveTo);
 }
 function onload(){
 	arenaList = document.getElementById('arena-datalist');
 	participantList = document.getElementById('participants-selectable');
-	btnAddTeam = document.getElementById('add-team');
-	settingsIframe = document.getElementById('settings');
 	logContainer = document.getElementById('logContainer');
 	outputSum = document.getElementById('outputSum');
 	btnStart = document.getElementById('btnStart');
-	contentWindows.settingsIframe = settingsIframe.contentWindow;
-	btnTransfer = document.getElementById('transfer');
-	btnTransfer.onclick = transferToTeam;
+	for(const button of document.getElementsByClassName('transfer-button')){
+		button.onclick = transferTo;
+	}
 	document.getElementById('arena').onchange = event => {
 		let option = getOption(arenaList, event);
 		if(option !== undefined){
-			btnAddTeam.disabled = true;
 			for(const element of document.getElementsByClassName('participant-team-container')){
 				element.parentNode.removeChild(element);
 			}
 			document.title = event.target.value + ' Arena';
-			settingsIframe.contentWindow.postMessage({type: 'SetArena', value: event.target.value});
 			getParticipants(option.value);
 		}
 	}
 	fetch('https://api.github.com/orgs/AI-Tournaments/repos').then(response => response.json()).then(repos => {
 		repos.forEach(repo => {
 			if(repo.full_name.endsWith('-Arena')){
-				let option = document.createElement('option');
-				option.value = repo.full_name.replace(/.*\/|-Arena/g, '');
-				option.dataset.full_name = repo.full_name;
-				arenaList.appendChild(option);
+				fetch('https://raw.githubusercontent.com/GAME-Arena/master/properties.json'.replace('GAME-Arena', repo.full_name)).then(response => response.json()).then(arenaProperties => {
+					if(arenaProperties.limits.participants.max === 1 || arenaProperties.limits.participantsPerTeam.max === 1){
+						let option = document.createElement('option');
+						option.value = repo.full_name.replace(/.*\/|-Arena/g, '');
+						option.dataset.full_name = repo.full_name;
+						arenaList.appendChild(option);
+					}
+				});
 			}
 		});
 	});
@@ -210,73 +178,6 @@ function getParticipants(arena=''){
 			sortOptions(participantList);
 		})
 	});
-}
-
-function createTeam(){
-	let teamIndex = document.getElementsByClassName('participant-team-container').length + 1;
-	btnAddTeam.disabled = !validateTeams();
-	let teamID = 'participant-team-' + teamIndex;
-	let participantTeam = document.createElement('div');
-	participantTeam.classList.add('participant-team-container');
-	let input = document.createElement('input');
-	participantTeam.appendChild(input);
-	let label = document.createElement('label');
-	participantTeam.appendChild(label);
-	let select = document.createElement('select');
-	participantTeam.appendChild(select);
-	input.type = 'button';
-	input.dataset.select = teamID;
-	input.value = btnTransfer.value;
-	input.onclick = transferToTeam;
-	label.htmlFor = teamID;
-	label.innerHTML = 'Team ' + teamIndex;
-	select.id = teamID;
-	select.classList.add('participants');
-	select.classList.add('participant-team');
-	select.multiple = true;
-	document.getElementById('participant-groups').appendChild(participantTeam);
-}
-function start(){
-	while(0 < logContainer.childElementCount){
-		logContainer.removeChild(logContainer.firstChild);
-	}
-	outputSum.innerHTML = '';
-	for(var key in outputSum.dataset){
-		delete outputSum.dataset[key];
-	}
-	settingsIframe.contentWindow.postMessage({type: 'GetSettings'});
-}
-function begin(settings){
-	let json = {
-		arena: document.title.split(' ')[0],
-		participants: [],
-		settings: settings
-	};
-	for(const select of document.getElementsByClassName('participants')){
-		if(select.id !== 'participants-selectable'){
-			let team = [];
-			json.participants.push(team);
-			for(const option of select.options){
-				team.push({
-					name: option.dataset.name,
-					url: option.dataset.url
-				});
-			}
-		}
-	}
-	let div = document.createElement('div');
-	logContainer.appendChild(div);
-	let iframe = document.createElement('iframe');
-	iframe.src = 'iframe.sandbox.html#' + JSON.stringify(json);
-	iframe.sandbox = 'allow-scripts';
-	iframe.style.display = 'none';
-	iframe.id = Date() + '_' +  Math.random();
-	div.appendChild(iframe);
-	let output = document.createElement('div');
-	output.style.display = 'none';
-	output.classList.add('log');
-	div.appendChild(output);
-	setTimeout(()=>{getIFrameLog(iframe, output)}, 1000);
 }
 function getIFrameLog(iframe){
 	contentWindows.iFrameLog.push(iframe.contentWindow);
