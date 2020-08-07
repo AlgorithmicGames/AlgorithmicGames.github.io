@@ -1,5 +1,6 @@
 'use strict'
 function a(){
+	let arenaProperties;
 	let arenaList = document.getElementById('arena-datalist');
 	let participantList = document.getElementById('participants-selectable');
 	let outputSum = document.getElementById('outputSum');
@@ -25,7 +26,8 @@ function a(){
 	fetch('https://api.github.com/orgs/AI-Tournaments/repos').then(response => response.json()).then(repos => {
 		repos.forEach(repo => {
 			if(repo.full_name.endsWith('-Arena')){
-				fetch('https://raw.githubusercontent.com/GAME-Arena/master/properties.json'.replace('GAME-Arena', repo.full_name)).then(response => response.json()).then(arenaProperties => {
+				fetch('https://raw.githubusercontent.com/GAME-Arena/master/properties.json'.replace('GAME-Arena', repo.full_name)).then(response => response.json()).then(_arenaProperties => {
+					arenaProperties = _arenaProperties;
 					if(arenaProperties.header.limits.participants.max === 1 || arenaProperties.header.limits.participantsPerTeam.max === 1){
 						let option = document.createElement('option');
 						option.value = repo.full_name.replace(/.*\/|-Arena/g, '');
@@ -179,6 +181,34 @@ function a(){
 		iframe.contentWindow.postMessage(iframe.id, '*');
 	}
 	function start(){
-		console.log(participantsSelected.options);
+		let participants = [];
+		for(const option of participantsSelected.options){
+			participants.push({
+				name: option.dataset.name,
+				url: option.dataset.url
+			});
+		}
+		let brackets = buildBrackets(participants, arenaProperties.header);
+		console.log(brackets);
+	}
+	function buildBrackets(participants=[], arenaHeader={}){ // TODO: Add support for dynamic team amount.
+		let brackets = [];
+		let _participants = participants.slice();
+		_participants.forEach(a => {
+			_participants.forEach(b => {
+				if(a !== b){
+					let dontAdd = false;
+					if(arenaHeader.symmetric){
+						brackets.forEach(bracket => {
+							dontAdd |= bracket.includes(a) && bracket.includes(b);
+						});
+					}
+					if(!dontAdd){
+						brackets.push([a, b]);
+					}
+				}
+			});
+		});
+		return brackets;
 	}
 }
