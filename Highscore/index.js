@@ -5,6 +5,7 @@ let participantList = undefined;
 let logContainer = undefined;
 let outputSum = undefined;
 let btnStart = undefined;
+let participantsSelected = undefined;
 let contentWindows = {
 	arena: []
 };
@@ -112,6 +113,7 @@ function transferTo(event){
 			option.selected = false;
 		}
 	}
+	document.getElementById('start').disabled = participantsSelected.options.length < 2;
 	sortOptions(selectElement_moveTo);
 }
 function onload(){
@@ -120,6 +122,7 @@ function onload(){
 	logContainer = document.getElementById('logContainer');
 	outputSum = document.getElementById('outputSum');
 	btnStart = document.getElementById('btnStart');
+	participantsSelected = document.getElementById('participants-selected');
 	for(const button of document.getElementsByClassName('transfer-button')){
 		button.onclick = transferTo;
 	}
@@ -182,4 +185,7 @@ function getParticipants(arena=''){
 function getIFrameLog(iframe){
 	contentWindows.iFrameLog.push(iframe.contentWindow);
 	iframe.contentWindow.postMessage(iframe.id, '*');
+}
+function start(){
+	console.log(participantsSelected.options);
 }
