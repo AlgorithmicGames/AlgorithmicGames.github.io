@@ -1,2 +1,2 @@
-# AI-Tournaments-Website
+# AI-Tournaments
 The website.
