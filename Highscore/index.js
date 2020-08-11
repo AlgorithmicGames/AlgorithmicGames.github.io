@@ -1,11 +1,13 @@
 'use strict'
 function a(){
+	let tableSummary;
 	let arenaProperties;
 	let arenaList = document.getElementById('arena-datalist');
 	let participantList = document.getElementById('participants-selectable');
 	let outputSum = document.getElementById('outputSum');
 	let participantsSelected = document.getElementById('participants-selected');
 	let btnStart = document.getElementById('btnStart');
+	let tableContainer = document.getElementById('highscore-table-container');
 	btnStart.onclick = start;
 	for(const button of document.getElementsByClassName('transfer-button')){
 		button.onclick = transferTo;
@@ -23,7 +25,7 @@ function a(){
 			document.title = event.target.value + ' Arena';
 			getParticipants(option.value);
 		}
-	}
+	};
 	fetch('https://api.github.com/orgs/AI-Tournaments/repos').then(response => response.json()).then(repos => {
 		repos.forEach(repo => {
 			if(repo.full_name.endsWith('-Arena')){
@@ -44,10 +46,32 @@ function a(){
 			getArenaLog(messageEvent);
 		}else if(messageEvent.data.type === 'log'){
 			document.getElementById(messageEvent.data.value.id + '_output').innerHTML = JSON.stringify(messageEvent.data.value.log,null,'\t');
+			updateTable();
 		}else{
 			console.error('Source element not defined!');
 			console.error(messageEvent.source.frameElement);
 		}
+	}
+	function updateTable(){
+		let logs = [];
+		for(const arenaLog of document.getElementsByClassName('log-arena')){
+			if(arenaLog.innerHTML !== ''){
+				logs.push(JSON.parse(arenaLog.innerHTML));
+			}
+		};
+		logs.forEach(log => {
+			let ai_1 = log[0];
+			let ai_2 = log[1];
+			let cell = document.getElementById(ai_1.name + '_' + ai_2.name);
+			cell.innerHTML = round(ai_1.score, 1) + ' / ' + round(ai_2.score, 1);
+			if(ai_1.score < ai_2.score){
+				cell.classList.add('ai-2');
+			}else if(ai_2.score < ai_1.score){
+				cell.classList.add('ai-1');
+			}
+			let array = [{'name': ai_1.name, 'score': ai_1.score}, {'name': ai_2.name, 'score': ai_2.score}];
+			updateResultTable(array);
+		});
 	}
 	function getArenaLog(messageEvent){
 		let iframe = document.getElementById(messageEvent.data.id);
@@ -147,6 +171,11 @@ function a(){
 		}
 		btnStart.disabled = participantsSelected.options.length < 2;
 		sortOptions(selectElement_moveTo);
+		let participants = [];
+		for(const option of participantsSelected.options){
+			participants.push(option.dataset.name);
+		}
+		buildTable(participants);
 	}
 	function getParticipants(arena=''){
 		for(const selectElement of document.getElementsByClassName('participants')){
@@ -191,21 +220,22 @@ function a(){
 		brackets.forEach(bracket => {
 			let div = document.createElement('div');
 			document.getElementById('logContainer').appendChild(div);
-			let iframe = document.createElement('iframe');
-			iframe.src = '../Arena/index.html';
-			iframe.style.display = 'none';
-			iframe.id = Date() + '_' +  Math.random();
-			div.appendChild(iframe);
+			let arena = document.createElement('iframe');
+			arena.src = '../Arena/index.html';
+			arena.style.display = 'none';
+			arena.id = 'arena_' + Date() + '_' +  Math.random();
+			div.appendChild(arena);
 			let output = document.createElement('pre');
-			output.id = iframe.id + '_output';
+			output.id = arena.id + '_output';
 			output.style.display = 'none';
 			output.classList.add('log');
+			output.classList.add('log-arena');
 			div.appendChild(output);
-			contentWindows.iFrameLog.push(iframe.contentWindow);
-			iframe.contentWindow.addEventListener('load', () => {
-				iframe.contentWindow.postMessage({
+			contentWindows.iFrameLog.push(arena.contentWindow);
+			arena.contentWindow.addEventListener('load', () => {
+				arena.contentWindow.postMessage({
 					type: 'auto-run',
-					id: iframe.id,
+					id: arena.id,
 					bracket: bracket,
 					settings: arenaProperties.settings,
 					title: document.title
@@ -232,5 +262,194 @@ function a(){
 			});
 		});
 		return brackets;
+	}
+	function buildTable(listOfAIs){
+	//	pendingGames++;
+	//	let postCompare = function(){
+	//		pendingGames--;
+	//		if(pendingGames === 0){
+	//			buttonEnableSwitch(true, true);
+	//		}
+	//	}
+		while(tableContainer.firstChild){tableContainer.removeChild(tableContainer.firstChild);}
+		if(0 < listOfAIs.length){
+			let header = document.createElement('p');
+			header.innerHTML = 'Average out of ' + arenaProperties.settings.general.averageOf + ' games.';
+			tableContainer.appendChild(header);
+			let tableWrapper = document.createElement('div');
+			tableContainer.appendChild(tableWrapper);
+
+			// Create base of new table.
+			let table = document.createElement('table');
+			tableSummary = document.createElement('table');
+
+			// Add major table header.
+			let tableRow = document.createElement('tr');
+			let tableCell = document.createElement('td');
+			tableCell.classList.add('cell-unused');
+			tableCell.colSpan = 2;
+			tableCell.rowSpan = 2;
+			tableCell.innerHTML = 'Score';
+			tableRow.appendChild(tableCell);
+			let tableHeaderMajor = document.createElement('th');
+			tableHeaderMajor.innerHTML = '<div>Team 1</div>';
+			tableHeaderMajor.classList.add('major-header', 'ai-1');
+			tableHeaderMajor.colSpan = listOfAIs.length;
+			tableRow.appendChild(tableHeaderMajor);
+			table.appendChild(tableRow);
+
+			// Add base table.
+			tableRow = document.createElement('tr');
+			listOfAIs.forEach(function(name){
+				let tableHeader = document.createElement('th');
+				tableHeader.innerHTML = name;
+				tableRow.appendChild(tableHeader);
+			}, this);
+			table.appendChild(tableRow);
+
+			// Add base header for result.
+			tableRow = document.createElement('tr');
+			// Summary
+			tableCell = document.createElement('td');
+			tableCell.classList.add('cell-unused');
+			tableCell.innerHTML = 'Summary';
+			tableRow.appendChild(tableCell);
+			// Team 1
+			tableCell = document.createElement('th');
+			tableCell.innerHTML = 'Team 1';
+			tableCell.classList.add('clickable');
+			tableCell.onclick = function(){sortTableSummary(1)};
+			tableRow.appendChild(tableCell);
+			// Team 2
+			tableCell = document.createElement('th');
+			tableCell.innerHTML = 'Team 2';
+			tableCell.classList.add('clickable');
+			tableCell.onclick = function(){sortTableSummary(2)};
+			tableRow.appendChild(tableCell);
+			// Average
+			tableCell = document.createElement('th');
+			tableCell.innerHTML = 'Average';
+			tableCell.classList.add('clickable');
+			tableCell.onclick = function(){sortTableSummary(0)};
+			tableRow.appendChild(tableCell);
+			tableSummary.appendChild(tableRow);
+
+			// Add major table side header.
+			tableRow = document.createElement('tr');
+			let tableHeaderMajorSide = document.createElement('th');
+			tableHeaderMajorSide.innerHTML = '<div>Team 2</div>';
+			tableHeaderMajorSide.classList.add('major-header', 'rotated', 'ai-2');
+			tableHeaderMajorSide.rowSpan = listOfAIs.length;
+			tableRow.appendChild(tableHeaderMajorSide);
+
+			listOfAIs.forEach(function(name){
+				let tableHeader = document.createElement('th');
+				tableHeader.innerHTML = name;
+				tableRow.appendChild(tableHeader);
+
+				// Add AI to result table.
+				let tableRowResult = document.createElement('tr');
+				tableHeader = document.createElement('th');
+				tableHeader.innerHTML = name;
+				tableRowResult.appendChild(tableHeader);
+
+				let tableSummaryCell = document.createElement('td');
+				tableSummaryCell.id = name + '_AI1';
+				tableSummaryCell.classList.add('resultAI1');
+				tableSummaryCell.innerHTML = '0.0';
+				tableSummaryCell.dataset.score = 0;
+				tableRowResult.appendChild(tableSummaryCell);
+
+				tableSummaryCell = document.createElement('td');
+				tableSummaryCell.id = name + '_AI2';
+				tableSummaryCell.classList.add('resultAI2');
+				tableSummaryCell.innerHTML = '0.0';
+				tableSummaryCell.dataset.score = 0;
+				tableRowResult.appendChild(tableSummaryCell);
+
+				tableSummaryCell = document.createElement('td');
+				tableSummaryCell.id = name + '_average';
+				tableSummaryCell.classList.add('resultAverage');
+				tableSummaryCell.innerHTML = '0.0';
+				tableSummaryCell.dataset.score = 0;
+				tableRowResult.appendChild(tableSummaryCell);
+
+				tableSummary.appendChild(tableRowResult);
+				listOfAIs.forEach(function(_name){
+					let tableCell = document.createElement('td');
+					tableCell.id = _name + '_' + name;
+					tableRow.appendChild(tableCell);
+				}, this);
+				table.appendChild(tableRow);
+				tableRow = document.createElement('tr');
+			}, this);
+			tableWrapper.appendChild(table);
+			tableWrapper.appendChild(tableSummary);
+		}
+	}
+
+	function updateResultTable(input){
+		input.forEach(function(ai, index){
+			let aiNumber = index + 1;
+			let aiName = ai.name;
+			let score = ai.score;
+			let cellScore = document.getElementById(aiName + '_AI' + aiNumber);
+			let oldScore = parseFloat(cellScore.dataset.score);
+			let newScore = oldScore + score;
+			cellScore.dataset.score = newScore;
+			cellScore.innerHTML = round(newScore, 1);
+			// Set average
+			let scoreAI_1 = parseFloat(document.getElementById(aiName + '_AI1').dataset.score);
+			let scoreAI_2 = parseFloat(document.getElementById(aiName + '_AI2').dataset.score);
+			document.getElementById(aiName + '_average').innerHTML = round((scoreAI_1 + scoreAI_2)/2, 1);
+		}, this);
+		sortTableSummary(0);
+	}
+
+	function sortTableSummary(ai){
+		let column;
+		switch(ai){
+			case 1:
+				column = 'resultAI1';
+				break;
+		
+			case 2:
+				column = 'resultAI2';
+				break;
+		
+			default:
+				column = 'resultAverage';
+		}
+		let rows = tableSummary.childNodes;
+		rows = [].slice.call(rows, 1);
+		rows.sort(function(a, b){
+			let aValue = parseFloat(a.getElementsByClassName(column)[0].childNodes[0].data);
+			let bValue = parseFloat(b.getElementsByClassName(column)[0].childNodes[0].data);
+			if(bValue < aValue) return -1;
+			if(aValue < bValue) return 1;
+			return 0;
+		});
+		// Remove and readd.
+		let header = tableSummary.firstChild;
+		while(tableSummary.firstChild){tableSummary.removeChild(tableSummary.firstChild);}
+		tableSummary.appendChild(header);
+		rows.forEach(function(row){
+			tableSummary.appendChild(row);
+		}, this);
+		// Mark sorted column
+		tableSummary.childNodes.forEach(function(rowNodes){
+			rowNodes.childNodes.forEach(function(columnNode){
+				columnNode.classList.remove('sorted');
+				if(columnNode.classList.contains(column)){
+					columnNode.classList.add('sorted');
+				}
+			}, this);
+		}, this);
+	}
+	function round(value, decimals){
+		var hadDecimal = 0 < value%1;
+		var base = Math.pow(10, decimals);
+		var newValue = Math.round(value*base)/base;
+		return newValue + (newValue%1 == 0 && hadDecimal ? '.0' : '')
 	}
 }
