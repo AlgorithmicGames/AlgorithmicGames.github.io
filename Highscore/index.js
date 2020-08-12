@@ -2,18 +2,17 @@
 function a(){
 	let tableSummary;
 	let arenaProperties;
+	let logContainer = document.getElementById('logContainer');
 	let arenaList = document.getElementById('arena-datalist');
 	let participantList = document.getElementById('participants-selectable');
-	let outputSum = document.getElementById('outputSum');
 	let participantsSelected = document.getElementById('participants-selected');
-	let btnStart = document.getElementById('btnStart');
 	let tableContainer = document.getElementById('highscore-table-container');
+	let btnStart = document.getElementById('btnStart');
 	btnStart.onclick = start;
 	for(const button of document.getElementsByClassName('transfer-button')){
 		button.onclick = transferTo;
 	}
 	let contentWindows = {
-		arena: [],
 		iFrameLog: []
 	};
 	document.getElementById('arena').onchange = event => {
@@ -42,10 +41,10 @@ function a(){
 		});
 	});
 	window.onmessage = messageEvent => {
-		if(contentWindows.arena.includes(messageEvent.source)){
-			getArenaLog(messageEvent);
-		}else if(messageEvent.data.type === 'log'){
+		if(messageEvent.data.type === 'log'){
 			document.getElementById(messageEvent.data.value.id + '_output').innerHTML = JSON.stringify(messageEvent.data.value.log,null,'\t');
+			let iframe = document.getElementById(messageEvent.data.value.id);
+			iframe.parentNode.removeChild(iframe);
 			updateTable();
 		}else{
 			console.error('Source element not defined!');
@@ -62,18 +61,20 @@ function a(){
 		logs.forEach(log => {
 			let ai_1 = log[0];
 			let ai_2 = log[1];
-			let cell = document.getElementById(ai_1.name + '_' + ai_2.name);
-			cell.innerHTML = round(ai_1.score, 1) + ' / ' + round(ai_2.score, 1);
-			if(ai_1.score < ai_2.score){
-				cell.classList.add('ai-2');
-			}else if(ai_2.score < ai_1.score){
-				cell.classList.add('ai-1');
+			if(ai_1.type === 'score' && ai_2.type === 'score'){
+				let cell = document.getElementById(ai_1.name + '_' + ai_2.name);
+				cell.innerHTML = round(ai_1.score, 1) + ' / ' + round(ai_2.score, 1);
+				if(ai_1.score < ai_2.score){
+					cell.classList.add('ai-2');
+				}else if(ai_2.score < ai_1.score){
+					cell.classList.add('ai-1');
+				}
+				let array = [{'name': ai_1.name, 'score': ai_1.score}, {'name': ai_2.name, 'score': ai_2.score}];
+				updateResultTable(array);
 			}
-			let array = [{'name': ai_1.name, 'score': ai_1.score}, {'name': ai_2.name, 'score': ai_2.score}];
-			updateResultTable(array);
 		});
 	}
-	function getArenaLog(messageEvent){
+	function _unused_getArenaLog(messageEvent){
 		let iframe = document.getElementById(messageEvent.data.id);
 		let output = iframe.parentElement.getElementsByClassName('log')[0];
 		if(messageEvent.origin === 'null'){
@@ -134,6 +135,7 @@ function a(){
 				if(outputSum.dataset.aborted !== undefined){
 					array.push({type: 'aborted', aborted: aborted})
 				}
+				console.log(aborted);
 				outputSum.dataset.array = JSON.stringify(array);
 				outputSum.innerHTML = JSON.stringify(array,null,'\t');
 				contentWindows.iFrameLog.splice(contentWindows.iFrameLog.indexOf(messageEvent.source), 1);
@@ -209,6 +211,12 @@ function a(){
 		});
 	}
 	function start(){
+		while(logContainer.firstChild){logContainer.removeChild(logContainer.firstChild);}
+		['resultAI1', 'resultAI2', 'resultAverage'].forEach(className => {
+			for(const cell of document.getElementsByClassName(className)){
+				cell.dataset.score = 0;
+			}
+		});
 		let participants = [];
 		for(const option of participantsSelected.options){
 			participants.push({
@@ -219,11 +227,11 @@ function a(){
 		let brackets = buildBrackets(participants, arenaProperties.header);
 		brackets.forEach(bracket => {
 			let div = document.createElement('div');
-			document.getElementById('logContainer').appendChild(div);
+			logContainer.appendChild(div);
 			let arena = document.createElement('iframe');
 			arena.src = '../Arena/index.html';
 			arena.style.display = 'none';
-			arena.id = 'arena_' + Date() + '_' +  Math.random();
+			arena.id = 'arena_' + Date() + '_' + Math.random();
 			div.appendChild(arena);
 			let output = document.createElement('pre');
 			output.id = arena.id + '_output';
@@ -273,12 +281,6 @@ function a(){
 	//	}
 		while(tableContainer.firstChild){tableContainer.removeChild(tableContainer.firstChild);}
 		if(0 < listOfAIs.length){
-			let header = document.createElement('p');
-			header.innerHTML = 'Average out of ' + arenaProperties.settings.general.averageOf + ' games.';
-			tableContainer.appendChild(header);
-			let tableWrapper = document.createElement('div');
-			tableContainer.appendChild(tableWrapper);
-
 			// Create base of new table.
 			let table = document.createElement('table');
 			tableSummary = document.createElement('table');
@@ -290,6 +292,9 @@ function a(){
 			tableCell.colSpan = 2;
 			tableCell.rowSpan = 2;
 			tableCell.innerHTML = 'Score';
+			if(1 < arenaProperties.settings.general.averageOf){
+				tableCell.innerHTML += ', average out of ' + arenaProperties.settings.general.averageOf + ' games.';
+			}
 			tableRow.appendChild(tableCell);
 			let tableHeaderMajor = document.createElement('th');
 			tableHeaderMajor.innerHTML = '<div>Team 1</div>';
@@ -383,8 +388,8 @@ function a(){
 				table.appendChild(tableRow);
 				tableRow = document.createElement('tr');
 			}, this);
-			tableWrapper.appendChild(table);
-			tableWrapper.appendChild(tableSummary);
+			tableContainer.appendChild(table);
+			tableContainer.appendChild(tableSummary);
 		}
 	}
 
