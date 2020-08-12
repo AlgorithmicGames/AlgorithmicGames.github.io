@@ -21,7 +21,7 @@ function a(){
 			for(const element of document.getElementsByClassName('participant-team-container')){
 				element.parentNode.removeChild(element);
 			}
-			document.title = event.target.value + ' Arena';
+			document.title = event.target.value + ' Highscore';
 			getParticipants(option.value);
 		}
 	};
