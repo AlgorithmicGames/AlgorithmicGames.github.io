@@ -59,91 +59,30 @@ function a(){
 			}
 		};
 		logs.forEach(log => {
-			let ai_1 = log[0];
-			let ai_2 = log[1];
-			if(ai_1.type === 'score' && ai_2.type === 'score'){
+			if(log[0].type === 'score' && log[1].type === 'score'){
+				let ai_1 = log[0];
+				let ai_2 = log[1];
 				let cell = document.getElementById(ai_1.name + '_' + ai_2.name);
-				cell.innerHTML = round(ai_1.score, 1) + ' / ' + round(ai_2.score, 1);
-				if(ai_1.score < ai_2.score){
-					cell.classList.add('ai-2');
-				}else if(ai_2.score < ai_1.score){
-					cell.classList.add('ai-1');
+				if(!cell.classList.contains('disqualified')){
+					cell.innerHTML = round(ai_1.score, 1) + ' / ' + round(ai_2.score, 1);
+					if(ai_1.score < ai_2.score){
+						cell.classList.add('ai-2');
+					}else if(ai_2.score < ai_1.score){
+						cell.classList.add('ai-1');
+					}
+					cell.dataset.score = JSON.stringify([{'name': ai_1.name, 'score': ai_1.score}, {'name': ai_2.name, 'score': ai_2.score}]);
+					updateSummaryTable();
 				}
-				let array = [{'name': ai_1.name, 'score': ai_1.score}, {'name': ai_2.name, 'score': ai_2.score}];
-				updateResultTable(array);
+			}else if(1 < log.length && log[1].type === 'aborted'){
+				let name = log[1].aborted[0].name;
+				for(const element of document.getElementsByClassName(name)){
+					if(element.id !== name+'_'+name){
+						element.classList.add('disqualified');
+					}
+				}
 			}
 		});
 	}
-	function _unused_getArenaLog(messageEvent){
-		let iframe = document.getElementById(messageEvent.data.id);
-		let output = iframe.parentElement.getElementsByClassName('log')[0];
-		if(messageEvent.origin === 'null'){
-			while(0 < output.childElementCount){
-				output.removeChild(output.firstChild);
-			}
-			let isDone = true;
-			let aborted = []; // TODO: Use.
-			let log = undefined;
-			messageEvent.data.value.data.forEach(posts => {
-				let container = document.createElement('div');
-				output.appendChild(container);
-				let isDone_local = false;
-				let score = undefined;
-				posts.forEach(post => {
-					isDone_local |= post.type === 'FinalScore' || post.type === 'Aborted';
-					if(post.type === 'FinalScore'){
-						score = post.value.score;
-						log = post.value.history;
-					}else if(post.type === 'Aborted'){
-						score = null;
-						aborted.push(post.value);
-					}
-					let label = document.createElement('label');
-					label.htmlFor = iframe.src + ':' + post.id;
-					label.classList.add(post.type);
-					label.innerHTML = post.type;
-					container.appendChild(label);
-					let pre = document.createElement('pre');
-					pre.id = iframe.src + ':' + post.id;
-					pre.classList.add(post.type);
-					pre.innerHTML = JSON.stringify(post.value,null,'\t');
-					container.appendChild(pre);
-				});
-				isDone &= isDone_local;
-				if(isDone_local){
-					if(score === null){
-						outputSum.dataset.aborted = JSON.stringify(aborted);
-					}else{
-						let array = outputSum.dataset.array === undefined ? [] : JSON.parse(outputSum.dataset.array);
-						score.forEach(s => {
-							let entry = array.find(entry => entry.name === s.name);
-							if(entry === undefined){
-								entry = {type: 'score', name: s.name, score: 0, scores: []};
-								array.push(entry);
-							}
-							entry.scores.push(s.score);
-							entry.score = entry.scores.reduce(function(a,b){return a+b;})/entry.scores.length;
-						});
-						outputSum.dataset.array = JSON.stringify(array);
-						outputSum.innerHTML = JSON.stringify(array,null,'\t');
-					}
-				}
-			});
-			if(isDone){
-				let array = outputSum.dataset.array === undefined ? [] : JSON.parse(outputSum.dataset.array);
-				array.push({type: 'log', log: log})
-				if(outputSum.dataset.aborted !== undefined){
-					array.push({type: 'aborted', aborted: aborted})
-				}
-				console.log(aborted);
-				outputSum.dataset.array = JSON.stringify(array);
-				outputSum.innerHTML = JSON.stringify(array,null,'\t');
-				contentWindows.iFrameLog.splice(contentWindows.iFrameLog.indexOf(messageEvent.source), 1);
-			}else{
-				getIFrameLog(iframe);
-			}
-		}
-	};
 	function getOption(element, event){
 		for(const option of element.getElementsByTagName('option')){
 			if(option.value === event.target.value){
@@ -213,8 +152,8 @@ function a(){
 	function start(){
 		while(logContainer.firstChild){logContainer.removeChild(logContainer.firstChild);}
 		['resultAI1', 'resultAI2', 'resultAverage'].forEach(className => {
-			for(const cell of document.getElementsByClassName(className)){
-				cell.dataset.score = 0;
+			for(const summaryCell of document.getElementsByClassName(className)){
+				summaryCell.dataset.score = 0;
 			}
 		});
 		let participants = [];
@@ -230,12 +169,10 @@ function a(){
 			logContainer.appendChild(div);
 			let arena = document.createElement('iframe');
 			arena.src = '../Arena/index.html';
-			arena.style.display = 'none';
 			arena.id = 'arena_' + Date() + '_' + Math.random();
 			div.appendChild(arena);
 			let output = document.createElement('pre');
 			output.id = arena.id + '_output';
-			output.style.display = 'none';
 			output.classList.add('log');
 			output.classList.add('log-arena');
 			div.appendChild(output);
@@ -272,17 +209,11 @@ function a(){
 		return brackets;
 	}
 	function buildTable(listOfAIs){
-	//	pendingGames++;
-	//	let postCompare = function(){
-	//		pendingGames--;
-	//		if(pendingGames === 0){
-	//			buttonEnableSwitch(true, true);
-	//		}
-	//	}
 		while(tableContainer.firstChild){tableContainer.removeChild(tableContainer.firstChild);}
 		if(0 < listOfAIs.length){
 			// Create base of new table.
 			let table = document.createElement('table');
+			table.id = 'result-table';
 			tableSummary = document.createElement('table');
 
 			// Add major table header.
@@ -383,6 +314,10 @@ function a(){
 				listOfAIs.forEach(function(_name){
 					let tableCell = document.createElement('td');
 					tableCell.id = _name + '_' + name;
+					tableCell.classList.add(name);
+					tableCell.classList.add(_name);
+					tableCell.dataset.team1 = _name;
+					tableCell.dataset.team2 = name;
 					tableRow.appendChild(tableCell);
 				}, this);
 				table.appendChild(tableRow);
@@ -393,21 +328,28 @@ function a(){
 		}
 	}
 
-	function updateResultTable(input){
-		input.forEach(function(ai, index){
-			let aiNumber = index + 1;
-			let aiName = ai.name;
-			let score = ai.score;
-			let cellScore = document.getElementById(aiName + '_AI' + aiNumber);
-			let oldScore = parseFloat(cellScore.dataset.score);
-			let newScore = oldScore + score;
-			cellScore.dataset.score = newScore;
-			cellScore.innerHTML = round(newScore, 1);
-			// Set average
-			let scoreAI_1 = parseFloat(document.getElementById(aiName + '_AI1').dataset.score);
-			let scoreAI_2 = parseFloat(document.getElementById(aiName + '_AI2').dataset.score);
-			document.getElementById(aiName + '_average').innerHTML = round((scoreAI_1 + scoreAI_2)/2, 1);
-		}, this);
+	function updateSummaryTable(){
+		for(const cell of tableSummary.getElementsByTagName('td')){
+			cell.dataset.score = 0;
+		}
+		for(const cell of document.getElementById('result-table').getElementsByTagName('td')){
+			if(cell.dataset.score !== undefined){
+				JSON.parse(cell.dataset.score).forEach(function(ai, index){
+					let aiNumber = index + 1;
+					let aiName = ai.name;
+					let score = ai.score;
+					let cellScore = document.getElementById(aiName + '_AI' + aiNumber);
+					let oldScore = parseFloat(cellScore.dataset.score);
+					let newScore = oldScore + score;
+					cellScore.dataset.score = newScore;
+					cellScore.innerHTML = round(newScore, 1);
+					// Set average
+					let scoreAI_1 = parseFloat(document.getElementById(aiName + '_AI1').dataset.score);
+					let scoreAI_2 = parseFloat(document.getElementById(aiName + '_AI2').dataset.score);
+					document.getElementById(aiName + '_average').innerHTML = round((scoreAI_1 + scoreAI_2)/2, 1);
+				}, this);
+			}
+		}
 		sortTableSummary(0);
 	}
 

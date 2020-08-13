@@ -9,12 +9,21 @@
 		<link rel="stylesheet" href="../Arena/log.css">
 		<link rel="stylesheet" href="table.css">
 		<style>
-			iframe {
+			#logContainer{
+				display: none;
+			}
+			iframe{
 				width: 100%;
 				border: 0;
 			}
 			input[type="button" i]:disabled{
 				visibility: hidden;
+			}
+			.disqualified{
+				color: red;
+			}
+			.disqualified::before{
+				content: 'Disqualified';
 			}
 		</style>
 		<script src="index.js"></script>
