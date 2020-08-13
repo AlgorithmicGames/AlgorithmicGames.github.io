@@ -1,6 +1,6 @@
 'use strict'
 function a(){
-	let tableSummary;
+	let tableSummary = document.createElement('table');
 	let arenaProperties;
 	let logContainer = document.getElementById('logContainer');
 	let arenaList = document.getElementById('arena-datalist');
@@ -8,6 +8,10 @@ function a(){
 	let participantsSelected = document.getElementById('participants-selected');
 	let tableContainer = document.getElementById('highscore-table-container');
 	let btnStart = document.getElementById('btnStart');
+	let _brackets;
+	let bracketsOngoing = 0;
+	let bracketsOngoingLimit = 4;
+	let aborted = [];
 	btnStart.onclick = start;
 	for(const button of document.getElementsByClassName('transfer-button')){
 		button.onclick = transferTo;
@@ -46,6 +50,12 @@ function a(){
 			let iframe = document.getElementById(messageEvent.data.value.id);
 			iframe.parentNode.removeChild(iframe);
 			updateTable();
+			bracketsOngoing--;
+			if(bracketsOngoing === 0 && _brackets.length === 0){
+				tableSummary.classList.remove('working');
+			}else if(bracketsOngoing < bracketsOngoingLimit){
+				startNextBracket();
+			}
 		}else{
 			console.error('Source element not defined!');
 			console.error(messageEvent.source.frameElement);
@@ -75,6 +85,11 @@ function a(){
 				}
 			}else if(1 < log.length && log[1].type === 'aborted'){
 				let name = log[1].aborted[0].name;
+				aborted.push(name);
+				let summaryHeader = document.getElementById(name + '_summaryHeader');
+				if(summaryHeader !== null){
+					summaryHeader.parentNode.parentNode.removeChild(summaryHeader.parentNode);
+				}
 				for(const element of document.getElementsByClassName(name)){
 					if(element.id !== name+'_'+name){
 						element.classList.add('disqualified');
@@ -102,16 +117,18 @@ function a(){
 		}
 	}
 	function transferTo(event){
-		let selectElement_moveTo = document.getElementById(event.target.dataset.select);
-		let selectElements = document.getElementsByClassName('participants');
-		for(const selectElement of selectElements){
-			for(let option of [...selectElement.selectedOptions]){
-				selectElement_moveTo.add(option);
-				option.selected = false;
+		if(event !== undefined){
+			let selectElement_moveTo = document.getElementById(event.target.dataset.select);
+			let selectElements = document.getElementsByClassName('participants');
+			for(const selectElement of selectElements){
+				for(let option of [...selectElement.selectedOptions]){
+					selectElement_moveTo.add(option);
+					option.selected = false;
+				}
 			}
+			btnStart.disabled = participantsSelected.options.length < 2;
+			sortOptions(selectElement_moveTo);
 		}
-		btnStart.disabled = participantsSelected.options.length < 2;
-		sortOptions(selectElement_moveTo);
 		let participants = [];
 		for(const option of participantsSelected.options){
 			participants.push(option.dataset.name);
@@ -150,6 +167,8 @@ function a(){
 		});
 	}
 	function start(){
+		btnStart.disabled = true; // TODO: Remove when rerun should be possible without reload.
+		tableSummary.classList.add('working');
 		while(logContainer.firstChild){logContainer.removeChild(logContainer.firstChild);}
 		['resultAI1', 'resultAI2', 'resultAverage'].forEach(className => {
 			for(const summaryCell of document.getElementsByClassName(className)){
@@ -163,30 +182,9 @@ function a(){
 				url: option.dataset.url
 			});
 		}
-		let brackets = buildBrackets(participants, arenaProperties.header);
-		brackets.forEach(bracket => {
-			let div = document.createElement('div');
-			logContainer.appendChild(div);
-			let arena = document.createElement('iframe');
-			arena.src = '../Arena/index.html';
-			arena.id = 'arena_' + Date() + '_' + Math.random();
-			div.appendChild(arena);
-			let output = document.createElement('pre');
-			output.id = arena.id + '_output';
-			output.classList.add('log');
-			output.classList.add('log-arena');
-			div.appendChild(output);
-			contentWindows.iFrameLog.push(arena.contentWindow);
-			arena.contentWindow.addEventListener('load', () => {
-				arena.contentWindow.postMessage({
-					type: 'auto-run',
-					id: arena.id,
-					bracket: bracket,
-					settings: arenaProperties.settings,
-					title: document.title
-				}, '*');
-			});
-		});
+		_brackets = buildBrackets(participants, arenaProperties.header);
+		bracketsOngoing = 0;
+		startNextBracket();
 	}
 	function buildBrackets(participants=[], arenaHeader={}){ // TODO: Add support for dynamic team amount.
 		let brackets = [];
@@ -208,13 +206,47 @@ function a(){
 		});
 		return brackets;
 	}
+	function startNextBracket(){
+		let bracket = _brackets.shift();
+		if(bracket !== undefined){
+			if(bracket.flat().some(b => aborted.includes(b.name))){
+				startNextBracket()
+			}else{
+				let div = document.createElement('div');
+				logContainer.appendChild(div);
+				let arena = document.createElement('iframe');
+				arena.src = '../Arena/index.html';
+				arena.id = 'arena_' + Date() + '_' + Math.random();
+				div.appendChild(arena);
+				let output = document.createElement('pre');
+				output.id = arena.id + '_output';
+				output.classList.add('log');
+				output.classList.add('log-arena');
+				div.appendChild(output);
+				contentWindows.iFrameLog.push(arena.contentWindow);
+				arena.contentWindow.addEventListener('load', () => {
+					arena.contentWindow.postMessage({
+						type: 'auto-run',
+						id: arena.id,
+						bracket: bracket,
+						settings: arenaProperties.settings,
+						title: document.title
+					}, '*');
+				});
+				bracketsOngoing++;
+				if(bracketsOngoing < bracketsOngoingLimit){
+					startNextBracket();
+				}
+			}
+		}
+	}
 	function buildTable(listOfAIs){
 		while(tableContainer.firstChild){tableContainer.removeChild(tableContainer.firstChild);}
 		if(0 < listOfAIs.length){
+			tableSummary.classList.add('working');
 			// Create base of new table.
 			let table = document.createElement('table');
 			table.id = 'result-table';
-			tableSummary = document.createElement('table');
 
 			// Add major table header.
 			let tableRow = document.createElement('tr');
@@ -287,6 +319,7 @@ function a(){
 				let tableRowResult = document.createElement('tr');
 				tableHeader = document.createElement('th');
 				tableHeader.innerHTML = name;
+				tableHeader.id = name + '_summaryHeader';
 				tableRowResult.appendChild(tableHeader);
 
 				let tableSummaryCell = document.createElement('td');
