@@ -64,7 +64,7 @@ function a(){
 				let ai_2 = log[1];
 				let cell = document.getElementById(ai_1.name + '_' + ai_2.name);
 				if(!cell.classList.contains('disqualified')){
-					cell.innerHTML = round(ai_1.score, 1) + ' / ' + round(ai_2.score, 1);
+					cell.innerHTML = round(ai_1.score, 1) + ' - ' + round(ai_2.score, 1);
 					if(ai_1.score < ai_2.score){
 						cell.classList.add('ai-2');
 					}else if(ai_2.score < ai_1.score){
