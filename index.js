@@ -1,16 +1,17 @@
 'use strict'
 function a(){
-	var charCross = '✖';
+	let createdWindows = 0;
+	let charCross = '✖';
 	let _wrapper = document.getElementById('wrapper');
-	var _noise;
-	var _charsPerRow = 0;
+	let _noise;
 	document.getElementById('header-title').innerHTML = document.title;
 	calcSize();
 	window.onresize = calcSize;
 	play();
-	addMessage('Work in progress', 'Sorry, nothing to see here at the moment.\nBut get back here soon™ because awesome stuff are coming!\nRead more about aitournaments.io over at <a href="https://github.com/AI-Tournaments" target="_blank">GitHub</a>.', true);
+	addMessage('Wellcome servant!','Make your Master proud by participate in our arenas based upon different kinds of AI and algorithm driven games.', true, '50%');
+	addMessage('Work in progress', 'Sorry, but Overlord has not open publicly open the arenas yet so there is nothing to see here at the moment.\nBut dig around or get back here soon™ because awesome stuff are coming!\nRead more about aitournaments.io over at <a href="https://github.com/AI-Tournaments" target="_blank">GitHub</a>.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '50%');
 	function makeDragable(trigger, dragable=trigger){
-		var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+		let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 		trigger.onmousedown = dragMouseDown;
 		function dragMouseDown(e) {
 			e = e || window.event;
@@ -35,8 +36,11 @@ function a(){
 			document.onmousemove = null;
 		}
 	}
-	function addMessage(header='', message='', center=false){
+	function addMessage(header='', message='', center=false, maxWidth){
 		let windowWrapper = document.createElement('div');
+		if(maxWidth !== undefined){
+			windowWrapper.style.maxWidth = maxWidth;
+		}
 		windowWrapper.classList.add('window');
 		let messageWrapper = document.createElement('div');
 		messageWrapper.classList.add('border');
@@ -64,11 +68,15 @@ function a(){
 			longestLine = Math.max(longestLine, strip(row).length);
 		}
 		longestLine += 4;
-		if(center){
-			windowWrapper.style.top = (_noise.length/2 - (rows.length+4)/2) + 'em';
-			windowWrapper.style.left = (_charsPerRow/2 - longestLine/2)/2 + 'em';
-		}
 		document.body.appendChild(windowWrapper);
+		if(center){
+			windowWrapper.style.top = (document.body.offsetHeight - windowWrapper.offsetHeight)/2 + 'px';
+			windowWrapper.style.left = (document.body.offsetWidth - windowWrapper.offsetWidth)/2 + 'px';
+		}else{
+			windowWrapper.style.top = 65 + 10*createdWindows + 'px';
+			windowWrapper.style.left = 10 + 10*createdWindows + 'px';
+			createdWindows++;
+		}
 	}
 	function calcSize(){
 		_wrapper.className = 'force-new-row';
@@ -91,7 +99,6 @@ function a(){
 		initNoise(rows, charsPerRow);
 	}
 	function initNoise(rows, charsPerRow){
-		_charsPerRow = charsPerRow;
 		_noise = new Array(rows);
 		for(let r = 0; r < rows; r++){
 			let chars = '';
@@ -136,10 +143,11 @@ function a(){
 		return chars;
 	}
 	function strip(html){
-		var output = '';
+		let output;
+		let tempString;
 		do{
-			var tempString = output;
-			var element = document.createElement('div');
+			tempString = output;
+			let element = document.createElement('div');
 			element.innerHTML = html;
 			output = element.textContent || element.innerText || '';
 		}
