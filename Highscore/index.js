@@ -1,6 +1,8 @@
 'use strict'
 function a(){
+	let _tournamentSettings;
 	let tableSummary = document.createElement('table');
+	let settingsIframe = document.getElementById('settings');
 	let arenaProperties;
 	let logContainer = document.getElementById('logContainer');
 	let arenaList = document.getElementById('arena-datalist');
@@ -26,6 +28,7 @@ function a(){
 				element.parentNode.removeChild(element);
 			}
 			document.title = event.target.value + ' Highscore';
+			settingsIframe.contentWindow.postMessage({type: 'SetArena', value: event.target.value});
 			getParticipants(option.value);
 		}
 	};
@@ -56,6 +59,18 @@ function a(){
 			}else if(bracketsOngoing < bracketsOngoingLimit){
 				startNextBracket();
 			}
+		}else if(settingsIframe.contentWindow === messageEvent.source){
+			switch(messageEvent.data.type){
+				case 'properties':
+					arenaProperties = messageEvent.data.value.properties;
+					settingsIframe.style.height = messageEvent.data.value.height + 'px';
+					break;
+				case 'settings':
+					_tournamentSettings = messageEvent.data.value;
+					startNextBracket();
+					break;
+			}
+			
 		}else{
 			console.error('Source element not defined!');
 			console.error(messageEvent.source.frameElement);
@@ -184,7 +199,7 @@ function a(){
 		}
 		_brackets = buildBrackets(participants, arenaProperties.header);
 		bracketsOngoing = 0;
-		startNextBracket();
+		settingsIframe.contentWindow.postMessage({type: 'GetSettings'});
 	}
 	function buildBrackets(participants=[], arenaHeader={}){ // TODO: Add support for dynamic team amount.
 		let brackets = [];
@@ -229,7 +244,7 @@ function a(){
 						type: 'auto-run',
 						id: arena.id,
 						bracket: bracket,
-						settings: arenaProperties.settings,
+						settings: _tournamentSettings,
 						title: document.title
 					}, '*');
 				});
