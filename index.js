@@ -8,8 +8,8 @@ function a(){
 	calcSize();
 	window.onresize = calcSize;
 	play();
-	addMessage('Wellcome servant!','Make your Master proud by participate in our arenas based upon different kinds of AI and algorithm driven games.', true, '50%');
-	addMessage('Work in progress', 'Sorry, but Overlord has not open publicly open the arenas yet so there is nothing to see here at the moment.\nBut dig around or get back here soon™ because awesome stuff are coming!\nRead more about aitournaments.io over at <a href="https://github.com/AI-Tournaments" target="_blank">GitHub</a>.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '50%');
+	addMessage('Wellcome servant!','Make your Master proud by participate in our arenas based upon different kinds of AI and algorithm driven games.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
+	addMessage('Work in progress', 'Sorry, but Overlord has not publicly open the arenas yet so there is nothing to see here at the moment.\nBut dig around or get back here soon™ because awesome stuff are coming!\nRead more about aitournaments.io over at <a href="https://github.com/AI-Tournaments" target="_blank">GitHub</a>.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '50%');
 	function makeDragable(trigger, dragable=trigger){
 		let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 		trigger.onmousedown = dragMouseDown;
