@@ -24,7 +24,7 @@ function a(){
 		}
 	}
 	function openScreen(src=''){
-		for(const screen of document.getElementsByClassName('screen')){
+		for(const screen of _screens.children){
 			screen.style.display = 'none';
 		}
 		let iframe = document.createElement('iframe');
@@ -95,7 +95,7 @@ function a(){
 		}
 	}
 	function refitScreens(){
-		for(const screen of document.getElementsByClassName('screen')){
+		for(const screen of _screens.children){
 			screen.style.height = screen.parentElement.offsetHeight + 'px';
 			screen.style.width = screen.parentElement.offsetHeight + 'px';
 		}
