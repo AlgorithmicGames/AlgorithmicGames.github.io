@@ -70,7 +70,6 @@ function a(){
 					startNextBracket();
 					break;
 			}
-			
 		}else{
 			console.error('Source element not defined!');
 			console.error(messageEvent.source.frameElement);
@@ -82,7 +81,7 @@ function a(){
 			if(arenaLog.innerHTML !== ''){
 				logs.push(JSON.parse(arenaLog.innerHTML));
 			}
-		};
+		}
 		logs.forEach(log => {
 			if(log[0].type === 'score' && log[1].type === 'score'){
 				let ai_1 = log[0];

@@ -2,14 +2,36 @@
 function a(){
 	let createdWindows = 0;
 	let charCross = '✖';
-	let _wrapper = document.getElementById('wrapper');
+	let _content = document.getElementById('content');
+	let _screens = document.getElementById('screens');
+	let _background = document.getElementById('background');
 	let _noise;
 	document.getElementById('header-title').innerHTML = document.title;
 	calcSize();
 	window.onresize = calcSize;
 	play();
 	openWindow('Wellcome servant!','Make your Master proud by participate in our arenas based upon different kinds of AI and algorithm driven games.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
-	openWindow('Work in progress', 'Sorry, but Overlord has not publicly open the arenas yet so there is nothing to see here at the moment.\nBut dig around or get back here soon™ because awesome stuff are coming!\nRead more about aitournaments.io over at <a href="https://github.com/AI-Tournaments/AI-Tournaments" target="_blank">GitHub</a> or join the discussion <a href="https://github.com/AI-Tournaments/AI-Tournaments/issues/1" target="_blank">here</a>.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '50%');
+	openWindow('Work in progress', 'Sorry, but Overlord has not publicly open the arenas yet so there is nothing to see here at the moment.\nBut dig around or get back here soon™ because awesome stuff are coming!\nRead more about aitournaments.io over at <a href="https://github.com/AI-Tournaments/AI-Tournaments" target="_blank">GitHub</a> or join the discussion <a href="https://github.com/AI-Tournaments/AI-Tournaments/issues/1" target="_blank">here</a>.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '705px');
+	setTimeout(function(){openScreen('Highscore')},1000); // Prepared for displaying other screens.
+	window.onmessage = messageEvent => {
+		if(messageEvent.data.type === 'resize'){
+			let iframe = document.getElementById(messageEvent.data.value.id);
+			iframe.style.height = messageEvent.data.value.height+'px';
+			iframe.style.width = messageEvent.data.value.width+'px';
+		}else{
+			console.error('Source element not defined!');
+			console.error(messageEvent.source.frameElement);
+		}
+	}
+	function openScreen(src=''){
+		for(const screen of document.getElementsByClassName('screen')){
+			screen.style.display = 'none';
+		}
+		let iframe = document.createElement('iframe');
+		_screens.appendChild(iframe);
+		iframe.src = src;
+		refitScreens();
+	}
 	function makeDragable(trigger, dragable=trigger){
 		let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 		trigger.onmousedown = dragMouseDown;
@@ -38,6 +60,7 @@ function a(){
 	}
 	function openWindow(header='', message='', center=false, maxWidth){
 		let windowWrapper = document.createElement('div');
+		_content.appendChild(windowWrapper);
 		if(maxWidth !== undefined){
 			windowWrapper.style.maxWidth = maxWidth;
 		}
@@ -62,40 +85,39 @@ function a(){
 		messageDiv.classList.add('message');
 		messageDiv.innerHTML = message;
 		messageWrapper.appendChild(messageDiv);
-		let longestLine = 0;
-		let rows = message.split('\n');
-		for(const row of rows){
-			longestLine = Math.max(longestLine, strip(row).length);
-		}
-		longestLine += 4;
-		document.body.appendChild(windowWrapper);
 		if(center){
 			windowWrapper.style.top = (document.body.offsetHeight - windowWrapper.offsetHeight)/2 + 'px';
 			windowWrapper.style.left = (document.body.offsetWidth - windowWrapper.offsetWidth)/2 + 'px';
 		}else{
-			windowWrapper.style.top = 65 + 10*createdWindows + 'px';
-			windowWrapper.style.left = 10 + 10*createdWindows + 'px';
 			createdWindows++;
+			windowWrapper.style.top = 10*createdWindows + 'px';
+			windowWrapper.style.left = 10*createdWindows + 'px';
+		}
+	}
+	function refitScreens(){
+		for(const screen of document.getElementsByClassName('screen')){
+			screen.style.height = screen.parentElement.offsetHeight + 'px';
+			screen.style.width = screen.parentElement.offsetHeight + 'px';
 		}
 	}
 	function calcSize(){
-		_wrapper.className = 'force-new-row';
+		_background.className = 'force-new-row';
 		let charsPerRow = 0;
-		_wrapper.innerHTML = '0';
-		let height = _wrapper.offsetHeight;
-		while(_wrapper.offsetHeight === height){
-			_wrapper.innerHTML = _wrapper.innerHTML + '0';
+		_background.innerHTML = '0';
+		let height = _background.offsetHeight;
+		while(_background.offsetHeight === height){
+			_background.innerHTML = _background.innerHTML + '0';
 			charsPerRow++;
 		}
 		charsPerRow++;
 		height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 		let rows = 2;
-		let charsOnFirstRow = _wrapper.innerHTML;
-		while(_wrapper.offsetHeight < height){
+		let charsOnFirstRow = _background.innerHTML;
+		while(_background.offsetHeight < height){
 			rows++;
-			_wrapper.innerHTML = _wrapper.innerHTML + charsOnFirstRow;
+			_background.innerHTML = _background.innerHTML + charsOnFirstRow;
 		}
-		_wrapper.className = '';
+		_background.className = '';
 		initNoise(rows, charsPerRow);
 	}
 	function initNoise(rows, charsPerRow){
@@ -113,7 +135,7 @@ function a(){
 		}
 	}
 	function play(){
-		_wrapper.innerHTML = parsToString(getNoise());
+		_background.innerHTML = parsToString(getNoise());
 		window.requestAnimationFrame(play);
 	}
 	function getNoise(){
