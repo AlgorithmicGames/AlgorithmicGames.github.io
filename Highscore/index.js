@@ -1,7 +1,7 @@
 'use strict'
 function a(){
 	let _tournamentSettings;
-	let tableSummary = document.createElement('table');
+	let tableSummary;
 	let settingsIframe = document.getElementById('settings');
 	let arenaProperties;
 	let logContainer = document.getElementById('logContainer');
@@ -258,6 +258,7 @@ function a(){
 	function buildTable(listOfAIs){
 		while(tableContainer.firstChild){tableContainer.removeChild(tableContainer.firstChild);}
 		if(0 < listOfAIs.length){
+			tableSummary = document.createElement('table')
 			tableSummary.classList.add('working');
 			// Create base of new table.
 			let table = document.createElement('table');
