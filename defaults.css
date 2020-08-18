@@ -1,0 +1,15 @@
+:root {
+	--main-color: green;
+	--main-background-color: black;
+	--secondary-background-color: darkgreen;
+
+	color: var(--main-color);
+	border-color: var(--main-color);
+	font-family: consolas, "Courier New", Courier, Monaco, monospace;
+}
+a {
+	color: var(--main-color);
+}
+pre {
+	font-family: consolas, "Courier New", Courier, Monaco, monospace;
+}
