@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>AI Tournaments Highscore</title>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-173346924-1"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-173346924-1');</script>
+		<meta content="width=device-width, initial-scale=1.0" name="viewport">
+		<meta content="yes" name="mobile-web-app-capable">
+		<link rel="stylesheet" href="../defaults.css">
+		<style>
+			body {
+				margin: 0;
+				padding: 8px;
+			}
+			#control-container>* {
+				vertical-align: top;
+			}
+			#data-input {
+				white-space: pre;
+			}
+		</style>
+		<script src="index.js"></script>
+	</head>
+	<body onload="a()">
+		<div id="control-container">
+			<label for="data">Data:</label>
+			<textarea id="data-input"></textarea>
+			<input type="button" id="lock" value="Lock" disabled/>
+			<span id="invalid-input" style="color:red;display:none;">Invalid input.</span>
+		</div>
+		<div id="replayable-content"></div>
+	</body>
+</html>
