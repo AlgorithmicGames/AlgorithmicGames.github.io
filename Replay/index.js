@@ -1,6 +1,8 @@
 'use strict'
 function a(){
 	let replayData;
+	let control = document.getElementById('control-container');
+	let iframe = document.getElementById('replay-container');
 	let btnLock = document.getElementById('lock');
 	let dataInput = document.getElementById('data-input');
 	btnLock.addEventListener('click', mouseEvent=>{
@@ -25,22 +27,26 @@ function a(){
 			let selectionStart = dataInput.selectionStart;
 			dataInput.value = JSON.stringify(replayData,null,'\t');
 			dataInput.selectionStart = selectionStart;
-
-			let log = replayData.find(d=>d.type==='log').data;
-			log.forEach((match, index) => {
+			replayData.data.forEach((matchLog, index) => {
 				let input = document.createElement('input');
 				input.type = 'button';
 				input.value = 'Match ' + (index+1);
+				input.dataset.log = JSON.stringify(matchLog.find(d=>d.type==='Done').value);
 				input.disabled = true;
 				input.classList.add('select-match-button');
 				input.addEventListener('click', mouseEvent=>{
+					for(const element of control.children){
+						if(!element.classList.contains('select-match-button')){
+							element.style.display = 'none';
+						}
+					}
 					for(const input of document.getElementsByClassName('select-match-button')){
 						input.disabled = false;
-						console.log(event);
+						iframe.src = (false?'https://ai-tournaments.github.io':'http://127.0.0.1:8887')+'/'+replayData.arena+'-Arena/replay.html#' + input.dataset.log;
 					}
 					input.disabled = true;
 				});
-				document.body.appendChild(input);
+				control.appendChild(input);
 			});
 		}
 	});

@@ -4,7 +4,6 @@ function a(){
 	let tableSummary;
 	let settingsIframe = document.getElementById('settings');
 	let arenaProperties;
-	let logContainer = document.getElementById('logContainer');
 	let arenaList = document.getElementById('arena-datalist');
 	let participantList = document.getElementById('participants-selectable');
 	let participantsSelected = document.getElementById('participants-selected');
@@ -18,9 +17,6 @@ function a(){
 	for(const button of document.getElementsByClassName('transfer-button')){
 		button.onclick = transferTo;
 	}
-	let contentWindows = {
-		iFrameLog: []
-	};
 	document.getElementById('arena').onchange = event => {
 		let option = getOption(arenaList, event);
 		if(option !== undefined){
@@ -49,8 +45,8 @@ function a(){
 	});
 	window.onmessage = messageEvent => {
 		if(messageEvent.data.type === 'log'){
-			document.getElementById(messageEvent.data.value.id + '_output').innerHTML = JSON.stringify(messageEvent.data.value.log,null,'\t');
-			let iframe = document.getElementById(messageEvent.data.value.id);
+			document.getElementById(messageEvent.data.value.id).dataset.log = JSON.stringify(messageEvent.data.value.log);
+			let iframe = document.getElementById('iframe_' + messageEvent.data.value.id);
 			iframe.parentNode.removeChild(iframe);
 			updateTable();
 			bracketsOngoing--;
@@ -77,39 +73,46 @@ function a(){
 	}
 	function updateTable(){
 		let logs = [];
-		for(const arenaLog of document.getElementsByClassName('log-arena')){
-			if(arenaLog.innerHTML !== ''){
-				logs.push(JSON.parse(arenaLog.innerHTML));
+		for(const arenaLog of document.getElementsByClassName('score-cell')){
+			if(arenaLog.dataset.log !== undefined){
+				logs.push(JSON.parse(arenaLog.dataset.log));
 			}
 		}
-		logs.forEach(log => {
-			if(log[0].type === 'score' && log[1].type === 'score'){
-				let ai_1 = log[0];
-				let ai_2 = log[1];
-				let cell = document.getElementById(ai_1.name + '_' + ai_2.name);
-				if(!cell.classList.contains('disqualified')){
-					cell.innerHTML = round(ai_1.score, 1) + ' - ' + round(ai_2.score, 1);
-					if(ai_1.score < ai_2.score){
-						cell.classList.add('ai-2');
-					}else if(ai_2.score < ai_1.score){
-						cell.classList.add('ai-1');
+		logs.forEach(arenaLog => {
+			arenaLog.data.forEach(log => {
+				let _log = log.filter(l=>l.type==='Done');
+				if(0 < _log.length){
+					log = _log[0].value;
+					let ai_1 = log.score[0];
+					let ai_2 = log.score[1];
+					let cell = document.getElementById(ai_1.name + '_' + ai_2.name);
+					if(!cell.classList.contains('disqualified')){
+						cell.innerHTML = round(ai_1.score, 1) + ' - ' + round(ai_2.score, 1);
+						if(ai_1.score < ai_2.score){
+							cell.classList.add('ai-2');
+						}else if(ai_2.score < ai_1.score){
+							cell.classList.add('ai-1');
+						}
+						cell.dataset.score = JSON.stringify([{'name': ai_1.name, 'score': ai_1.score}, {'name': ai_2.name, 'score': ai_2.score}]);
+						updateSummaryTable();
 					}
-					cell.dataset.score = JSON.stringify([{'name': ai_1.name, 'score': ai_1.score}, {'name': ai_2.name, 'score': ai_2.score}]);
-					updateSummaryTable();
-				}
-			}else if(1 < log.length && log[1].type === 'aborted'){
-				let name = log[1].aborted[0].name;
-				aborted.push(name);
-				let summaryHeader = document.getElementById(name + '_summaryHeader');
-				if(summaryHeader !== null){
-					summaryHeader.parentNode.parentNode.removeChild(summaryHeader.parentNode);
-				}
-				for(const element of document.getElementsByClassName(name)){
-					if(element.id !== name+'_'+name){
-						element.classList.add('disqualified');
+				}else{
+					let _log = log.filter(l=>l.type==='Aborted');
+					if(0 < _log.length){
+						log = _log[0].value;
+						aborted.push(log.name);
+						let summaryHeader = document.getElementById(log.name + '_summaryHeader');
+						if(summaryHeader !== null){
+							summaryHeader.parentNode.parentNode.removeChild(summaryHeader.parentNode);
+						}
+						for(const element of document.getElementsByClassName(log.name)){
+							if(element.id !== log.name+'_'+log.name){
+								element.classList.add('disqualified');
+							}
+						}
 					}
 				}
-			}
+			});
 		});
 	}
 	function getOption(element, event){
@@ -183,7 +186,6 @@ function a(){
 	function start(){
 		btnStart.disabled = true; // TODO: Remove when rerun should be possible without reload.
 		tableSummary.classList.add('working');
-		while(logContainer.firstChild){logContainer.removeChild(logContainer.firstChild);}
 		['resultAI1', 'resultAI2', 'resultAverage'].forEach(className => {
 			for(const summaryCell of document.getElementsByClassName(className)){
 				summaryCell.dataset.score = 0;
@@ -226,22 +228,16 @@ function a(){
 			if(bracket.flat().some(b => aborted.includes(b.name))){
 				startNextBracket()
 			}else{
-				let div = document.createElement('div');
-				logContainer.appendChild(div);
+				let id = bracket[0][0].name+'_'+bracket[1][0].name;
 				let arena = document.createElement('iframe');
+				arena.classList.add('arena');
 				arena.src = '../Arena/index.html';
-				arena.id = 'arena_' + Date() + '_' + Math.random();
-				div.appendChild(arena);
-				let output = document.createElement('pre');
-				output.id = arena.id + '_output';
-				output.classList.add('log');
-				output.classList.add('log-arena');
-				div.appendChild(output);
-				contentWindows.iFrameLog.push(arena.contentWindow);
+				arena.id = 'iframe_' + id;
+				document.body.appendChild(arena);
 				arena.contentWindow.addEventListener('load', () => {
 					arena.contentWindow.postMessage({
 						type: 'auto-run',
-						id: arena.id,
+						id: id,
 						bracket: bracket,
 						settings: _tournamentSettings,
 						title: document.title
@@ -362,10 +358,22 @@ function a(){
 				listOfAIs.forEach(function(_name){
 					let tableCell = document.createElement('td');
 					tableCell.id = _name + '_' + name;
+					tableCell.classList.add('score-cell');
 					tableCell.classList.add(name);
 					tableCell.classList.add(_name);
 					tableCell.dataset.team1 = _name;
 					tableCell.dataset.team2 = name;
+					tableCell.addEventListener('click', mouseEvent=>{
+						// TODO: Temp.
+						let text = tableCell.dataset.log;
+						const el = document.createElement('textarea');
+						el.value = text;
+						document.body.appendChild(el);
+						el.select();
+						document.execCommand('copy');
+						document.body.removeChild(el);
+						alert('Log has been copied to Clipboard. Replace this popup with an option to either copy to clipboard or open a replay window directly.');
+					});
 					tableRow.appendChild(tableCell);
 				}, this);
 				table.appendChild(tableRow);

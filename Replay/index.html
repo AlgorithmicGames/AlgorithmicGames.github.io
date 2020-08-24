@@ -8,9 +8,23 @@
 		<meta content="yes" name="mobile-web-app-capable">
 		<link rel="stylesheet" href="../defaults.css">
 		<style>
+			html {
+				padding: 8px;
+				width: -webkit-fill-available;
+				height: -webkit-fill-available;
+			}
 			body {
 				margin: 0;
-				padding: 8px;
+				width: -webkit-fill-available;
+				height: -webkit-fill-available;
+			}
+			iframe {
+				border: 0;
+				width: -webkit-fill-available;
+				height: -webkit-fill-available;
+			}
+			#control-container {
+				position: absolute
 			}
 			#control-container>* {
 				vertical-align: top;
@@ -28,6 +42,6 @@
 			<input type="button" id="lock" value="Lock" disabled/>
 			<span id="invalid-input" style="color:red;display:none;">Invalid input.</span>
 		</div>
-		<div id="replayable-content"></div>
+		<iframe id="replay-container"></iframe>
 	</body>
 </html>
