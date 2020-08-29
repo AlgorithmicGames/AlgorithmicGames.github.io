@@ -42,7 +42,7 @@ function a(){
 					}
 					for(const input of document.getElementsByClassName('select-match-button')){
 						input.disabled = false;
-						iframe.src = (false?'https://ai-tournaments.github.io':'http://127.0.0.1:8887')+'/'+replayData.arena+'-Arena/replay.html#' + input.dataset.log;
+						iframe.src = (false?'https://ai-tournaments.github.io':'http://127.0.0.1:8887')+'/'+replayData.arena+'-Replay/#' + input.dataset.log;
 					}
 					input.disabled = true;
 				});
