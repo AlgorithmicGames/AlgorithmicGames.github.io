@@ -189,7 +189,7 @@ function a(){
 	function postGitHubProblem(root){
 		if(!_GitHubProblem){
 			_GitHubProblem = true;
-			openWindow('Problem at GitHub!','There is currently a problem with '+root+', so try again later. In the meantime see if <a href="https://www.githubstatus.com" target="_blank">GitHub Status</a> can help you.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
+			openWindow('Problem at GitHub!','There is currently a problem with '+root+', but please try again later. In the meantime see if <a href="https://www.githubstatus.com" target="_blank">GitHub Status</a> can help you.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
 		}
 	}
 }
