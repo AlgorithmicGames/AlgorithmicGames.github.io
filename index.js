@@ -186,10 +186,10 @@ function a(){
 			postGitHubProblem('raw.githubusercontent.com');
 		});
 	}
-	function postGitHubProblem(root){
+	function postGitHubProblem(source){
 		if(!_GitHubProblem){
 			_GitHubProblem = true;
-			openWindow('Problem at GitHub!','There is currently a problem with '+root+', so please come back later and try again. In the meantime see if <a href="https://www.githubstatus.com" target="_blank">GitHub Status</a> can help you.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
+			openWindow('Problem at GitHub!','There is currently a problem with '+source+', so please come back later and try again. In the meantime see if <a href="https://www.githubstatus.com" target="_blank">GitHub Status</a> can help you.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
 		}
 	}
 }
