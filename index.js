@@ -1,5 +1,6 @@
 'use strict'
 function a(){
+	let _GitHubProblem = false;
 	let createdWindows = 0;
 	let charCross = '✖';
 	let _content = document.getElementById('content');
@@ -10,6 +11,7 @@ function a(){
 	calcSize();
 	window.onresize = calcSize;
 	play();
+	checkGitHubStatus();
 	openWindow('Wellcome servant!','Make your Master proud by participate in our arenas based upon different kinds of AI and algorithm driven games.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
 	openWindow('Work in progress', 'Sorry, but Overlord has not publicly open the arenas yet so there is nothing to see here at the moment.\nBut dig around or get back here soon™ because awesome stuff are coming!\nRead more about aitournaments.io over at <a href="https://github.com/AI-Tournaments/AI-Tournaments" target="_blank">GitHub</a> or join the discussion <a href="https://github.com/AI-Tournaments/AI-Tournaments/issues/1" target="_blank">here</a>.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '705px');
 	//openScreen('Highscore'); // Prepared for displaying other screens.
@@ -175,5 +177,19 @@ function a(){
 		}
 		while(tempString !== output && output !== '');
 		return output;
+	}
+	function checkGitHubStatus(){
+		fetch('https://ai-tournaments.github.io/AI-Tournaments/').then(r=>r.text()).then().catch(error => {
+			postGitHubProblem('GitHub Pages');
+		});
+		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/index.html').then(r=>r.text()).then().catch(error => {
+			postGitHubProblem('raw.githubusercontent.com');
+		});
+	}
+	function postGitHubProblem(root){
+		if(!_GitHubProblem){
+			_GitHubProblem = true;
+			openWindow('Problem at GitHub!','There is currently a problem with '+root+', so try again later. In the meantime see if <a href="https://www.githubstatus.com" target="_blank">GitHub Status</a> can help you.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
+		}
 	}
 }
