@@ -17,20 +17,22 @@
 				margin: 0;
 				width: -webkit-fill-available;
 				height: -webkit-fill-available;
+				display: flex;
+				flex-direction: column;
 			}
 			iframe {
 				border: 0;
 				width: -webkit-fill-available;
 				height: -webkit-fill-available;
 			}
-			#control-container {
-				position: absolute
-			}
 			#control-container>* {
 				vertical-align: top;
 			}
 			#data-input {
 				white-space: pre;
+			}
+			.hidden {
+				display: none;
 			}
 		</style>
 		<script src="index.js"></script>
@@ -41,7 +43,10 @@
 			<textarea id="data-input"></textarea>
 			<input type="button" id="lock" value="Lock" disabled/>
 			<span id="invalid-input" style="color:red;display:none;">Invalid input.</span>
+			<select id="replay-viewers" class="hidden sticky">
+				<option id="default-option" selected>Default</option>
+			</select>
 		</div>
-		<iframe id="replay-container"></iframe>
+		<iframe id="replay-container" sandbox="allow-scripts"></iframe>
 	</body>
 </html>

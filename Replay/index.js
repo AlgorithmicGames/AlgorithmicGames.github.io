@@ -2,6 +2,7 @@
 function a(){
 	let replayData;
 	let control = document.getElementById('control-container');
+	let viewOptions = document.getElementById('replay-viewers');
 	let iframe = document.getElementById('replay-container');
 	let btnLock = document.getElementById('lock');
 	let dataInput = document.getElementById('data-input');
@@ -11,6 +12,28 @@ function a(){
 		for(const input of document.getElementsByClassName('select-match-button')){
 			input.disabled = false;
 		}
+		fetch('https://api.github.com/repos/AI-Tournaments/'+replayData.arena+'-Replay/forks').then(response => response.json()).then(forks => {
+			document.getElementById('default-option').value = (false?'https://ai-tournaments.github.io':'http://127.0.0.1:8887')+'/'+replayData.arena+'-Replay/';
+			forks.forEach(fork => {
+				if(fork.has_pages){
+					let option = document.createElement('option');
+					option.dataset.starts = fork.stargazers_count;
+					option.value = 'https://'+fork.owner.login+'.github.io/'+fork.name;
+					option.innerHTML = fork.full_name + ' ('+ option.dataset.starts +' ★)';
+					viewOptions.appendChild(option);
+				}
+			});
+			let options = [...viewOptions.options];
+			options.sort(function(a, b){
+				if(parseFloat(a.dataset.starts) < parseFloat(b.dataset.starts)){return -1;}
+				if(parseFloat(b.dataset.starts) < parseFloat(a.dataset.starts)){return 1;}
+				return 0;
+			});
+			for(let option of options){
+				viewOptions.add(option);
+			}
+			viewOptions.classList.remove('hidden');
+		});
 	});
 	dataInput.addEventListener('input', inputEvent=>{
 		[...document.getElementsByClassName('select-match-button')].forEach(input=>{
@@ -34,15 +57,16 @@ function a(){
 				input.dataset.log = JSON.stringify(matchLog.find(d=>d.type==='Done').value);
 				input.disabled = true;
 				input.classList.add('select-match-button');
+				input.classList.add('sticky');
 				input.addEventListener('click', mouseEvent=>{
 					for(const element of control.children){
-						if(!element.classList.contains('select-match-button')){
+						if(!element.classList.contains('sticky')){
 							element.style.display = 'none';
 						}
 					}
 					for(const input of document.getElementsByClassName('select-match-button')){
 						input.disabled = false;
-						iframe.src = (false?'https://ai-tournaments.github.io':'http://127.0.0.1:8887')+'/'+replayData.arena+'-Replay/#' + input.dataset.log;
+						iframe.src = viewOptions.selectedOptions[0].value + '#' + input.dataset.log;
 					}
 					input.disabled = true;
 				});
@@ -50,4 +74,12 @@ function a(){
 			});
 		}
 	});
+	if(1 < location.hash.length){
+		dataInput.value = decodeURI(location.hash.substring(1));
+		dataInput.dispatchEvent(new Event('input', {
+			bubbles: true,
+			cancelable: true,
+		}));
+		btnLock.click();
+	}
 }

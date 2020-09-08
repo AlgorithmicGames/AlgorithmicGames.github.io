@@ -161,7 +161,7 @@ function a(){
 		let promises = [];
 		fetch('https://api.github.com/repos/AI-Tournaments/'+arena+'-AI-Tournament-Participant/forks').then(response => response.json()).then(forks => {
 			forks.forEach(fork => {
-				promises.push(fetch('https://api.github.com/repos/' + fork.full_name + '/git/trees/master')
+				promises.push(fetch('https://api.github.com/repos/' + fork.full_name + '/git/trees/' + fork.default_branch)
 				.then(response => response.json())
 				.then(data => {
 					data.tree.forEach(file =>{
@@ -364,15 +364,9 @@ function a(){
 					tableCell.dataset.team1 = _name;
 					tableCell.dataset.team2 = name;
 					tableCell.addEventListener('click', mouseEvent=>{
-						// TODO: Temp.
-						let text = tableCell.dataset.log;
-						const el = document.createElement('textarea');
-						el.value = text;
-						document.body.appendChild(el);
-						el.select();
-						document.execCommand('copy');
-						document.body.removeChild(el);
-						alert('Log has been copied to Clipboard. Replace this popup with an option to either copy to clipboard or open a replay window directly.');
+						if(tableCell.dataset.log !== undefined){
+							window.open('../Replay/#'+tableCell.dataset.log, '_blank').focus();
+						}
 					});
 					tableRow.appendChild(tableCell);
 				}, this);
