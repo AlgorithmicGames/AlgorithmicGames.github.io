@@ -51,23 +51,20 @@
 				margin-right: 3px;
 			}
 
-			#header-content-row>div {
+			#header-content-row>* {
 				margin-right: 3px;
 				padding-top: 7px;
 				padding-right: 4px;
 				padding-bottom: 7px;
+				text-decoration: none;
 			}
 
-			#header-content-row>div:not(:last-child) {
+			#header-content-row>*:not(:last-child) {
 				border-right: 2px solid;
 			}
 
 			#header-content-row {
 				display: flex;
-			}
-
-			.dropdown::after {
-				content: " ▼";
 			}
 
 			#background {
@@ -124,6 +121,7 @@
 			<div class="header">
 				<div id="header-content-row">
 					<div id="header-title"></div>
+					<a href="https://github.com/AI-Tournaments/AI-Tournaments/releases/" target="_blank" class="dropdown">News</a>
 					<!--<div class="dropdown">Arenas</div> TODO: Unhide -->
 				</div>
 			</div>
