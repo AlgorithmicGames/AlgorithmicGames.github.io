@@ -12,7 +12,7 @@ function a(){
 	window.onresize = calcSize;
 	play();
 	checkGitHubStatus();
-// TODO: https://api.github.com/repos/AI-Tournaments/AI-Tournaments/releases
+	loadTheNews();
 	openWindow('Wellcome servant!','Make your Master proud by participate in our arenas based upon different kinds of AI and algorithm driven games.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
 	openWindow('Work in progress', 'Sorry, but Overlord has not publicly open the arenas yet so there is nothing to see here at the moment.\nBut dig around or get back here soon™ because awesome stuff are coming!\nRead more about aitournaments.io over at <a href="https://github.com/AI-Tournaments/AI-Tournaments" target="_blank">GitHub</a> or join the discussion <a href="https://github.com/AI-Tournaments/AI-Tournaments/issues/1" target="_blank">here</a>.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '705px');
 	//openScreen('Highscore'); // Prepared for displaying other screens.
@@ -25,6 +25,13 @@ function a(){
 			console.error('Source element not defined!');
 			console.error(messageEvent.source.frameElement);
 		}
+	}
+	function loadTheNews(){
+		fetch('https://api.github.com/repos/AI-Tournaments/AI-Tournaments/releases').then(response => response.json()).then(releases => {
+			releases.forEach(release => {
+				console.log(release);
+			});
+		});
 	}
 	function openScreen(src=''){
 		for(const screen of _screens.children){
