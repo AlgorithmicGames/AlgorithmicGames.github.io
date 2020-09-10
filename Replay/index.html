@@ -25,6 +25,9 @@
 				width: -webkit-fill-available;
 				height: -webkit-fill-available;
 			}
+			option::after {
+				content: ' ('+attr(data-starts)+' ★)';
+			}
 			#control-container>* {
 				vertical-align: top;
 			}

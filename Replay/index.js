@@ -12,14 +12,14 @@ function a(){
 		for(const input of document.getElementsByClassName('select-match-button')){
 			input.disabled = false;
 		}
-		fetch('https://api.github.com/repos/AI-Tournaments/'+replayData.arena+'-Replay/forks').then(response => response.json()).then(forks => {
+		fetch('https://api.github.com/search/repositories?q=topic:AI-Tournament+topic:Replay+topic:'+arena).then(response => response.json()).then(response => {
 			document.getElementById('default-option').value = (false?'https://ai-tournaments.github.io':'http://127.0.0.1:8887')+'/'+replayData.arena+'-Replay/';
-			forks.forEach(fork => {
-				if(fork.has_pages){
+			response.items.forEach(repo => {
+				if(repo.has_pages){
 					let option = document.createElement('option');
-					option.dataset.starts = fork.stargazers_count;
-					option.value = 'https://'+fork.owner.login+'.github.io/'+fork.name;
-					option.innerHTML = fork.full_name + ' ('+ option.dataset.starts +' ★)';
+					option.dataset.starts = repo.stargazers_count;
+					option.value = 'https://'+repo.owner.login+'.github.io/'+repo.name;
+					option.innerHTML = repo.full_name;
 					viewOptions.appendChild(option);
 				}
 			});
