@@ -26,11 +26,27 @@ function a(){
 			console.error(messageEvent.source.frameElement);
 		}
 	}
-	function loadTheNews(){
+	function loadTheNews(amount=5){
+		let newsContainer = document.getElementById('news-dropdown');
 		fetch('https://api.github.com/repos/AI-Tournaments/AI-Tournaments/releases').then(response => response.json()).then(releases => {
-			releases.forEach(release => {
-				console.log(release);
+			releases.slice(0,amount).forEach(release => {
+				let item = document.createElement('a');
+				item.href = release.html_url;
+				item.target = '_blank';
+				let label = document.createElement('label');
+				label.innerHTML = release.name;
+				item.appendChild(label);
+				let time = document.createElement('time');
+				time.datetime = release.published_at;
+				time.innerHTML = release.published_at.substring(0,10);
+				item.appendChild(time);
+				newsContainer.appendChild(item);
 			});
+			let item = document.createElement('a');
+			item.href = newsContainer.parentElement.getElementsByTagName('a')[0].href;
+			item.target = '_blank';
+			item.innerHTML = '. . .';
+			newsContainer.appendChild(item);
 		});
 	}
 	function openScreen(src=''){

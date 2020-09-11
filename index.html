@@ -59,6 +59,47 @@
 				text-decoration: none;
 			}
 
+			/* Dropdown */
+			.dropdown {
+				position: relative;
+				display: inline-block;
+			}
+			.dropdown-content {
+				display: none;
+				position: absolute;
+				background-color: var(--transparency);
+				border: 1px solid var(--main-color);
+				border-top: 1px dashed;
+				width: max-content;
+				z-index: 1;
+			}
+			.dropdown-content>* {
+				color: var(--secondary-background-color);
+				padding: 12px 16px;
+				text-decoration: none;
+				display: block;
+				border: 1px solid transparent;
+			}
+			.dropdown-content>*:hover {
+				color: var(--main-color);
+				border-color: var(--main-color);
+			}
+			.dropdown:hover .dropdown-content {
+				display: block;
+			}
+			/* /Dropdown */
+
+			#news-dropdown>* {
+				display: flex;
+				justify-content: space-between;
+			}#news-dropdown>*>*:first-child {
+				margin-right: 2em;
+			}
+			#news-dropdown>*:last-child {
+				display: block;
+				text-align: center;
+			}
+
 			#header-content-row>*:not(:last-child) {
 				border-right: 2px solid;
 			}
@@ -121,7 +162,10 @@
 			<div class="header">
 				<div id="header-content-row">
 					<div id="header-title"></div>
-					<a href="https://github.com/AI-Tournaments/AI-Tournaments/releases/" target="_blank" class="dropdown">News</a>
+					<div class="dropdown">
+						<a href="https://github.com/AI-Tournaments/AI-Tournaments/releases/" target="_blank">News</a>
+						<div class="dropdown-content" id="news-dropdown"></div>
+					</div>
 					<!--<div class="dropdown">Arenas</div> TODO: Unhide -->
 				</div>
 			</div>
