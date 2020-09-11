@@ -2,6 +2,7 @@
 	--main-color: green;
 	--main-background-color: black;
 	--secondary-background-color: darkgreen;
+	--transparency: rgba(0,0,0,.75);
 
 	color: var(--main-color);
 	border-color: var(--main-color);
