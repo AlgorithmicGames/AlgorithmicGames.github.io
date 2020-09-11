@@ -8,6 +8,9 @@ function a(){
 	let _background = document.getElementById('background');
 	let _noise;
 	document.getElementById('header-title').innerHTML = document.title;
+	for(const element of document.getElementsByClassName('open-screen')) {
+		element.addEventListener('click', ()=>{openScreen(element.dataset.url)});
+	}
 	calcSize();
 	window.onresize = calcSize;
 	play();
@@ -15,7 +18,6 @@ function a(){
 	loadTheNews();
 	openWindow('Wellcome servant!','Make your Master proud by participate in our arenas based upon different kinds of AI and algorithm driven games.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
 	openWindow('Work in progress', 'Sorry, but Overlord has not publicly open the arenas yet so there is nothing to see here at the moment.\nBut dig around or get back here soon™ because awesome stuff are coming!\nRead more about aitournaments.io over at <a href="https://github.com/AI-Tournaments/AI-Tournaments" target="_blank">GitHub</a> or join the discussion <a href="https://github.com/AI-Tournaments/AI-Tournaments/issues/1" target="_blank">here</a>.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '705px');
-	//openScreen('Highscore'); // Prepared for displaying other screens.
 	window.onmessage = messageEvent => {
 		if(messageEvent.data.type === 'resize'){
 			let iframe = document.getElementById(messageEvent.data.value.id);
@@ -50,13 +52,21 @@ function a(){
 		});
 	}
 	function openScreen(src=''){
+		let screenFound = false;
 		for(const screen of _screens.children){
-			screen.style.display = 'none';
+			if(screen.dataset.targetSrc === src){
+				screenFound = true;
+				screen.style.display = '';
+			}else{
+				screen.style.display = 'none';
+			}
 		}
-		let iframe = document.createElement('iframe');
-		_screens.appendChild(iframe);
-		iframe.src = src;
-		refitScreens();
+		if(!screenFound){
+			let iframe = document.createElement('iframe');
+			_screens.appendChild(iframe);
+			iframe.src = src;
+			iframe.dataset.targetSrc = src;
+		}
 	}
 	function makeDragable(trigger, dragable=trigger){
 		let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
@@ -118,12 +128,6 @@ function a(){
 			createdWindows++;
 			windowWrapper.style.top = 10*createdWindows + 'px';
 			windowWrapper.style.left = 10*createdWindows + 'px';
-		}
-	}
-	function refitScreens(){
-		for(const screen of _screens.children){
-			screen.style.height = screen.parentElement.offsetHeight + 'px';
-			screen.style.width = screen.parentElement.offsetHeight + 'px';
 		}
 	}
 	function calcSize(){

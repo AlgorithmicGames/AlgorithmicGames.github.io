@@ -52,6 +52,7 @@
 			}
 
 			#header-content-row>* {
+				cursor: pointer;
 				margin-right: 3px;
 				padding-top: 7px;
 				padding-right: 4px;
@@ -166,7 +167,14 @@
 						<a href="https://github.com/AI-Tournaments/AI-Tournaments/releases/" target="_blank">News</a>
 						<div class="dropdown-content" id="news-dropdown"></div>
 					</div>
-					<!--<div class="dropdown">Arenas</div> TODO: Unhide -->
+					<div class="open-screen" data-url="Arena/">Arena</div>
+					<div class="dropdown">
+						<label>Tournament</label>
+						<div class="dropdown-content" id="news-dropdown">
+							<!--<div class="open-screen" data-url="Tournament/Backend/">Backend</div>-->
+							<div class="open-screen" data-url="Tournament/Clientside/">Client-side</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</header>

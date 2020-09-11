@@ -233,7 +233,7 @@ function a(){
 				let id = bracket[0][0].name+'_'+bracket[1][0].name;
 				let arena = document.createElement('iframe');
 				arena.classList.add('arena');
-				arena.src = '../Arena/index.html';
+				arena.src = '../../Arena/index.html';
 				arena.id = 'iframe_' + id;
 				document.body.appendChild(arena);
 				arena.contentWindow.addEventListener('load', () => {
@@ -367,7 +367,7 @@ function a(){
 					tableCell.dataset.team2 = name;
 					tableCell.addEventListener('click', mouseEvent=>{
 						if(tableCell.dataset.log !== undefined){
-							window.open('../Replay/#'+tableCell.dataset.log, '_blank').focus();
+							window.open('../../Replay/#'+tableCell.dataset.log, '_blank').focus();
 						}
 					});
 					tableRow.appendChild(tableCell);
