@@ -7,7 +7,12 @@ function a(){
 	let _screens = document.getElementById('screens');
 	let _background = document.getElementById('background');
 	let _noise;
-	document.getElementById('header-title').innerHTML = document.title;
+	let headerTitle = document.getElementById('header-title');
+	headerTitle.innerHTML = document.title;
+	headerTitle.addEventListener('click', ()=>{
+		var win = window.open('https://github.com/AI-Tournaments', '_blank');
+		win.focus();
+	});
 	for(const element of document.getElementsByClassName('open-screen')) {
 		element.addEventListener('click', ()=>{openScreen(element.dataset.url)});
 	}
