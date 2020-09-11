@@ -33,9 +33,9 @@ function a(){
 				let item = document.createElement('a');
 				item.href = release.html_url;
 				item.target = '_blank';
-				let label = document.createElement('label');
-				label.innerHTML = release.name;
-				item.appendChild(label);
+				let name = document.createElement('div');
+				name.innerHTML = release.name;
+				item.appendChild(name);
 				let time = document.createElement('time');
 				time.datetime = release.published_at;
 				time.innerHTML = release.published_at.substring(0,10);
