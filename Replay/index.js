@@ -12,7 +12,7 @@ function a(){
 		for(const input of document.getElementsByClassName('select-match-button')){
 			input.disabled = false;
 		}
-		fetch('https://api.github.com/search/repositories?q=topic:AI-Tournament+topic:Replay+topic:'+replayData.arena).then(response => response.json()).then(response => {
+		fetch('https://api.github.com/search/repositories?q=topic:AI-Tournaments+topic:Replay+topic:'+replayData.arena).then(response => response.json()).then(response => {
 			document.getElementById('default-option').value = (false?'https://ai-tournaments.github.io':'http://127.0.0.1:8887')+'/'+replayData.arena+'-Replay/';
 			response.items.forEach(repo => {
 				if(repo.has_pages){
