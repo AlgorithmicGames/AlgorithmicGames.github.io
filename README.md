@@ -6,7 +6,8 @@ Click here to [join the community](https://github.com/AI-Tournaments/AI-Tourname
 ## Participate
 To participate in a Arena you need to create a GitHub repository and add three topics: `AI-Tournaments`, `Participant` and the name of the arena. The created repository has to have a file in root called `participant.js`, this is the file that will be called to the arena.
 
-## Why open source?
+## Why Source Available?
+// TODO: Write about not Open Source, but...
 // TODO: Write about execution of user written JavaScript and security (IFrame and Web Worker).
 ### Arenas
 Fair insight.
