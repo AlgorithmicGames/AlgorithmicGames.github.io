@@ -21,7 +21,7 @@ function a(){
 	play();
 	checkGitHubStatus();
 	loadTheNews();
-	openWindow('Wellcome servant!','Make your Master proud by participate in our arenas based upon different kinds of AI and algorithm driven games.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
+	openWindow('Welcome servant!','Make your Master proud by participate in our arenas based upon different kinds of AI and algorithm driven games.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
 	openWindow('Work in progress', 'Sorry, but Overlord has not publicly open the arenas yet so there is nothing to see here at the moment.\nBut dig around or get back here soon™ because awesome stuff are coming!\nRead more about aitournaments.io over at <a href="https://github.com/AI-Tournaments/AI-Tournaments" target="_blank">GitHub</a> or join the discussion <a href="https://github.com/AI-Tournaments/AI-Tournaments/issues/1" target="_blank">here</a>.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '705px');
 	window.onmessage = messageEvent => {
 		if(messageEvent.data.type === 'resize'){
@@ -73,7 +73,7 @@ function a(){
 			iframe.dataset.targetSrc = src;
 		}
 	}
-	function makeDragable(trigger, dragable=trigger){
+	function makeDraggable(trigger, draggable=trigger){
 		let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 		trigger.onmousedown = dragMouseDown;
 		function dragMouseDown(e) {
@@ -91,8 +91,8 @@ function a(){
 			pos2 = pos4 - e.clientY;
 			pos3 = e.clientX;
 			pos4 = e.clientY;
-			dragable.style.top = (dragable.offsetTop - pos2) + 'px';
-			dragable.style.left = (dragable.offsetLeft - pos1) + 'px';
+			draggable.style.top = (draggable.offsetTop - pos2) + 'px';
+			draggable.style.left = (draggable.offsetLeft - pos1) + 'px';
 		}
 		function closeDragElement() {
 			document.onmouseup = null;
@@ -119,8 +119,8 @@ function a(){
 		let headerDiv = document.createElement('pre');
 		headerDiv.innerHTML = header;
 		headerDiv.classList.add('header');
-		headerDiv.classList.add('dragable');
-		makeDragable(headerDiv, windowWrapper);
+		headerDiv.classList.add('draggable');
+		makeDraggable(headerDiv, windowWrapper);
 		messageWrapper.appendChild(headerDiv);
 		let messageDiv = document.createElement('pre');
 		messageDiv.classList.add('message');
