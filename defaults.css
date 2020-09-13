@@ -4,6 +4,9 @@
 	--secondary-background-color: darkgreen;
 	--transparency: rgba(0,0,0,.75);
 
+	--github-stars: '★';
+	--score-stars: '☆';
+
 	color: var(--main-color);
 	border-color: var(--main-color);
 	font-family: consolas, "Courier New", Courier, Monaco, monospace;
