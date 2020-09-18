@@ -21,6 +21,7 @@ function a(){
 	play();
 	checkGitHubStatus();
 	loadTheNews();
+	loadArenas();
 	openWindow('Welcome servant!','Make your Master proud by participate in our arenas based upon different kinds of AI and algorithm driven games.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
 	openWindow('Work in progress', 'Sorry, but Overlord has not publicly open the arenas yet so there is nothing to see here at the moment.\nBut dig around or get back here soon™ because awesome stuff are coming!\nRead more about aitournaments.io over at <a href="https://github.com/AI-Tournaments/AI-Tournaments" target="_blank">GitHub</a> or join the discussion <a href="https://github.com/AI-Tournaments/AI-Tournaments/issues/1" target="_blank">here</a>.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '705px');
 	window.onmessage = messageEvent => {
@@ -54,6 +55,19 @@ function a(){
 			item.target = '_blank';
 			item.innerHTML = '. . .';
 			newsContainer.appendChild(item);
+		});
+	}
+	function loadArenas(amount=undefined){
+		let arenaContainer = document.getElementById('arena-dropdown');
+		fetch('https://api.github.com/orgs/AI-Tournaments/repos').then(response => response.json()).then(repos => {
+			repos.slice(0,amount).forEach(repo => {
+				if(repo.full_name.endsWith('-Arena')){
+					let item = document.createElement('div');
+					item.innerHTML = repo.name.replace('-Arena','')
+					item.dataset.stars = repo.stargazers_count;
+					arenaContainer.appendChild(item);
+				}
+			});
 		});
 	}
 	function openScreen(src=''){
@@ -199,7 +213,7 @@ function a(){
 		}
 		return chars;
 	}
-	function strip(html){
+	function strip(html=''){
 		let output;
 		let tempString;
 		do{

@@ -16,17 +16,19 @@ function a(){
 			document.getElementById('default-option').value = (false?'https://ai-tournaments.github.io':'http://127.0.0.1:8887')+'/'+replayData.arena+'-Replay/';
 			response.items.forEach(repo => {
 				if(repo.has_pages){
+					let cssStar = getComputedStyle(document.documentElement).getPropertyValue('--github-stars').trim();
+					cssStar = cssStar.substring(1,cssStar.length-1);
 					let option = document.createElement('option');
-					option.dataset.starts = repo.stargazers_count;
+					option.innerHTML = repo.full_name.replace(/.*\/|-Arena/g, '') + ' ' + cssStar + repo.stargazers_count;
+					option.dataset.stars = repo.stargazers_count;
 					option.value = 'https://'+repo.owner.login+'.github.io/'+repo.name;
-					option.innerHTML = repo.full_name;
 					viewOptions.appendChild(option);
 				}
 			});
 			let options = [...viewOptions.options];
 			options.sort(function(a, b){
-				if(parseFloat(a.dataset.starts) < parseFloat(b.dataset.starts)){return -1;}
-				if(parseFloat(b.dataset.starts) < parseFloat(a.dataset.starts)){return 1;}
+				if(parseFloat(a.dataset.stars) < parseFloat(b.dataset.stars)){return -1;}
+				if(parseFloat(b.dataset.stars) < parseFloat(a.dataset.stars)){return 1;}
 				return 0;
 			});
 			for(let option of options){
