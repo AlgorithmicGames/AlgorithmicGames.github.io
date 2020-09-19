@@ -24,6 +24,16 @@ function a(){
 	loadArenas();
 	openWindow('Welcome servant!','Make your Master proud by participate in our arenas based upon different kinds of AI and algorithm driven games.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
 	openWindow('Work in progress', 'Sorry, but Overlord has not publicly open the arenas yet so there is nothing to see here at the moment.\nBut dig around or get back here soon™ because awesome stuff are coming!\nRead more about aitournaments.io over at <a href="https://github.com/AI-Tournaments/AI-Tournaments" target="_blank">GitHub</a> or join the discussion <a href="https://github.com/AI-Tournaments/AI-Tournaments/issues/1" target="_blank">here</a>.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '705px');
+	fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
+		let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
+		fetch('https://gitlab.com/api/v4/markdown',{method: 'POST', body: JSON.stringify({text: why}),
+			headers: {Accept: 'application/vnd.github.v3+json', 'Content-Type':'application/json'}
+		}).then(response => response.json()).then(response => {
+			document.getElementById('source-available').addEventListener('click', ()=>{
+				openWindow('Why "Source Available"?', '<span class="source-available">'+response.html+'</span>\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '705px');
+			});
+		});
+	});
 	window.onmessage = messageEvent => {
 		if(messageEvent.data.type === 'resize'){
 			let iframe = document.getElementById(messageEvent.data.value.id);
