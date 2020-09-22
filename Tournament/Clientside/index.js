@@ -100,13 +100,13 @@ function a(){
 					let _log = log.filter(l=>l.type==='Aborted');
 					if(0 < _log.length){
 						log = _log[0].value;
-						aborted.push(log.name);
+						aborted.push(log.participantName);
 						let summaryHeader = document.getElementById(log.name + '_summaryHeader');
 						if(summaryHeader !== null){
 							summaryHeader.parentNode.parentNode.removeChild(summaryHeader.parentNode);
 						}
-						for(const element of document.getElementsByClassName(log.name)){
-							if(element.id !== log.name+'_'+log.name){
+						for(const element of document.getElementsByClassName(log.participantName)){
+							if(element.id !== log.participantName+'_'+log.participantName){
 								element.classList.add('disqualified');
 							}
 						}
@@ -227,7 +227,7 @@ function a(){
 	function startNextBracket(){
 		let bracket = _brackets.shift();
 		if(bracket !== undefined){
-			if(bracket.flat().some(b => aborted.includes(b.name))){
+			if(bracket.flat().some(b => aborted.includes(b.participantName))){
 				startNextBracket()
 			}else{
 				let id = bracket[0][0].name+'_'+bracket[1][0].name;
