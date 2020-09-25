@@ -4,9 +4,9 @@
 	--secondary-background-color: darkgreen;
 	--transparency: rgba(0,0,0,.75);
 
-	--github-stars:★;
-	--score-stars:☆;
-	--link:🔗;
+	--github-stars:'\2605';/*★*/
+	--score-stars:'\2606';/*☆*/
+	--link:'\1F517';/*🔗*/
 
 	color: var(--main-color);
 	border-color: var(--main-color);
