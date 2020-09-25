@@ -83,17 +83,31 @@ function a(){
 				let _log = log.filter(l=>l.type==='Done');
 				if(0 < _log.length){
 					log = _log[0].value;
-					let ai_1 = log.score[0];
-					let ai_2 = log.score[1];
-					let cell = document.getElementById(ai_1.name + '_' + ai_2.name);
+					let team_1 = log.score[0];
+					let team_2 = log.score[1];
+					let team_1_members = '';
+					team_1.members.forEach(member => {
+						if(team_1_members !== ''){
+							team_1_members += ',';
+						}
+						team_1_members += member.name;
+					});
+					let team_2_members = '';
+					team_2.members.forEach(member => {
+						if(team_2_members !== ''){
+							team_2_members += ',';
+						}
+						team_2_members += member.name;
+					});
+					let cell = document.getElementById(team_1_members + '_' + team_2_members);
 					if(!cell.classList.contains('disqualified')){
-						cell.innerHTML = round(ai_1.score, 1) + ' - ' + round(ai_2.score, 1);
-						if(ai_1.score < ai_2.score){
+						cell.innerHTML = round(team_1.score, 1) + ' - ' + round(team_2.score, 1);
+						if(team_1.score < team_2.score){
 							cell.classList.add('ai-2');
-						}else if(ai_2.score < ai_1.score){
+						}else if(team_2.score < ai_1.score){
 							cell.classList.add('ai-1');
 						}
-						cell.dataset.score = JSON.stringify([{'name': ai_1.name, 'score': ai_1.score}, {'name': ai_2.name, 'score': ai_2.score}]);
+						cell.dataset.score = JSON.stringify([{'members': team_1.members, 'score': team_1.score}, {'members': team_2.members, 'score': team_2.score}]);
 						updateSummaryTable();
 					}
 				}else{
@@ -386,19 +400,21 @@ function a(){
 		}
 		for(const cell of document.getElementById('result-table').getElementsByTagName('td')){
 			if(cell.dataset.score !== undefined){
-				JSON.parse(cell.dataset.score).forEach(function(ai, index){
+				JSON.parse(cell.dataset.score).forEach(function(team, index){
 					let aiNumber = index + 1;
-					let aiName = ai.name;
-					let score = ai.score;
-					let cellScore = document.getElementById(aiName + '_AI' + aiNumber);
-					let oldScore = parseFloat(cellScore.dataset.score);
-					let newScore = oldScore + score;
-					cellScore.dataset.score = newScore;
-					cellScore.innerHTML = round(newScore, 1);
-					// Set average
-					let scoreAI_1 = parseFloat(document.getElementById(aiName + '_AI1').dataset.score);
-					let scoreAI_2 = parseFloat(document.getElementById(aiName + '_AI2').dataset.score);
-					document.getElementById(aiName + '_average').innerHTML = round((scoreAI_1 + scoreAI_2)/2, 1);
+					let score = team.score;
+					team.members.forEach(member => {
+						let aiName = member.name;
+						let cellScore = document.getElementById(aiName + '_AI' + aiNumber);
+						let oldScore = parseFloat(cellScore.dataset.score);
+						let newScore = oldScore + score + member.bonus;
+						cellScore.dataset.score = newScore;
+						cellScore.innerHTML = round(newScore, 1);
+						// Set average
+						let scoreAI_1 = parseFloat(document.getElementById(aiName + '_AI1').dataset.score);
+						let scoreAI_2 = parseFloat(document.getElementById(aiName + '_AI2').dataset.score);
+						document.getElementById(aiName + '_average').innerHTML = round((scoreAI_1 + scoreAI_2)/2, 1);
+					});
 				}, this);
 			}
 		}
