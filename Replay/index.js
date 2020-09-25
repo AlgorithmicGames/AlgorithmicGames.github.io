@@ -10,7 +10,7 @@ function a(){
 		btnLock.disabled = true;
 		dataInput.disabled = true;
 		for(const input of document.getElementsByClassName('select-match-button')){
-			input.disabled = false;
+			input.disabled = input.dataset.aborted === 'true';
 		}
 		fetch('https://api.github.com/search/repositories?q=topic:AI-Tournaments+topic:Replay+topic:'+replayData.arena).then(response => response.json()).then(response => {
 			document.getElementById('default-option').value = (false?'https://ai-tournaments.github.io':'http://127.0.0.1:8887')+'/'+replayData.arena+'-Replay/';
@@ -56,7 +56,13 @@ function a(){
 				let input = document.createElement('input');
 				input.type = 'button';
 				input.value = 'Match ' + (index+1);
-				input.dataset.log = JSON.stringify(matchLog.find(d=>d.type==='Done').value);
+				let log_done = matchLog.find(d=>d.type==='Done');
+				if(log_done === undefined){
+					input.value += ' (aborted)';
+					input.dataset.aborted = 'true';
+				}else{
+					input.dataset.log = JSON.stringify(log_done.value);
+				}
 				input.disabled = true;
 				input.classList.add('select-match-button');
 				input.classList.add('sticky');
@@ -67,7 +73,7 @@ function a(){
 						}
 					}
 					for(const input of document.getElementsByClassName('select-match-button')){
-						input.disabled = false;
+						input.disabled = input.dataset.aborted === 'true';
 						iframe.src = viewOptions.selectedOptions[0].value + '#' + input.dataset.log;
 					}
 					input.disabled = true;
