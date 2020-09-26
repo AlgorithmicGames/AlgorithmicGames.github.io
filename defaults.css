@@ -19,6 +19,7 @@ pre {
 	font-family: consolas, "Courier New", Courier, Monaco, monospace;
 }
 select {
+	color: var(--main-color);
 	background: transparent;
 }
 select>* {
