@@ -1,14 +1,16 @@
 'use strict'
 function a(){
 	let _tournamentSettings;
+	let _sortByStars = false;
 	let tableSummary;
 	let settingsIframe = document.getElementById('settings');
 	let arenaProperties;
-	let arenaList = document.getElementById('arena-datalist');
+	let selectArena = document.getElementById('selectArena');
 	let participantList = document.getElementById('participants-selectable');
 	let participantsSelected = document.getElementById('participants-selected');
 	let tableContainer = document.getElementById('highscore-table-container');
 	let btnStart = document.getElementById('btnStart');
+	selectArena.contentWindow.postMessage(undefined);
 	let _brackets;
 	let bracketsOngoing = 0;
 	let bracketsOngoingLimit = 4;
@@ -17,32 +19,6 @@ function a(){
 	for(const button of document.getElementsByClassName('transfer-button')){
 		button.onclick = transferTo;
 	}
-	document.getElementById('arena').onchange = event => {
-		let option = getOption(arenaList, event);
-		if(option !== undefined){
-			for(const element of document.getElementsByClassName('participant-team-container')){
-				element.parentNode.removeChild(element);
-			}
-			document.title = event.target.value + ' Highscore';
-			settingsIframe.contentWindow.postMessage({type: 'SetArena', value: event.target.value});
-			getParticipants(option.value);
-		}
-	};
-	fetch('https://api.github.com/orgs/AI-Tournaments/repos').then(response => response.json()).then(repos => {
-		repos.forEach(repo => {
-			if(repo.full_name.endsWith('-Arena')){
-				fetch('https://raw.githubusercontent.com/GAME-Arena/master/properties.json'.replace('GAME-Arena', repo.full_name)).then(response => response.json()).then(_arenaProperties => {
-					arenaProperties = _arenaProperties;
-					if(arenaProperties.header.limits.participants.max === 1 || arenaProperties.header.limits.participantsPerTeam.max === 1){
-						let option = document.createElement('option');
-						option.value = repo.full_name.replace(/.*\/|-Arena/g, '');
-						option.dataset.full_name = repo.full_name;
-						arenaList.appendChild(option);
-					}
-				});
-			}
-		});
-	});
 	window.onmessage = messageEvent => {
 		if(messageEvent.data.type === 'log'){
 			document.getElementById(messageEvent.data.value.id).dataset.log = JSON.stringify(messageEvent.data.value.log);
@@ -55,6 +31,16 @@ function a(){
 			}else if(bracketsOngoing < bracketsOngoingLimit){
 				startNextBracket();
 			}
+		}else if(messageEvent.data.type === 'arena-changed'){
+			_sortByStars = messageEvent.data.value.settings.sortByStars;
+			selectArena.style.height = messageEvent.data.value.settings.height + 'px';
+			let json = messageEvent.data.value.option;
+			for(const element of document.getElementsByClassName('participant-team-container')){
+				element.parentNode.removeChild(element);
+			}
+			document.title = json.name + ' Highscore';
+			settingsIframe.contentWindow.postMessage({type: 'SetArena', value: json.full_name});
+			getParticipants(json.name);
 		}else if(settingsIframe.contentWindow === messageEvent.source){
 			switch(messageEvent.data.type){
 				case 'properties':
