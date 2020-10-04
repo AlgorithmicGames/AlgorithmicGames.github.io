@@ -75,6 +75,10 @@ function a(){
 					let item = document.createElement('div');
 					item.innerHTML = repo.name.replace('-Arena','')
 					item.dataset.stars = repo.stargazers_count;
+					item.dataset.full_name = repo.full_name;
+					item.addEventListener('click', ()=>{
+						openScreen('Arena/#'+repo.full_name)
+					});
 					arenaContainer.appendChild(item);
 				}
 			});
