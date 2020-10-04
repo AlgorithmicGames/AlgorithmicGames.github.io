@@ -163,22 +163,24 @@ function a(){
 			headers: {Accept: 'application/vnd.github.mercy-preview+json'} // TEMP: Remove when out of preview. https://docs.github.com/en/rest/reference/search#search-topics-preview-notices
 		}).then(response => response.json()).then(response => {
 			response.items.forEach(repo => {
-				promises.push(fetch('https://api.github.com/repos/' + repo.full_name + '/git/trees/' + repo.default_branch)
-				.then(response => response.json())
-				.then(data => {
-					data.tree.forEach(file =>{
-						if(file.type === 'blob' && file.path === 'participant.js'){
-							let option = document.createElement('option');
-							option.dataset.name = repo.full_name.replace('AI-Tournaments-Participant-'+arena+'-','');
-							option.dataset.url = 'https://raw.githubusercontent.com/' + repo.full_name + '/' + repo.default_branch + '/' + file.path;
-							option.innerHTML = option.dataset.name;
-							participantList.appendChild(option);
-						}
-					});
-				})
-				.catch(error => {
-					console.error(error);
-				}));
+				if(!repo.topics.includes('retired')){
+					promises.push(fetch('https://api.github.com/repos/' + repo.full_name + '/git/trees/' + repo.default_branch)
+					.then(response => response.json())
+					.then(data => {
+						data.tree.forEach(file =>{
+							if(file.type === 'blob' && file.path === 'participant.js'){
+								let option = document.createElement('option');
+								option.dataset.name = repo.full_name.replace('AI-Tournaments-Participant-'+arena+'-','');
+								option.dataset.url = 'https://raw.githubusercontent.com/' + repo.full_name + '/' + repo.default_branch + '/' + file.path;
+								option.innerHTML = option.dataset.name;
+								participantList.appendChild(option);
+							}
+						});
+					})
+					.catch(error => {
+						console.error(error);
+					}));
+				}
 			});
 			Promise.all(promises).then(() => {
 				sortOptions(participantList);
