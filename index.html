@@ -48,12 +48,12 @@
 				margin-top: 7px;
 			}
 
-			#header-content-row>* {
+			#header-content-row>*:not(:last-child), #header-right>* {
 				cursor: pointer;
 				padding: 7px 12px;
 			}
 
-			#source-available {
+			#header-right {
 				position: absolute;
 				right: 0;
 			}
@@ -120,8 +120,11 @@
 			#header-content-row>*:not(:last-child) {
 				border-right: 2px solid;
 			}
+			#header-right>*:not(:first-child) {
+				border-left: 2px solid;
+			}
 
-			#header-content-row {
+			#header-content-row, #header-right {
 				display: flex;
 			}
 
@@ -199,7 +202,16 @@
 							<div class="open-screen" data-url="Tournament/Clientside/">Client-side</div>
 						</div>
 					</div>
-					<div id="source-available">Source</div>
+					<div id="header-right">
+						<div class="dropdown">
+							<label>Contact</label>
+							<div class="dropdown-content" id="news-dropdown">
+								<a href="https://github.com/AI-Tournaments/AI-Tournaments/issues/1">Community</a>
+								<!--<a href="mailto:overlord@aitournaments.io">E-mail</a>-->
+							</div>
+						</div>
+						<div id="source-available">Source</div>
+					</div>
 				</div>
 			</div>
 		</header>
