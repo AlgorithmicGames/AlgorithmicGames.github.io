@@ -127,40 +127,47 @@ function a(){
 			document.onmousemove = null;
 		}
 	}
-	function openWindow(header='', message='', center=false, maxWidth){
-		let windowWrapper = document.createElement('div');
-		_content.appendChild(windowWrapper);
-		if(maxWidth !== undefined){
-			windowWrapper.style.maxWidth = maxWidth;
-		}
-		windowWrapper.classList.add('window');
-		let messageWrapper = document.createElement('div');
-		messageWrapper.classList.add('border');
-		windowWrapper.appendChild(messageWrapper);
-		let cross = document.createElement('pre');
-		cross.innerHTML = charCross;
-		cross.classList.add('cross-close');
-		cross.onclick = () => {
-			windowWrapper.parentNode.removeChild(windowWrapper);
-		};
-		windowWrapper.appendChild(cross);
-		let headerDiv = document.createElement('pre');
-		headerDiv.innerHTML = header;
-		headerDiv.classList.add('header');
-		headerDiv.classList.add('draggable');
-		makeDraggable(headerDiv, windowWrapper);
-		messageWrapper.appendChild(headerDiv);
-		let messageDiv = document.createElement('pre');
-		messageDiv.classList.add('message');
-		messageDiv.innerHTML = message;
-		messageWrapper.appendChild(messageDiv);
-		if(center){
-			windowWrapper.style.top = (document.body.offsetHeight - windowWrapper.offsetHeight)/2 + 'px';
-			windowWrapper.style.left = (document.body.offsetWidth - windowWrapper.offsetWidth)/2 + 'px';
-		}else{
-			createdWindows++;
-			windowWrapper.style.top = 10*createdWindows + 'px';
-			windowWrapper.style.left = 10*createdWindows + 'px';
+	function openWindow(header='', message='', center=false, maxWidth, displayOnce=false){
+		let combinedMessage = header+'\n'+message;
+		let display = localStorage.getItem(combinedMessage) === null;
+		if(display){
+			let windowWrapper = document.createElement('div');
+			_content.appendChild(windowWrapper);
+			if(maxWidth !== undefined){
+				windowWrapper.style.maxWidth = maxWidth;
+			}
+			windowWrapper.classList.add('window');
+			let messageWrapper = document.createElement('div');
+			messageWrapper.classList.add('border');
+			windowWrapper.appendChild(messageWrapper);
+			let cross = document.createElement('pre');
+			cross.innerHTML = charCross;
+			cross.classList.add('cross-close');
+			cross.onclick = () => {
+				if(displayOnce){
+					localStorage.setItem(combinedMessage, new Date().toISOString());
+				}
+				windowWrapper.parentNode.removeChild(windowWrapper);
+			};
+			windowWrapper.appendChild(cross);
+			let headerDiv = document.createElement('pre');
+			headerDiv.innerHTML = header;
+			headerDiv.classList.add('header');
+			headerDiv.classList.add('draggable');
+			makeDraggable(headerDiv, windowWrapper);
+			messageWrapper.appendChild(headerDiv);
+			let messageDiv = document.createElement('pre');
+			messageDiv.classList.add('message');
+			messageDiv.innerHTML = message;
+			messageWrapper.appendChild(messageDiv);
+			if(center){
+				windowWrapper.style.top = (document.body.offsetHeight - windowWrapper.offsetHeight)/2 + 'px';
+				windowWrapper.style.left = (document.body.offsetWidth - windowWrapper.offsetWidth)/2 + 'px';
+			}else{
+				createdWindows++;
+				windowWrapper.style.top = 10*createdWindows + 'px';
+				windowWrapper.style.left = 10*createdWindows + 'px';
+			}
 		}
 	}
 	function calcSize(){
