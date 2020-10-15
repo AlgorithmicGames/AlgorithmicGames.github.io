@@ -190,6 +190,16 @@
 				display: block;
 				text-align: center;
 			}
+
+			.discord-logo {
+				--size: 24px;
+				display: inline-block;
+				height: var(--size);
+				width: var(--size);
+				background-image: url(https://discord.com/assets/f8389ca1a741a115313bede9ac02e2c0.svg);
+				background-repeat: no-repeat;
+				vertical-align: middle;
+			}
 		</style>
 		<script>
 			if(false && location.href.endsWith('?soon=aitournaments.io')){
@@ -216,7 +226,7 @@
 					</div>
 					<div class="dropdown">
 						<label>Tournament</label>
-						<div class="dropdown-content" id="news-dropdown">
+						<div class="dropdown-content">
 							<!--<div class="open-screen" data-url="Tournament/Backend/">Backend</div>-->
 							<div class="open-screen" data-url="Tournament/Clientside/">Client-side</div>
 						</div>
@@ -224,8 +234,8 @@
 					<div id="header-right">
 						<div class="dropdown">
 							<label>Contact</label>
-							<div class="dropdown-content" id="news-dropdown">
-								<a href="https://discord.gg/jhUJNsN" target="_blank">Community</a>
+							<div class="dropdown-content">
+								<a href="https://discord.gg/jhUJNsN" target="_blank">Community <i class="discord-logo"></i><!-- TODO: Replace color with matching green. --></a>
 								<!--<a href="mailto:overlord@aitournaments.io">E-mail</a>-->
 							</div>
 						</div>
