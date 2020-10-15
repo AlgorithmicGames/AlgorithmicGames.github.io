@@ -2,7 +2,6 @@
 function a(){
 	let _GitHubProblem = false;
 	let createdWindows = 0;
-	let charCross = '✖';
 	let _content = document.getElementById('content');
 	let _screens = document.getElementById('screens');
 	let _background = document.getElementById('background');
@@ -145,7 +144,6 @@ function a(){
 			messageWrapper.classList.add('border');
 			windowWrapper.appendChild(messageWrapper);
 			let cross = document.createElement('pre');
-			cross.innerHTML = charCross;
 			cross.classList.add('cross-close');
 			cross.onclick = () => {
 				if(displayOnce){
