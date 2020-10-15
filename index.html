@@ -48,6 +48,10 @@
 				margin-top: 7px;
 			}
 
+			.header a {
+				text-decoration: none;
+			}
+
 			#header-content-row>*:not(:last-child), #header-right>* {
 				cursor: pointer;
 				padding: 7px 12px;
@@ -174,6 +178,18 @@
 				white-space: -o-pre-wrap;	/* Opera 7 */
 				word-wrap: break-word;		/* IE */
 			}
+
+			#header-title-fake {
+				display: none;
+			}
+			#header-title:hover>#header-title-real {
+				height: 0;
+				visibility: hidden;
+			}
+			#header-title:hover>#header-title-fake {
+				display: block;
+				text-align: center;
+			}
 		</style>
 		<script>
 			if(false && location.href.endsWith('?soon=aitournaments.io')){
@@ -186,7 +202,10 @@
 		<header>
 			<div class="header">
 				<div id="header-content-row">
-					<div id="header-title"></div>
+					<div id="header-title">
+							<div id="header-title-real"></div>
+							<div id="header-title-fake">GitHub.com</div>
+						</div>
 					<div class="dropdown">
 						<a href="https://github.com/AI-Tournaments/AI-Tournaments/releases/" target="_blank">News</a>
 						<div class="dropdown-content" id="news-dropdown"></div>

@@ -6,7 +6,7 @@ function a(){
 	let _screens = document.getElementById('screens');
 	let _background = document.getElementById('background');
 	let _noise;
-	let headerTitle = document.getElementById('header-title');
+	let headerTitle = document.getElementById('header-title-real');
 	headerTitle.innerHTML = document.title;
 	headerTitle.addEventListener('click', ()=>{
 		var win = window.open('https://github.com/AI-Tournaments', '_blank');
