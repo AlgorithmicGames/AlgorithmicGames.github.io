@@ -6,11 +6,9 @@ function a(){
 	let _screens = document.getElementById('screens');
 	let _background = document.getElementById('background');
 	let _noise;
-	let headerTitle = document.getElementById('header-title-real');
-	headerTitle.innerHTML = document.title;
-	headerTitle.addEventListener('click', ()=>{
-		var win = window.open('https://github.com/AI-Tournaments', '_blank');
-		win.focus();
+	document.getElementById('header-title-real').innerHTML = document.title;
+	document.getElementById('header-title-fake').addEventListener('click', ()=>{
+		window.open('https://github.com/AI-Tournaments', '_blank').focus();
 	});
 	for(const element of document.getElementsByClassName('open-screen')) {
 		element.addEventListener('click', ()=>{openScreen(element.dataset.url)});
