@@ -13,7 +13,7 @@ function a(){
 			input.disabled = input.dataset.aborted === 'true';
 		}
 		fetch('https://api.github.com/search/repositories?q=topic:AI-Tournaments+topic:Replay+topic:'+replayData.arena).then(response => response.json()).then(response => {
-			document.getElementById('default-option').value = (true?'https://ai-tournaments.github.io':'http://127.0.0.1:8887')+'/'+replayData.arena+'-Replay/';
+			document.getElementById('default-option').value = (true?'https://ai-tournaments.github.io':'http://127.0.0.1:8887')+'/'+replayData.arena+'-Replay/'; // TODO: Automatically use 127.0.0.1:x when developing.
 			response.items.forEach(repo => {
 				if(repo.has_pages){
 					let cssStar = getComputedStyle(document.documentElement).getPropertyValue('--github-stars').trim();
