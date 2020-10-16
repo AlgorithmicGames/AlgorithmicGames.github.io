@@ -4,6 +4,8 @@
 	--secondary-background-color: darkgreen;
 	--transparency: rgba(0,0,0,.75);
 
+	--arrow-up:'\25B2';/*▲*/
+	--arrow-down:'\25BC';/*▼*/
 	--cross-close:'\2716';/*✖*/
 	--github-stars:'\2605';/*★*/
 	--score-stars:'\2606';/*☆*/
