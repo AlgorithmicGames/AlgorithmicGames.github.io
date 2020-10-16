@@ -13,8 +13,8 @@ function a(){
 	for(const element of document.getElementsByClassName('open-screen')) {
 		element.addEventListener('click', ()=>{openScreen(element.dataset.url)});
 	}
-	calcSize();
 	window.onresize = calcSize;
+	window.onresize();
 	play();
 	checkGitHubStatus();
 	loadTheNews();
@@ -189,6 +189,7 @@ function a(){
 		}
 		_background.className = '';
 		initNoise(rows, charsPerRow);
+		_content.style.height = window.innerHeight - document.getElementsByTagName('header')[0].offsetHeight + 'px';
 	}
 	function initNoise(rows, charsPerRow){
 		_noise = new Array(rows);
