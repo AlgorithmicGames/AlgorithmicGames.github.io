@@ -1,5 +1,6 @@
 'use strict'
 function a(){
+	let __json;
 	let _tournamentSettings;
 	let _sortByStars = false;
 	let tableSummary;
@@ -34,13 +35,13 @@ function a(){
 		}else if(messageEvent.data.type === 'arena-changed'){
 			_sortByStars = messageEvent.data.value.settings.sortByStars;
 			selectArena.style.height = messageEvent.data.value.settings.height + 'px';
-			let json = messageEvent.data.value.option;
+			__json = messageEvent.data.value.option;
 			for(const element of document.getElementsByClassName('participant-team-container')){
 				element.parentNode.removeChild(element);
 			}
-			document.title = json.name + ' Highscore';
-			settingsIframe.contentWindow.postMessage({type: 'SetArena', value: json.full_name});
-			getParticipants(json.name);
+			document.title = __json.name + ' Highscore';
+			settingsIframe.contentWindow.postMessage({type: 'SetArena', value: __json.full_name+'/'+__json.default_branch});
+			getParticipants(__json.name);
 		}else if(settingsIframe.contentWindow === messageEvent.source){
 			switch(messageEvent.data.type){
 				case 'properties':
@@ -85,12 +86,12 @@ function a(){
 						}
 						team_2_members += member.name;
 					});
-					let cell = document.getElementById(team_1_members + '_' + team_2_members);
+					let cell = document.getElementById(team_1_members + '_&_' + team_2_members);
 					if(!cell.classList.contains('disqualified')){
 						cell.innerHTML = round(team_1.score, 1) + ' - ' + round(team_2.score, 1);
 						if(team_1.score < team_2.score){
 							cell.classList.add('ai-2');
-						}else if(team_2.score < ai_1.score){
+						}else if(team_2.score < team_1.score){
 							cell.classList.add('ai-1');
 						}
 						cell.dataset.score = JSON.stringify([{'members': team_1.members, 'score': team_1.score}, {'members': team_2.members, 'score': team_2.score}]);
@@ -106,7 +107,7 @@ function a(){
 							summaryHeader.parentNode.parentNode.removeChild(summaryHeader.parentNode);
 						}
 						for(const element of document.getElementsByClassName(log.participantName)){
-							if(element.id !== log.participantName+'_'+log.participantName){
+							if(element.id !== log.participantName+'_&_'+log.participantName){
 								element.classList.add('disqualified');
 							}
 						}
@@ -114,13 +115,6 @@ function a(){
 				}
 			});
 		});
-	}
-	function getOption(element, event){
-		for(const option of element.getElementsByTagName('option')){
-			if(option.value === event.target.value){
-				return option;
-			}
-		}
 	}
 	function sortOptions(selectElement){
 		let options = [...selectElement.options];
@@ -232,7 +226,7 @@ function a(){
 			if(bracket.flat().some(b => aborted.includes(b.participantName))){
 				startNextBracket()
 			}else{
-				let id = bracket[0][0].name+'_'+bracket[1][0].name;
+				let id = bracket[0][0].name+'_&_'+bracket[1][0].name;
 				let arena = document.createElement('iframe');
 				arena.classList.add('arena');
 				arena.src = '../../Arena/index.html';
@@ -244,7 +238,7 @@ function a(){
 						id: id,
 						bracket: bracket,
 						settings: _tournamentSettings,
-						title: document.title
+						arena: __json
 					}, '*');
 				});
 				bracketsOngoing++;
@@ -361,7 +355,7 @@ function a(){
 				tableSummary.appendChild(tableRowResult);
 				listOfAIs.forEach(function(_name){
 					let tableCell = document.createElement('td');
-					tableCell.id = _name + '_' + name;
+					tableCell.id = _name + '_&_' + name;
 					tableCell.classList.add('score-cell');
 					tableCell.classList.add(name);
 					tableCell.classList.add(_name);
