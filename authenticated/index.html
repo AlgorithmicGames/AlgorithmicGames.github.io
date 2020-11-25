@@ -1,0 +1,9 @@
+<script>
+	'use strict'
+	localStorage.removeItem('GitHub OAuth-code');
+	let index = location.href.indexOf('=');
+	if(0 < index){
+		localStorage.setItem('GitHub OAuth-code', location.href.substr(index+1));
+	}
+	window.location.replace(location.href.substr(0, location.href.indexOf('authenticated')));
+</script>
