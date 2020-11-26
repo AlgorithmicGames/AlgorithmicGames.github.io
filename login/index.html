@@ -1,0 +1,5 @@
+<script>
+	'use strict'
+	localStorage.setItem('origin', new URLSearchParams(window.location.search).get('origin'));
+	window.location.replace('https://github.com/login/oauth/authorize?scope=user:email&client_id=19698a5006b153e8a671');
+</script>
