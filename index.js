@@ -16,11 +16,11 @@ function a(){
 	window.onresize = calcSize;
 	window.onresize();
 	play();
-	checkGitHubStatus();
+	GitHubApi.login();
+	checkLoginStatus();
 	loadTheNews();
 	loadArenas();
-	checkLoginStatus();
-	document.getElementById('login-button').href += getHostKey();
+	document.getElementById('login-button').href += '?origin='+encodeURI(location.protocol+'//'+location.host+location.pathname);
 	// Hidden until a fun "lore" has been established. openWindow('Welcome to the tournament, servant!','You have been sent here by your proud Master to showcasing what you have learned in our arenas. [TODO: How to?]\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px', true);
 	openWindow(
 		'Welcome to the tournament!','Here you can participate in different games (known as Arenas) for a fun challenge to stay atop of the leaderboards. Read the <a href="https://github.com/AI-Tournaments/AI-Tournaments#participate" target="_blank">Participate</a> section in the README to get started.\n'+
@@ -56,10 +56,10 @@ function a(){
 		}
 	}
 	function checkLoginStatus(){
-		if(localStorage.getItem('GitHub OAuth-Token') === null){
-			document.getElementById('login-button-wrapper').classList.add('display');
+		if(GitHubApi.isLoggedIn()){
+			document.getElementById('login-button-wrapper').classList.remove('show');
 		}else{
-			document.getElementById('login-button-wrapper').classList.remove('display');
+			document.getElementById('login-button-wrapper').classList.add('show');
 		}
 		requestAnimationFrame(checkLoginStatus);
 	}
