@@ -90,7 +90,7 @@ function a(){
 						cell.innerHTML = round(team_1.score, 1) + ' - ' + round(team_2.score, 1);
 						if(team_1.score < team_2.score){
 							cell.classList.add('ai-2');
-						}else if(team_2.score < ai_1.score){
+						}else if(team_2.score < team_1.score){
 							cell.classList.add('ai-1');
 						}
 						cell.dataset.score = JSON.stringify([{'members': team_1.members, 'score': team_1.score}, {'members': team_2.members, 'score': team_2.score}]);
