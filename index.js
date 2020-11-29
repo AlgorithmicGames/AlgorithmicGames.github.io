@@ -150,7 +150,7 @@ function a(){
 		}
 	}
 	function openWindow(header='', message='', center=false, maxWidth, displayOnce=false){
-		let combinedMessage = header+'\n'+message;
+		let combinedMessage = 'Window message - '+header+'\n'+message;
 		let display = localStorage.getItem(combinedMessage) === null;
 		if(display){
 			let windowWrapper = document.createElement('div');
