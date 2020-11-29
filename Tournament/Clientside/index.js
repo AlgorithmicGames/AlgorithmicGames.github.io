@@ -229,6 +229,7 @@ function a(){
 				let id = bracket[0][0].name+'_&_'+bracket[1][0].name;
 				let arena = document.createElement('iframe');
 				arena.classList.add('arena');
+				arena.style = 'display: none'
 				arena.src = '../../Arena/index.html';
 				arena.id = 'iframe_' + id;
 				document.body.appendChild(arena);
