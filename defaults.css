@@ -4,11 +4,12 @@
 	--secondary-background-color: darkgreen;
 	--transparency: rgba(0,0,0,.75);
 
-	--arrow-up:'\25B2';/*▲*/
-	--arrow-down:'\25BC';/*▼*/
-	--cross-close:'\2716';/*✖*/
-	--github-stars:'\2605';/*★*/
-	--score-stars:'\2606';/*☆*/
+	/** Icons. NOTE: Use unicode ('\1F517') if icon is an Emoji like 🔗. */
+	--arrow-up:▲;
+	--arrow-down:▼;
+	--cross-close:✖;
+	--github-stars:★;
+	--score-stars:☆;
 	--link:'\1F517';/*🔗*/
 
 	color: var(--main-color);
