@@ -1,16 +1,7 @@
 'use strict'
 class Backend{
-	static call(method='', module='', data){
-		let url = Backend.getBackend()+'?'+module;
-		let headers = {
-			method: method.toLocaleUpperCase()
-		}
-		if(headers.method==='GET'){
-			url += '&'+JSON.stringify(data);
-		}else{
-			headers.body = JSON.stringify(data);
-		}
-		return fetch(new Request(url), headers).then(response => response.json());
+	static call(module='', data){
+		return fetch(new Request(Backend.getBackend()+'?'+module), {method:'POST',body:JSON.stringify(data)}).then(response => response.json());
 	}
 	static getBackend(){
 		let backend = localStorage.getItem('backend');
