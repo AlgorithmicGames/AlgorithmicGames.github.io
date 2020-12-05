@@ -5,7 +5,7 @@ class Backend{
 	}
 	static getBackend(){
 		let backend = localStorage.getItem('backend');
-		return backend === null ? 'https://backend.aitournaments.io' : backend;
+		return backend === null ? '78.69.133.195'/*'https://backend.aitournaments.io'*/ : backend;
 	}
 	static isOverride(){
 		return localStorage.getItem('backend') !== null;
