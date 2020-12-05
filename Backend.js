@@ -5,7 +5,7 @@ class Backend{
 		let headers = {
 			method: method.toLocaleUpperCase()
 		}
-		if(method==='GET'){
+		if(headers.method==='GET'){
 			url += '&'+JSON.stringify(data);
 		}else{
 			headers.body = JSON.stringify(data);
