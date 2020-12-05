@@ -60,6 +60,7 @@
 			#header-right {
 				position: absolute;
 				right: 0;
+				margin-right: 3px;
 			}
 			.source-available>h3, .source-available>p {
 				margin: 0;
@@ -195,6 +196,31 @@
 				text-align: center;
 			}
 
+			@keyframes display-login {
+				from {
+					max-width: 0px;
+				}
+				to {
+					max-width: 70px;
+				}
+			}
+			#login-button-wrapper {
+				overflow: hidden;
+				max-width: 0px;
+				padding-left: 0px;
+				padding-right: 0px;
+			}
+			#login-button {
+				padding-left: 12px;
+				padding-right: 12px;
+			}
+			#login-button-wrapper.show {
+				animation-name: display-login;
+				animation-duration: 2s;
+				animation-timing-function: ease-in-out;
+				max-width: unset;
+			}
+
 			.discord-logo {
 				--size: 24px;
 				display: inline-block;
@@ -211,6 +237,8 @@
 			}
 		</script>
 		<script src="index.js"></script>
+		<script src="Backend.js"></script>
+		<script src="GitHubApi.js"></script>
 	</head>
 	<body onload="a()">
 		<header>
@@ -244,6 +272,9 @@
 							</div>
 						</div>
 						<div id="source-available">Source</div>
+						<div id="login-button-wrapper">
+							<a id="login-button" href="https://ai-tournaments.github.io/AI-Tournaments/login">Login</a>
+						</div>
 					</div>
 				</div>
 			</div>

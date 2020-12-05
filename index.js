@@ -16,15 +16,23 @@ function a(){
 	window.onresize = calcSize;
 	window.onresize();
 	play();
-	checkGitHubStatus();
+	GitHubApi.login();
+	checkLoginStatus();
 	loadTheNews();
 	loadArenas();
+	document.getElementById('login-button').href += '?origin='+encodeURI(location.protocol+'//'+location.host+location.pathname);
 	// Hidden until a fun "lore" has been established. openWindow('Welcome to the tournament, servant!','You have been sent here by your proud Master to showcasing what you have learned in our arenas. [TODO: How to?]\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px', true);
 	openWindow(
 		'Welcome to the tournament!','Here you can participate in different games (known as Arenas) for a fun challenge to stay atop of the leaderboards. Read the <a href="https://github.com/AI-Tournaments/AI-Tournaments#participate" target="_blank">Participate</a> section in the README to get started.\n'+
 		'If you want to you can join the community discussions over at the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord server</a>.\n'+
 		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
 	true, '582px', true);
+	if(Backend.isOverride()){
+		openWindow('⚠️Attention: Backend override⚠️','Backend is currently set to: '+Backend.getBackend()+'<br><button onclick="localStorage.removeItem(\'backend\'); location.reload();">Reset</button>',false);
+	}
+	if(navigator.userAgent.indexOf("Firefox") === -1){
+		openWindow('Known problem: browser crash','AI-Tournaments can crash in some browsers when running matches in the client, Chrome is for example calling it "Oh, snap! STATUS_ACCESS_VIOLATION". If you are facing this problem, try using Firefox until it is sorted. Read more <a href="https://github.com/AI-Tournaments/AI-Tournaments/issues/2" target="_blank">here</a>.',false,'424px');
+	}
 	fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
 		let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
 		fetch('https://gitlab.com/api/v4/markdown',{method: 'POST', body: JSON.stringify({text: why}),
@@ -45,9 +53,25 @@ function a(){
 			console.error(messageEvent.source.frameElement);
 		}
 	}
+	function getHostKey(){
+		switch(location.host){
+			case 'ai-tournaments.github.io': return '19698a5006b153e8a671';
+			case 'aitournaments.io': return 'c112116c382035bd968d';
+			case 'localhost:8080': return 'b7ba44d41ba56a0ed489';
+			case '127.0.0.1:8080': return '3efde99e3c8c77d9688f';
+		}
+	}
+	function checkLoginStatus(){
+		if(GitHubApi.isLoggedIn()){
+			document.getElementById('login-button-wrapper').classList.remove('show');
+		}else{
+			document.getElementById('login-button-wrapper').classList.add('show');
+		}
+		requestAnimationFrame(checkLoginStatus);
+	}
 	function loadTheNews(amount=5){
 		let newsContainer = document.getElementById('news-dropdown');
-		fetch('https://api.github.com/repos/AI-Tournaments/AI-Tournaments/releases').then(response => response.json()).then(releases => {
+		GitHubApi.fetch('repos/AI-Tournaments/AI-Tournaments/releases').then(response => response.json()).then(releases => {
 			releases.slice(0,amount).forEach(release => {
 				let item = document.createElement('a');
 				item.href = release.html_url;
@@ -70,7 +94,7 @@ function a(){
 	}
 	function loadArenas(amount=undefined){
 		let arenaContainer = document.getElementById('arena-dropdown');
-		fetch('https://api.github.com/orgs/AI-Tournaments/repos').then(response => response.json()).then(repos => {
+		GitHubApi.fetch('orgs/AI-Tournaments/repos').then(response => response.json()).then(repos => {
 			repos.slice(0,amount).forEach(repo => {
 				if(repo.full_name.endsWith('-Arena')){
 					let item = document.createElement('div');
@@ -129,7 +153,7 @@ function a(){
 		}
 	}
 	function openWindow(header='', message='', center=false, maxWidth, displayOnce=false){
-		let combinedMessage = header+'\n'+message;
+		let combinedMessage = 'Window message - '+header+'\n'+message;
 		let display = localStorage.getItem(combinedMessage) === null;
 		if(display){
 			let windowWrapper = document.createElement('div');
