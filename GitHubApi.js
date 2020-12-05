@@ -31,7 +31,7 @@ class GitHubApi{
 		}
 		if(oAuthCode !== null){
 			localStorage.setItem('GitHub OAuth-Token', '!'+oAuthCode);
-			Backend.call('get', 'login', {oAuthCode: oAuthCode, client_id: GitHubApi.CLIENT_ID}).then(json => {
+			Backend.call('login', {oAuthCode: oAuthCode, client_id: GitHubApi.CLIENT_ID}).then(json => {
 				console.log(json);
 				if(json.data !== undefined){
 					localStorage.setItem('GitHub OAuth-Token', json.data);
