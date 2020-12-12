@@ -15,9 +15,8 @@ function a(){
 	}
 	window.onresize = calcSize;
 	window.onresize();
-	play();
 	GitHubApi.login();
-	checkLoginStatus();
+	frameLoop();
 	loadTheNews();
 	loadArenas();
 	document.getElementById('login-button').href += '?origin='+encodeURI(location.protocol+'//'+location.host+location.pathname);
@@ -53,13 +52,16 @@ function a(){
 			console.error(messageEvent.source.frameElement);
 		}
 	}
-	function checkLoginStatus(){
+	function frameLoop(){
+		// Check login status
 		if(GitHubApi.isLoggedIn()){
 			document.getElementById('login-button-wrapper').classList.remove('show');
 		}else{
 			document.getElementById('login-button-wrapper').classList.add('show');
 		}
-		requestAnimationFrame(checkLoginStatus);
+		// Update background
+		_background.innerHTML = parsToString(getNoise());
+		window.requestAnimationFrame(frameLoop);
 	}
 	function loadTheNews(amount=5){
 		let newsContainer = document.getElementById('news-dropdown');
@@ -220,10 +222,6 @@ function a(){
 			}
 			_noise[r] = chars;
 		}
-	}
-	function play(){
-		_background.innerHTML = parsToString(getNoise());
-		window.requestAnimationFrame(play);
 	}
 	function getNoise(){
 		let numberOfChanges = (_noise.length*_noise[0].length)/100;
