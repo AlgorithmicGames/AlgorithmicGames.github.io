@@ -34,4 +34,4 @@ Download code from AI-Tournaments to ...
 * And basically anything that gives something back to the community.
 ### Disallowed examples
 * Removing the links to AI-Tournaments.
-* Setup a commercial site of AI-Tournaments.
+* Setup a commercial competitor to AI-Tournaments.

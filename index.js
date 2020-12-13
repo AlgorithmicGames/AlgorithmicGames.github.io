@@ -15,9 +15,8 @@ function a(){
 	}
 	window.onresize = calcSize;
 	window.onresize();
-	play();
 	GitHubApi.login();
-	checkLoginStatus();
+	frameLoop();
 	loadTheNews();
 	loadArenas();
 	document.getElementById('login-button').href += '?origin='+encodeURI(location.protocol+'//'+location.host+location.pathname);
@@ -53,21 +52,65 @@ function a(){
 			console.error(messageEvent.source.frameElement);
 		}
 	}
-	function getHostKey(){
-		switch(location.host){
-			case 'ai-tournaments.github.io': return '19698a5006b153e8a671';
-			case 'aitournaments.io': return 'c112116c382035bd968d';
-			case 'localhost:8080': return 'b7ba44d41ba56a0ed489';
-			case '127.0.0.1:8080': return '3efde99e3c8c77d9688f';
-		}
-	}
-	function checkLoginStatus(){
+	function frameLoop(){
+		// Check login status.
 		if(GitHubApi.isLoggedIn()){
 			document.getElementById('login-button-wrapper').classList.remove('show');
 		}else{
 			document.getElementById('login-button-wrapper').classList.add('show');
 		}
-		requestAnimationFrame(checkLoginStatus);
+		// Update background.
+		_background.innerHTML = parsToString(getNoise());
+		// Display requested popup messages.
+		let items = localStorage.length;
+		for(let index = 0; index < items; ++index ){
+			let key = localStorage.key(index);
+			if(key !== null && key.startsWith('PopupMessage-')){
+				let message = localStorage.getItem(key);
+				localStorage.removeItem(key);
+				message = message.split('\n');
+				let header = message.shift();
+				let maxWidth = message.shift();
+				openWindow(header+'<span hidden>'+key+'</span>', message.join('\n'), false, maxWidth===''?undefined:maxWidth, true);
+			}
+		}
+		// Update countdown timers.
+		for(let element of document.getElementsByTagName('time')){
+			if(element.classList.contains('countdown')){
+				let timespan = (new Date(element.dateTime)-Date.now());
+				let days = Math.floor(timespan/86400000);
+				timespan -=  days*86400000;
+				let hours = Math.floor(timespan/3600000);
+				timespan -= hours*3600000;
+				let minutes = Math.floor(timespan/60000);
+				timespan -= minutes*60000;
+				let seconds = Math.floor(timespan/1000);
+				element.innerHTML = '';
+				if(0<days){
+					element.innerHTML += days + ' ';
+				}
+				if(0<hours || element.innerHTML!==''){
+					if(hours<10){
+						hours = '0' + hours;
+					}
+					element.innerHTML += hours + ':';
+				}
+				if(0<minutes || element.innerHTML!==''){
+					if(minutes<10){
+						minutes = '0' + minutes;
+					}
+					element.innerHTML += minutes + ':';
+				}
+				if(0<seconds || element.innerHTML!==''){
+					if(seconds<10){
+						seconds = '0' + seconds;
+					}
+					element.innerHTML += seconds;
+				}
+			}
+		}
+		// Schedule next update.
+		window.requestAnimationFrame(frameLoop);
 	}
 	function loadTheNews(amount=5){
 		let newsContainer = document.getElementById('news-dropdown');
@@ -228,10 +271,6 @@ function a(){
 			}
 			_noise[r] = chars;
 		}
-	}
-	function play(){
-		_background.innerHTML = parsToString(getNoise());
-		window.requestAnimationFrame(play);
 	}
 	function getNoise(){
 		let numberOfChanges = (_noise.length*_noise[0].length)/100;
