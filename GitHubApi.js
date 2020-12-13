@@ -1,6 +1,6 @@
 'use strict'
 class GitHubApi{
-	static CLIENT_ID = '19698a5006b153e8a671';
+	static #CLIENT_ID = '19698a5006b153e8a671';
 	static #waitUntil = timestamp => new Promise(resolve => setTimeout(resolve, timestamp-Date.now()));
 	static fetch(path='', init={}){
 		let token = localStorage.getItem('GitHub OAuth-Token');
@@ -20,7 +20,11 @@ class GitHubApi{
 				throw new Error('Unauthorized GitHub OAuth-Token. Logged out.');
 			}else if([403, 429/*Unconfirmed*/].includes(response.status)){
 				let timestamp = 1000*(parseInt(response.headers.get('x-ratelimit-reset'))+1);
-				console.log('x-ratelimit-reset: ' + new Date(timestamp));
+				if(this.isLoggedIn()){
+					localStorage.setItem('PopupMessage-'+window.performance.timing.navigationStart+timestamp, 'GitHub API rate limit reached\n424px\nWait until the <a href="https://docs.github.com/en/free-pro-team@latest/rest/reference/rate-limit" target="_blank">API rate limit</a> timer resets: <time class="countdown" datetime="'+new Date(timestamp)+'"></time>');
+				}else{
+					localStorage.setItem('PopupMessage-'+window.performance.timing.navigationStart+timestamp, 'GitHub API rate limit reached\n371px\nGitHub has a lower <a href="https://docs.github.com/en/free-pro-team@latest/rest/reference/rate-limit" target="_blank">API rate limit</a> for unsigned requests. <a href="https://ai-tournaments.github.io/AI-Tournaments/login">Login</a> to be able to continue to create matches or wait until the timer resets: <time class="countdown" datetime="'+new Date(timestamp)+'"></time>');
+				}
 				return this.#waitUntil(timestamp).then(()=>GitHubApi.fetch(path, init));
 			}
 			throw new Error('Uncaught response: ' + response.status + ' ' + response.statusText);
@@ -37,7 +41,7 @@ class GitHubApi{
 		}
 		if(oAuthCode !== null){
 			localStorage.setItem('GitHub OAuth-Token', '!'+oAuthCode);
-			Backend.call('login', {oAuthCode: oAuthCode, client_id: GitHubApi.CLIENT_ID}).then(json => {
+			Backend.call('login', {oAuthCode: oAuthCode, client_id: GitHubApi.#CLIENT_ID}).then(json => {
 				console.log(json);
 				if(json.data !== undefined){
 					localStorage.setItem('GitHub OAuth-Token', json.data);

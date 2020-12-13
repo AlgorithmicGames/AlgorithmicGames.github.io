@@ -53,14 +53,63 @@ function a(){
 		}
 	}
 	function frameLoop(){
-		// Check login status
+		// Check login status.
 		if(GitHubApi.isLoggedIn()){
 			document.getElementById('login-button-wrapper').classList.remove('show');
 		}else{
 			document.getElementById('login-button-wrapper').classList.add('show');
 		}
-		// Update background
+		// Update background.
 		_background.innerHTML = parsToString(getNoise());
+		// Display requested popup messages.
+		let items = localStorage.length;
+		for(let index = 0; index < items; ++index ){
+			let key = localStorage.key(index);
+			if(key !== null && key.startsWith('PopupMessage-')){
+				let message = localStorage.getItem(key);
+				localStorage.removeItem(key);
+				message = message.split('\n');
+				let header = message.shift();
+				let maxWidth = message.shift();
+				openWindow(header+'<span hidden>'+key+'</span>', message.join('\n'), false, maxWidth===''?undefined:maxWidth, true);
+			}
+		}
+		// Update countdown timers.
+		for(let element of document.getElementsByTagName('time')){
+			if(element.classList.contains('countdown')){
+				let timespan = (new Date(element.dateTime)-Date.now());
+				let days = Math.floor(timespan/86400000);
+				timespan -=  days*86400000;
+				let hours = Math.floor(timespan/3600000);
+				timespan -= hours*3600000;
+				let minutes = Math.floor(timespan/60000);
+				timespan -= minutes*60000;
+				let seconds = Math.floor(timespan/1000);
+				element.innerHTML = '';
+				if(0<days){
+					element.innerHTML += days + ' ';
+				}
+				if(0<hours || element.innerHTML!==''){
+					if(hours<10){
+						hours = '0' + hours;
+					}
+					element.innerHTML += hours + ':';
+				}
+				if(0<minutes || element.innerHTML!==''){
+					if(minutes<10){
+						minutes = '0' + minutes;
+					}
+					element.innerHTML += minutes + ':';
+				}
+				if(0<seconds || element.innerHTML!==''){
+					if(seconds<10){
+						seconds = '0' + seconds;
+					}
+					element.innerHTML += seconds;
+				}
+			}
+		}
+		// Schedule next update.
 		window.requestAnimationFrame(frameLoop);
 	}
 	function loadTheNews(amount=5){
