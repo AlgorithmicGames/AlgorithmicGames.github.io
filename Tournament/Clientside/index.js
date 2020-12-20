@@ -111,8 +111,8 @@ function a(){
 								element.classList.add('disqualified');
 							}
 						});
-						}
 					}
+				}
 			});
 		});
 	}
