@@ -36,9 +36,9 @@ function a(){
 			_sortByStars = messageEvent.data.value.settings.sortByStars;
 			selectArena.style.height = messageEvent.data.value.settings.height + 'px';
 			__json = messageEvent.data.value.option;
-			for(const element of document.getElementsByClassName('participant-team-container')){
+			Array.from(document.getElementsByClassName('participant-team-container')).forEach(element => {
 				element.parentNode.removeChild(element);
-			}
+			});
 			document.title = __json.name + ' Highscore';
 			settingsIframe.contentWindow.postMessage({type: 'SetArena', value: __json.raw_url});
 			getParticipants(__json.name);
@@ -106,13 +106,13 @@ function a(){
 						if(summaryHeader !== null){
 							summaryHeader.parentNode.parentNode.removeChild(summaryHeader.parentNode);
 						}
-						for(const element of document.getElementsByClassName(log.participantName)){
+						Array.from(document.getElementsByClassName(log.participantName)).forEach(element => {
 							if(element.id !== log.participantName+'_&_'+log.participantName){
 								element.classList.add('disqualified');
 							}
+						});
 						}
 					}
-				}
 			});
 		});
 	}
@@ -147,11 +147,11 @@ function a(){
 		buildTable(participants);
 	}
 	function getParticipants(arena=''){
-		for(const selectElement of document.getElementsByClassName('participants')){
+		Array.from(document.getElementsByClassName('participants')).forEach(selectElement =>{
 			while(0 < selectElement.length){
 				selectElement.remove(0);
 			}
-		}
+		});
 		let promises = [];
 		GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:Participant+topic:'+arena,{
 			headers: {Accept: 'application/vnd.github.mercy-preview+json'} // TEMP: Remove when out of preview. https://docs.github.com/en/rest/reference/search#search-topics-preview-notices
