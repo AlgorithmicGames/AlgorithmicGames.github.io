@@ -40,7 +40,7 @@ function a(){
 				element.parentNode.removeChild(element);
 			}
 			document.title = __json.name + ' Highscore';
-			settingsIframe.contentWindow.postMessage({type: 'SetArena', value: __json.full_name+'/'+__json.default_branch});
+			settingsIframe.contentWindow.postMessage({type: 'SetArena', value: __json.raw_url});
 			getParticipants(__json.name);
 		}else if(settingsIframe.contentWindow === messageEvent.source){
 			switch(messageEvent.data.type){
@@ -165,7 +165,7 @@ function a(){
 							if(file.type === 'blob' && file.path === 'participant.js'){
 								let option = document.createElement('option');
 								option.dataset.name = repo.full_name.replace('AI-Tournaments-Participant-'+arena+'-','');
-								option.dataset.url = 'https://raw.githubusercontent.com/' + repo.full_name + '/' + repo.default_branch + '/' + file.path;
+								option.dataset.url = repo.raw_url + file.path;
 								option.innerHTML = option.dataset.name;
 								participantList.appendChild(option);
 							}
