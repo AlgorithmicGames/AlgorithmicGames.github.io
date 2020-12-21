@@ -4,7 +4,7 @@ AI Tournaments is still in an early prototype stage. See the section on [`Partic
 Click here to [join the Discord community](https://discord.gg/jhUJNsN).
 
 ## Participate
-To participate in a Arena you need to create a GitHub repository and add three topics: `AI-Tournaments`, `Participant` and the name of the arena (without the `-Arena` suffix) or the full repository name (`UserAuthor/Example-Arena`) if it is a community arena. The created repository has to have a file in root called `participant.js`, this is the file that will be called to the arena.
+To participate in a Arena you need to [create a GitHub repository](https://github.com/AI-Tournaments/Participant-Template) and add three topics: `AI-Tournaments`, `Participant` and the name of the arena (without the `-Arena` suffix) or use the full repository name (`UserAuthor/Example-Arena`) if it is a community arena. The created repository has to have a file in root called `participant.js`, this is the file that will be called to the arena.
 ### Minimal requirement for participant.js
 ``` JavaScript
 onmessage = messageEvent => {
