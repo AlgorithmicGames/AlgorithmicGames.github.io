@@ -12,8 +12,8 @@ function a(){
 		for(const input of document.getElementsByClassName('select-match-button')){
 			input.disabled = input.dataset.aborted === 'true';
 		}
-		GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:Replay+topic:'+replayData.arena).then(response => response.json()).then(response => {
-			document.getElementById('default-option').value = (true?'https://ai-tournaments.github.io':'http://127.0.0.1:8080')+'/'+replayData.arena.split('/')[1].replace('Arena','Replay')+'/'; // TODO: Automatically use 127.0.0.1:8080 when developing.
+		GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:Replay+topic:'+replayData.body.arena).then(response => response.json()).then(response => {
+			document.getElementById('default-option').value = replayData.header !== undefined && replayData.header.defaultReplay !== undefined && replayData.header.defaultReplay !== '' ? replayData.header.defaultReplay : 'https://ai-tournaments.github.io/'+replayData.body.arena.split('/')[1].replace('Arena','Replay')+'/';
 			response.items.forEach(repo => {
 				if(repo.has_pages){
 					let cssStar = getComputedStyle(document.documentElement).getPropertyValue('--github-stars').trim();
@@ -50,9 +50,9 @@ function a(){
 		document.getElementById('invalid-input').style.display = btnLock.disabled ? '' : 'none';
 		if(!btnLock.disabled){
 			let selectionStart = dataInput.selectionStart;
-			dataInput.value = JSON.stringify(replayData,null,'\t');
+			dataInput.value = JSON.stringify(replayData.body,null,'\t');
 			dataInput.selectionStart = selectionStart;
-			replayData.data.forEach((matchLog, index) => {
+			replayData.body.data.forEach((matchLog, index) => {
 				let input = document.createElement('input');
 				input.type = 'button';
 				input.value = 'Match ' + (index+1);
