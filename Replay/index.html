@@ -25,6 +25,9 @@
 				width: -webkit-fill-available;
 				height: -webkit-fill-available;
 			}
+			#lblData {
+				display: block;
+			}
 			#control-container>* {
 				vertical-align: top;
 			}
@@ -40,7 +43,7 @@
 	</head>
 	<body onload="a()">
 		<div id="control-container">
-			<label for="data">Data:</label>
+			<label id="lblData" for="data">Data:</label>
 			<textarea id="data-input"></textarea>
 			<input type="button" id="lock" value="Lock" disabled/>
 			<span id="invalid-input" style="color:red;display:none;">Invalid input.</span>
