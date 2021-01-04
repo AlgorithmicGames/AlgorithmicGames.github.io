@@ -11,7 +11,7 @@ function a(){
 	let participantsSelected = document.getElementById('participants-selected');
 	let tableContainer = document.getElementById('highscore-table-container');
 	let btnStart = document.getElementById('btnStart');
-	selectArena.contentWindow.postMessage(undefined);
+	selectArena.contentWindow.postMessage({type: 'get-arenas', value: ''});
 	let _brackets;
 	let bracketsOngoing = 0;
 	let bracketsOngoingLimit = 4;
@@ -36,11 +36,11 @@ function a(){
 			_sortByStars = messageEvent.data.value.settings.sortByStars;
 			selectArena.style.height = messageEvent.data.value.settings.height + 'px';
 			__json = messageEvent.data.value.option;
-			for(const element of document.getElementsByClassName('participant-team-container')){
+			Array.from(document.getElementsByClassName('participant-team-container')).forEach(element => {
 				element.parentNode.removeChild(element);
-			}
+			});
 			document.title = __json.name + ' Highscore';
-			settingsIframe.contentWindow.postMessage({type: 'SetArena', value: __json.full_name+'/'+__json.default_branch});
+			settingsIframe.contentWindow.postMessage({type: 'SetArena', value: __json.raw_url});
 			getParticipants(__json.name);
 		}else if(settingsIframe.contentWindow === messageEvent.source){
 			switch(messageEvent.data.type){
@@ -106,11 +106,11 @@ function a(){
 						if(summaryHeader !== null){
 							summaryHeader.parentNode.parentNode.removeChild(summaryHeader.parentNode);
 						}
-						for(const element of document.getElementsByClassName(log.participantName)){
+						Array.from(document.getElementsByClassName(log.participantName)).forEach(element => {
 							if(element.id !== log.participantName+'_&_'+log.participantName){
 								element.classList.add('disqualified');
 							}
-						}
+						});
 					}
 				}
 			});
@@ -147,11 +147,11 @@ function a(){
 		buildTable(participants);
 	}
 	function getParticipants(arena=''){
-		for(const selectElement of document.getElementsByClassName('participants')){
+		Array.from(document.getElementsByClassName('participants')).forEach(selectElement =>{
 			while(0 < selectElement.length){
 				selectElement.remove(0);
 			}
-		}
+		});
 		let promises = [];
 		GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:Participant+topic:'+arena,{
 			headers: {Accept: 'application/vnd.github.mercy-preview+json'} // TEMP: Remove when out of preview. https://docs.github.com/en/rest/reference/search#search-topics-preview-notices
@@ -164,8 +164,8 @@ function a(){
 						data.tree.forEach(file =>{
 							if(file.type === 'blob' && file.path === 'participant.js'){
 								let option = document.createElement('option');
-								option.dataset.name = repo.full_name.replace('AI-Tournaments-Participant-'+arena+'-','');
 								option.dataset.url = 'https://raw.githubusercontent.com/' + repo.full_name + '/' + repo.default_branch + '/' + file.path;
+								option.dataset.name = repo.full_name.replace('AI-Tournaments-Participant-'+arena+'-','');
 								option.innerHTML = option.dataset.name;
 								participantList.appendChild(option);
 							}

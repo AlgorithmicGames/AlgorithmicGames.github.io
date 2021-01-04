@@ -1,8 +1,11 @@
 'use strict'
+let addArena;
 let addParticipant;
 function a(){
 	let _sortByStars = false;
 	let _json;
+	let localArenas = {};
+	let localParticipants = null
 	let arenaProperties;
 	let selectArena = document.getElementById('selectArena');
 	let participantList = document.getElementById('participants-selectable');
@@ -22,7 +25,9 @@ function a(){
 	let contentWindows = {
 		iFrameLog: []
 	};
-	window.onhashchange = ()=>selectArena.contentWindow.postMessage(location.hash.substring(1));
+	let arenaListReady;
+	let arenaListReadyPromise = new Promise(resolve => arenaListReady = resolve);
+	window.onhashchange = ()=>selectArena.contentWindow.postMessage({type: 'get-arenas', value: location.hash.substring(1)});
 	window.onhashchange();
 	window.onmessage = messageEvent => {
 		if(messageEvent.data.type === 'auto-run'){
@@ -36,13 +41,13 @@ function a(){
 				selectArena.style.height = messageEvent.data.value.settings.height + 'px';
 				_json = messageEvent.data.value.option;
 				btnAddTeam.disabled = true;
-				for(const element of document.getElementsByClassName('participant-team-container')){
+				Array.from(document.getElementsByClassName('participant-team-container')).forEach(element => {
 					element.parentNode.removeChild(element);
-				}
+				});
 				document.title = _json.name + ' Arena';
-				settingsIframe.contentWindow.postMessage({type: 'SetArena', value: _json.full_name+'/'+_json.default_branch});
+				settingsIframe.contentWindow.postMessage({type: 'SetArena', value: _json.raw_url});
 				getParticipants(_json.name);
-				fetch('https://raw.githubusercontent.com/'+_json.full_name+'/'+_json.default_branch+'/README.md').then(response => response.text()).then(readme => {
+				fetch(_json.raw_url+'README.md').then(response => response.text()).then(readme => {
 					fetch('https://gitlab.com/api/v4/markdown',{method: 'POST', body: JSON.stringify({text: readme}),
 					headers: {Accept: 'application/vnd.github.v3+json', 'Content-Type':'application/json'}
 				}).then(response => response.json()).then(response => {
@@ -68,7 +73,17 @@ function a(){
 			console.error(messageEvent.source.frameElement);
 		}
 	}
-	addParticipant = function(url='', name='Manually added participant'){
+	addArena = (url='', name='', replayURL='', ...participants) => {
+		if(name === ''){
+			name = url;
+		}
+		localArenas[url] = replayURL;
+		arenaListReadyPromise.then(()=>{
+		selectArena.contentWindow.postMessage({type: 'add-arena', value: [url, name]});
+		localParticipants = participants;
+		});
+	}
+	addParticipant = (url='', name='Manually added participant') => {
 		let option = addParticipantOption(url, name);
 		option.classList.add('local');
 		sortOptions(participantList);
@@ -134,17 +149,24 @@ function a(){
 				}
 			});
 			if(isDone){
+				let defaultReplay = localArenas[_json.raw_url];
+				let replayData = {
+					header: {
+						defaultReplay: defaultReplay
+					},
+					body: messageEvent.data.value
+				};
 				outputSum.dataset.array = JSON.stringify(messageEvent.data.value);
 				outputSum.dataset.done = true;
 				outputSum.innerHTML = JSON.stringify(messageEvent.data.value,null,'\t');
 				contentWindows.iFrameLog.splice(contentWindows.iFrameLog.indexOf(messageEvent.source), 1);
-				for(const element of document.getElementsByClassName('replay-container')){
+				Array.from(document.getElementsByClassName('replay-container')).forEach(element => {
 					element.parentNode.removeChild(element);
-				}
+				});
 				if(!document.title.startsWith('auto-run')){
 					let replayContainer = document.createElement('iframe');
 					replayContainer.classList.add('replay-container');
-					replayContainer.src = '../Replay/#'+outputSum.dataset.array;
+					replayContainer.src = '../Replay/#'+JSON.stringify(replayData);
 					document.body.appendChild(replayContainer);
 				}
 			}else{
@@ -194,41 +216,53 @@ function a(){
 		sortOptions(selectElement_moveTo);
 	}
 	function getParticipants(arena=''){
-		for(const selectElement of document.getElementsByClassName('participants')){
+		Array.from(document.getElementsByClassName('participants')).forEach(selectElement => {
 			while(0 < selectElement.length){
 				selectElement.remove(0);
 			}
-		}
-		let promises = [];
-		GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:Participant+topic:'+arena,{
-			headers: {Accept: 'application/vnd.github.mercy-preview+json'} // TEMP: Remove when out of preview. https://docs.github.com/en/rest/reference/search#search-topics-preview-notices
-		}).then(response => response.json()).then(response => {
-			response.items.forEach(repo => {
-				if(!repo.topics.includes('retired')){
-					promises.push(GitHubApi.fetch('repos/' + repo.full_name + '/git/trees/' + repo.default_branch)
-					.then(response => response.json())
-					.then(data => {
-						data.tree.forEach(file =>{
-							if(file.type === 'blob' && file.path === 'participant.js'){
-								let url = 'https://raw.githubusercontent.com/' + repo.full_name + '/' + repo.default_branch + '/' + file.path;
-								let name = repo.full_name.replace('AI-Tournaments-Participant-'+arena+'-','');
-								addParticipantOption(url, name);
-							}
-						});
-					})
-					.catch(error => {
-						console.error(error);
-					}));
+		});
+		if(localParticipants === null){
+			let promises = [];
+			GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:Participant+topic:'+arena,{
+				headers: {Accept: 'application/vnd.github.mercy-preview+json'} // TEMP: Remove when out of preview. https://docs.github.com/en/rest/reference/search#search-topics-preview-notices
+			}).then(response => response.json()).then(response => {
+				response.items.forEach(repo => {
+					if(!repo.topics.includes('retired')){
+						promises.push(GitHubApi.fetch('repos/' + repo.full_name + '/git/trees/' + repo.default_branch)
+						.then(response => response.json())
+						.then(data => {
+							data.tree.forEach(file =>{
+								if(file.type === 'blob' && file.path === 'participant.js'){
+									let url = 'https://raw.githubusercontent.com/' + repo.full_name + '/' + repo.default_branch + '/' + file.path;
+									let name = repo.full_name.replace('AI-Tournaments-Participant-'+arena+'-','');
+									addParticipantOption(url, name);
+								}
+							});
+						})
+						.catch(error => {
+							console.error(error);
+						}));
+					}
+				});
+				Promise.all(promises).then(() => {
+					sortOptions(participantList);
+					arenaListReady();
+				})
+			});
+		}else{
+			localParticipants.reverse().forEach((participant, index) => {
+				if(typeof participant === 'object'){
+					addParticipant(participant[0], participant[1]);
+				}else{
+					addParticipant(participant, 'Manually added participant '+(index+1));
 				}
 			});
-			Promise.all(promises).then(() => {
-				sortOptions(participantList);
-			})
-		});
+			localParticipants = null;
+		}
 	}
 	function addParticipantOption(url, name){
 		let option = document.createElement('option');
-		option.dataset.url = url;
+		option.dataset.raw_url = url;
 		option.dataset.name = name;
 		option.innerHTML = option.dataset.name;
 		participantList.appendChild(option);
@@ -271,6 +305,8 @@ function a(){
 	function begin(settings, bracket=[]){
 		let json = {
 			arena: _json.full_name+'/'+_json.default_branch,
+			ArenaHelper_url: location.origin+location.pathname.replace(/[^\/]*$/,'')+'ArenaHelper.js',
+			raw_url: _json.raw_url,
 			participants: bracket,
 			settings: settings
 		};
@@ -282,7 +318,7 @@ function a(){
 					for(const option of select.options){
 						team.push({
 							name: option.dataset.name,
-							url: option.dataset.url
+							url: option.dataset.raw_url
 						});
 					}
 				}

@@ -10,9 +10,9 @@ function a(){
 	document.getElementById('header-title-fake').addEventListener('click', ()=>{
 		window.open('https://github.com/AI-Tournaments', '_blank').focus();
 	});
-	for(const element of document.getElementsByClassName('open-screen')) {
+	Array.from(document.getElementsByClassName('open-screen')).forEach(element => {
 		element.addEventListener('click', ()=>{openScreen(element.dataset.url)});
-	}
+	});
 	window.onresize = calcSize;
 	window.onresize();
 	GitHubApi.login();

@@ -14,6 +14,29 @@ class GitHubApi{
 			}
 		}
 		return fetch(new Request('https://api.github.com/'+path, init)).then(response => {
+			if(localStorage.getItem('GitHub API debug') !== null){
+				let a = path.split('/')[0];
+				let reset = localStorage.getItem('_GitHub '+a+' x-ratelimit-reset');
+				if(response.headers.has('x-ratelimit-reset')){
+					reset = reset !== response.headers.get('x-ratelimit-reset');
+					localStorage.setItem('_GitHub '+a+' x-ratelimit-reset', response.headers.get('x-ratelimit-reset'));
+				}
+				if(response.headers.has('x-ratelimit-used')){
+					let b = parseInt(response.headers.get('x-ratelimit-used'));
+					let value = reset ? b : Math.max(parseInt(localStorage.getItem('_GitHub '+a+' x-ratelimit-used')), b);
+					localStorage.setItem('_GitHub '+a+' x-ratelimit-used', value);
+				}
+				if(response.headers.has('x-ratelimit-remaining')){
+					let b = parseInt(response.headers.get('x-ratelimit-remaining'));
+					let value = reset ? b : Math.max(parseInt(localStorage.getItem('_GitHub '+a+' x-ratelimit-remaining')), b);
+					localStorage.setItem('_GitHub '+a+' x-ratelimit-remaining', value);
+				}
+				if(response.headers.has('x-ratelimit-limit')){
+					let b = parseInt(response.headers.get('x-ratelimit-limit'));
+					let value = reset ? b : Math.max(parseInt(localStorage.getItem('_GitHub '+a+' x-ratelimit-limit')), b);
+					localStorage.setItem('_GitHub '+a+' x-ratelimit-limit', value);
+				}
+			}
 			if(response.status == 200){
 				return response;
 			}else if(response.status == 401){

@@ -4,7 +4,7 @@ AI Tournaments is still in an early prototype stage. See the section on [`Partic
 Click here to [join the Discord community](https://discord.gg/jhUJNsN).
 
 ## Participate
-To participate in a Arena you need to create a GitHub repository and add three topics: `AI-Tournaments`, `Participant` and the name of the arena (without the `-Arena` suffix) or the full repository name (`UserAuthor/Example-Arena`) if it is a community arena. The created repository has to have a file in root called `participant.js`, this is the file that will be called to the arena.
+To participate in a Arena you need to [create a GitHub repository](https://github.com/AI-Tournaments/Participant-Template) and add three topics: `AI-Tournaments`, `Participant` and the name of the arena (without the `-Arena` suffix) or use the full repository name (`UserAuthor/Example-Arena`) if it is a community arena. The created repository has to have a file in root called `participant.js`, this is the file that will be called to the arena.
 ### Minimal requirement for participant.js
 ``` JavaScript
 onmessage = messageEvent => {
@@ -13,6 +13,11 @@ onmessage = messageEvent => {
 ```
 ### Develop environment
 If you want to test your participant without publicly uploading it to GitHub you can placing it on a webserver and then go to [AI-Tournaments/Arena/](https://ai-tournaments.github.io/AI-Tournaments/Arena/), select an arena and add your participant by running the following command `addParticipant('url.to/your/participant.js','Optional name')` in the browser's JavaScript console. You can use the JavaScript keyword `debugger;` to help you find your script faster, just remember to remove it once you upload the code. You can add `debugger;` to first line (or second if you use `'use strict'`) and then add your breakpoint the normal way where you need them once your script popup. You will also need to raise the Arena-setting `timelimit_ms`, otherwise your participant will probably get disqualified because it didn't answer fast enough. It is possible to append [?debug](https://ai-tournaments.github.io/AI-Tournaments/Arena/?debug) to the Arena URL to activate a breakpoint just before the `arena.js` is called.
+## Community arena
+### Testing
+``` JavaScript
+addArena('http://127.0.0.1:8080/Community-Arena/','New-Community-Arena','http://127.0.0.1:8080/Community-Arena-Replay/'/*, 'http://127.0.0.1:8080/Community-Arena-Test-Participants/participant.js', ['http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js', 'Temp-Participant'], ...*/);
+```
 #### Advanced
 If you need more insight and maybe even add some debug logs to the Arena you can download the code, add it to a webserver and then spawn a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Spawning_a_dedicated_worker) with the `arena.js` and then [post a message](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Sending_messages_to_and_from_a_dedicated_worker) matching [Participants.js](https://github.com/AI-Tournaments/AI-Tournaments/blob/master/Arena/Participants.js)' constructor.
 
