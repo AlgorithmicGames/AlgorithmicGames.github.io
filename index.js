@@ -137,18 +137,27 @@ function a(){
 	}
 	function loadArenas(amount=undefined){
 		let arenaContainer = document.getElementById('arena-dropdown');
-		GitHubApi.fetch('orgs/AI-Tournaments/repos').then(response => response.json()).then(repos => {
-			repos.slice(0,amount).forEach(repo => {
-				if(repo.full_name.endsWith('-Arena')){
-					let item = document.createElement('div');
-					item.innerHTML = repo.name.replace('-Arena','')
-					item.dataset.stars = repo.stargazers_count;
-					item.dataset.full_name = repo.full_name;
-					item.addEventListener('click', ()=>{
-						openScreen('Arena/#'+repo.full_name)
-					});
-					arenaContainer.appendChild(item);
+		GitHubApi.fetchArenas().then(repos => {
+			let officialRepos = [];
+			repos.forEach(repo => {
+				if(repo.owner.login === 'AI-Tournaments'){
+					officialRepos.push(repo);
 				}
+			});
+			officialRepos.sort(function(a,b){
+				if(a.full_name < b.full_name){return -1;}
+				if(a.full_name > b.full_name){return 1;}
+				return 0;
+			})
+			officialRepos.slice(0,amount).forEach(repo => {
+				let item = document.createElement('div');
+				item.innerHTML = repo.name.replace('-Arena','')
+				item.dataset.stars = repo.stargazers_count;
+				item.dataset.full_name = repo.full_name;
+				item.addEventListener('click', ()=>{
+					openScreen('Arena/#'+repo.full_name)
+				});
+				arenaContainer.appendChild(item);
 			});
 		});
 	}

@@ -54,6 +54,9 @@ class GitHubApi{
 			throw new Error('Uncaught response: ' + response.status + ' ' + response.statusText);
 		});
 	}
+	static fetchArenas(){
+		return GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Arena-v1').then(response => response.json()).then(json => json.items);
+	}
 	static login(){
 		let oAuthCode = null;
 		if(0 < location.href.indexOf('?oAuthCode=')){
