@@ -1,6 +1,7 @@
 'use strict'
 class ArenaHelper{
 	static #log = [];
+	static #settings = null;
 	static #participants = null;
 	static #participants_onError = null;
 	static #participants_onMessage = null;
@@ -33,7 +34,7 @@ class ArenaHelper{
 	static #onmessage = messageEvent=>{
 		switch(messageEvent.data.type){
 			default: throw new Error('Message type "'+messageEvent.data.type+'" not found.');
-			case 'Start': ArenaHelper.#arenaReady(this.#participants); break;
+			case 'Start': ArenaHelper.#arenaReady(); break;
 			case 'Event': ArenaHelper.#event(messageEvent.data.data.event, messageEvent.data.data.source, messageEvent.data.data.payload); break;
 		}
 	}
@@ -59,10 +60,10 @@ class ArenaHelper{
 			throw new Error(message);
 		}
 		ArenaHelper.#init = ()=>{
-			if(typeof ArenaHelper.init !== 'function'){
-				fatal('ArenaHelper.init is not a function.');
+			if(typeof ArenaHelper.init === 'function'){
+				ArenaHelper.init(ArenaHelper.#settings, ArenaHelper.#participants);
 			}else{
-				ArenaHelper.init(data.settings, ArenaHelper.#participants);
+				fatal('ArenaHelper.init is not a function.');
 			}
 		}
 		let onmessage_preInit = messageEvent => {
@@ -150,6 +151,7 @@ class ArenaHelper{
 			if(ArenaHelper.#participants !== null){
 				throw new Error('Participants is already constructed.');
 			}
+			ArenaHelper.#settings = data.settings;
 			ArenaHelper.#participants = this;
 			let terminated = false;
 			let promises = [];
