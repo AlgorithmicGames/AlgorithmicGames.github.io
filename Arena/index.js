@@ -79,8 +79,8 @@ function a(){
 		}
 		localArenas[url] = replayURL;
 		arenaListReadyPromise.then(()=>{
+			localParticipants = participants;
 		selectArena.contentWindow.postMessage({type: 'add-arena', value: [url, name]});
-		localParticipants = participants;
 		});
 	}
 	addParticipant = (url='', name='Manually added participant') => {
@@ -180,17 +180,29 @@ function a(){
 		}
 		let options = [...selectElement.options];
 		options.sort(function(a, b){
+			if(a.classList.contains('local') && b.classList.contains('local')){
+				if(value(a) < value(b)){return -1;}
+				if(value(b) < value(a)){return 1;}
+			}else{
 			if(a.classList.contains('local') ? true : value(a) < value(b)){return -1;}
 			if(b.classList.contains('local') ? true : value(b) < value(a)){return 1;}
+			}
 			return 0;
 		});
 		for(let option of options){
 			selectElement.add(option);
 		}
 	}
-	function validateTeams(){
+	function validateTeamsMax(){
 		let selectElements = document.getElementsByClassName('participant-team');
-		return arenaProperties.header.limits.teams.min <= selectElements.length && selectElements.length <= arenaProperties.header.limits.teams.max;
+		return selectElements.length <= arenaProperties.header.limits.teams.max;
+	}
+	function validateTeamsMin(){
+		let selectElements = document.getElementsByClassName('participant-team');
+		return arenaProperties.header.limits.teams.min <= selectElements.length;
+	}
+	function validateTeams(){
+		return validateTeamsMin() && validateTeamsMax();
 	}
 	function validateStart(){
 		let selectElements = document.getElementsByClassName('participant-team');
@@ -270,7 +282,7 @@ function a(){
 	}
 	function createTeam(){
 		let teamIndex = document.getElementsByClassName('participant-team-container').length + 1;
-		btnAddTeam.disabled = !validateTeams();
+		btnAddTeam.disabled = !validateTeamsMax();
 		let teamID = 'participant-team-' + teamIndex;
 		let participantTeam = document.createElement('div');
 		participantTeam.classList.add('participant-team-container');
@@ -305,8 +317,12 @@ function a(){
 	function begin(settings, bracket=[]){
 		let json = {
 			arena: _json.full_name+'/'+_json.default_branch,
-			ArenaHelper_url: location.origin+location.pathname.replace(/[^\/]*$/,'')+'ArenaHelper.js',
-			raw_url: _json.raw_url,
+			urls: {
+				arena: _json.raw_url,
+				ArenaHelper: location.origin+location.pathname.replace(/[^\/]*$/,'')+'ArenaHelper.js',
+				ParticipantHelper: location.origin+location.pathname.replace(/[^\/]*$/,'')+'ParticipantHelper.js',
+				randomseed: 'https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js'
+			},
 			participants: bracket,
 			settings: settings
 		};
@@ -324,16 +340,19 @@ function a(){
 				}
 			}
 		}
+		let isDebugMode = location.href.includes('?debug');
 		let div = document.createElement('div');
 		logContainer.appendChild(div);
 		let iframe = document.createElement('iframe');
-		iframe.src = 'iframe.sandbox.html'+(location.href.includes('?debug')?'?debug':'')+'#' + JSON.stringify(json);
+		iframe.src = 'iframe.sandbox.arena.html'+(isDebugMode?'?debug':'')+'#' + JSON.stringify(json);
 		iframe.sandbox = 'allow-scripts';
 		iframe.style.display = 'none';
 		iframe.id = Date() + '_' + Math.random();
 		div.appendChild(iframe);
 		let output = document.createElement('div');
-		output.style.display = 'none';
+		if(!isDebugMode){
+			output.style.display = 'none';
+		}
 		output.classList.add('log');
 		div.appendChild(output);
 		setTimeout(()=>{getIFrameLog(iframe, output)}, 1000);

@@ -54,6 +54,9 @@ class GitHubApi{
 			throw new Error('Uncaught response: ' + response.status + ' ' + response.statusText);
 		});
 	}
+	static fetchArenas(){
+		return GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Arena-v1').then(response => response.json()).then(json => json.items);
+	}
 	static login(){
 		let oAuthCode = null;
 		if(0 < location.href.indexOf('?oAuthCode=')){
@@ -66,7 +69,6 @@ class GitHubApi{
 		if(oAuthCode !== null){
 			localStorage.setItem('GitHub OAuth-Token', '!'+oAuthCode);
 			Backend.call('login', {oAuthCode: oAuthCode, client_id: GitHubApi.#CLIENT_ID}).then(json => {
-				console.log(json);
 				if(json.data !== undefined){
 					localStorage.setItem('GitHub OAuth-Token', json.data);
 				}
