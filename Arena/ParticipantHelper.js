@@ -4,6 +4,7 @@ class ParticipantHelper{
 	static #initiated = false;
 	static #name = __url;
 	static #postMessage_native = ()=>{}
+	static init = ()=>{};
 	static onmessage = ()=>{}
 	static onmessageerror = ()=>{}
 	static respond = (data=null) => {
@@ -28,6 +29,7 @@ class ParticipantHelper{
 		}
 	}
 	static #onmessageerror = messageEvent=>{
+		console.log('// Will probably never be used but wraps default function anyway for future proofing.');
 		ParticipantHelper.onmessageerror(messageEvent);
 	}
 	static random;
