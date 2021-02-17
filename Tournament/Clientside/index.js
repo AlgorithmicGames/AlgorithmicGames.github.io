@@ -146,7 +146,7 @@ function a(){
 		}
 		buildTable(participants);
 	}
-	function getParticipants(arena=''){
+	function getParticipants(arenaFullName=''){
 		let arena = arenaFullName.replace('/','--');
 		let arenaReplace = 'AI-Tournaments-Participant-'+arena.replace(/AI-Tournaments--|-Arena/g, '')+'-';
 		Array.from(document.getElementsByClassName('participants')).forEach(selectElement =>{
