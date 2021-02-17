@@ -41,7 +41,7 @@ function a(){
 			});
 			document.title = __json.name + ' Highscore';
 			settingsIframe.contentWindow.postMessage({type: 'SetArena', value: __json.raw_url});
-			getParticipants(__json.name);
+			getParticipants(__json.full_name);
 		}else if(settingsIframe.contentWindow === messageEvent.source){
 			switch(messageEvent.data.type){
 				case 'properties':
