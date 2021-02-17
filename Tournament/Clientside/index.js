@@ -147,6 +147,8 @@ function a(){
 		buildTable(participants);
 	}
 	function getParticipants(arena=''){
+		let arena = arenaFullName.replace('/','--');
+		let arenaReplace = 'AI-Tournaments-Participant-'+arena.replace(/AI-Tournaments--|-Arena/g, '')+'-';
 		Array.from(document.getElementsByClassName('participants')).forEach(selectElement =>{
 			while(0 < selectElement.length){
 				selectElement.remove(0);
@@ -165,7 +167,7 @@ function a(){
 							if(file.type === 'blob' && file.path === 'participant.js'){
 								let option = document.createElement('option');
 								option.dataset.url = 'https://raw.githubusercontent.com/' + repo.full_name + '/' + repo.default_branch + '/' + file.path;
-								option.dataset.name = repo.full_name.replace('AI-Tournaments-Participant-'+arena+'-','');
+								option.dataset.name = repo.full_name.replace(arenaReplace,'');
 								option.innerHTML = option.dataset.name;
 								participantList.appendChild(option);
 							}
