@@ -50,6 +50,7 @@ function a(){
 		document.getElementById('invalid-input').style.display = btnLock.disabled ? '' : 'none';
 		if(!btnLock.disabled){
 			let selectionStart = dataInput.selectionStart;
+			console.log('// TODO: Find a more optimised method of displaying indented Json.');
 			dataInput.value = JSON.stringify(replayData.body,null,'\t');
 			dataInput.selectionStart = selectionStart;
 			replayData.body.data.forEach((matchLog, index) => {
