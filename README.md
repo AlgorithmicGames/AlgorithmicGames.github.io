@@ -1,7 +1,8 @@
 # AI-Tournaments
 AI Tournaments is still in an early prototype stage. See the section on [`Participate`](#Participate) if you want to join a arena, then analyze how other have solved the arena until better documentation has been written. The name of the repository will be the name used in the arena, except if it starts with `AI-Tournaments-Participant-` then that part is removed.
 
-Click here to [join the Discord community](https://discord.gg/jhUJNsN).
+Click image below to join the Discord community.
+<br>[![Discord banner2](https://discord.com/api/guilds/765291928454823936/widget.png?style=banner2)](https://discord.gg/jhUJNsN)
 
 ## Participate
 To participate in a Arena you need to [create a GitHub repository](https://github.com/AI-Tournaments/Participant-Template) and add three topics: `AI-Tournaments`, `AI-Tournaments-Participant` and the full repository name of the arena (`UserAuthor--ExampleArena`). The created repository also has to have a file in root called `participant.js`, this is the file that will be called to the arena.
