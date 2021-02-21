@@ -1,4 +1,6 @@
 'use strict'
+let b = location.hash;
+location.hash = '';
 function a(){
 	let replayData;
 	let control = document.getElementById('control-container');
@@ -83,8 +85,10 @@ function a(){
 			});
 		}
 	});
-	if(1 < location.hash.length){
-		dataInput.value = decodeURI(location.hash.substring(1));
+	if(1 < b.length){
+		dataInput.value = decodeURI(b.substring(1));
+		location.hash = b;
+		b = undefined;
 		dataInput.dispatchEvent(new Event('input', {
 			bubbles: true,
 			cancelable: true,
