@@ -16,6 +16,7 @@ If you need more insight and maybe even add some debug logs to the Arena you can
 addArena('http://127.0.0.1:8080/Community-Arena/','New-Community-Arena','http://127.0.0.1:8080/Community-Arena-Replay/'/*, 'http://127.0.0.1:8080/Community-Arena-Test-Participants/participant.js', ['http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js', 'Temp-Participant'], ...*/);
 ```
 ## Special thanks
+- seedrandom<br>
 AI-Tournaments uses [seedrandom](https://github.com/davidbau/seedrandom) by [David Bau](https://github.com/davidbau) for overriding `Math.random()` to generate repeatable numbers.
 
 ## Why Source Available?
