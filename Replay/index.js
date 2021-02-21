@@ -2,20 +2,20 @@
 let b = location.hash;
 location.hash = '';
 function a(){
-	let replayData;
-	let control = document.getElementById('control-container');
-	let viewOptions = document.getElementById('replay-viewers');
-	let iframe = document.getElementById('replay-container');
-	let btnLock = document.getElementById('lock');
-	let dataInput = document.getElementById('data-input');
-	btnLock.addEventListener('click', mouseEvent=>{
-		btnLock.disabled = true;
-		dataInput.disabled = true;
+	let _replayData;
+	let _element_control = document.getElementById('control-container');
+	let _element_viewOptions = document.getElementById('replay-viewers');
+	let _element_iframe = document.getElementById('replay-container');
+	let _element_btnLock = document.getElementById('lock');
+	let _element_dataInput = document.getElementById('data-input');
+	_element_btnLock.addEventListener('click', mouseEvent=>{
+		_element_btnLock.disabled = true;
+		_element_dataInput.disabled = true;
 		for(const input of document.getElementsByClassName('select-match-button')){
 			input.disabled = input.dataset.aborted === 'true';
 		}
-		GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:Replay+topic:'+replayData.body.arena).then(response => response.json()).then(response => {
-			document.getElementById('default-option').value = replayData.header !== undefined && replayData.header.defaultReplay !== undefined && replayData.header.defaultReplay !== '' ? replayData.header.defaultReplay : 'https://ai-tournaments.github.io/'+replayData.body.arena.split('/')[1].replace('Arena','Replay')+'/';
+		GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:Replay+topic:'+_replayData.body.arena).then(response => response.json()).then(response => {
+			document.getElementById('default-option').value = _replayData.header !== undefined && _replayData.header.defaultReplay !== undefined && _replayData.header.defaultReplay !== '' ? _replayData.header.defaultReplay : 'https://ai-tournaments.github.io/'+_replayData.body.arena.split('/')[1].replace('Arena','Replay')+'/';
 			response.items.forEach(repo => {
 				if(repo.has_pages){
 					let cssStar = getComputedStyle(document.documentElement).getPropertyValue('--github-stars').trim();
@@ -24,38 +24,36 @@ function a(){
 					option.innerHTML = repo.full_name.replace(/.*\/|-Arena/g, '') + ' ' + cssStar + repo.stargazers_count;
 					option.dataset.stars = repo.stargazers_count;
 					option.value = 'https://'+repo.owner.login+'.github.io/'+repo.name;
-					viewOptions.appendChild(option);
+					_element_viewOptions.appendChild(option);
 				}
 			});
-			let options = [...viewOptions.options];
+			let options = [..._element_viewOptions.options];
 			options.sort(function(a, b){
 				if(parseFloat(a.dataset.stars) < parseFloat(b.dataset.stars)){return -1;}
 				if(parseFloat(b.dataset.stars) < parseFloat(a.dataset.stars)){return 1;}
 				return 0;
 			});
 			for(let option of options){
-				viewOptions.add(option);
+				_element_viewOptions.add(option);
 			}
-			viewOptions.classList.remove('hidden');
+			_element_viewOptions.classList.remove('hidden');
 		});
 	});
-	dataInput.addEventListener('input', inputEvent=>{
+	_element_dataInput.addEventListener('input', inputEvent=>{
 		[...document.getElementsByClassName('select-match-button')].forEach(input=>{
 			input.parentElement.removeChild(input);
 		});
-		replayData = dataInput.value;
-		btnLock.disabled = true;
+		_element_btnLock.disabled = true;
 		try{
-			replayData = JSON.parse(replayData);
-			btnLock.disabled = typeof replayData !== 'object';
+			_replayData = JSON.parse(_element_dataInput.value);
+			_element_btnLock.disabled = typeof _replayData !== 'object';
 		}catch(error){}
-		document.getElementById('invalid-input').style.display = btnLock.disabled ? '' : 'none';
-		if(!btnLock.disabled){
-			let selectionStart = dataInput.selectionStart;
-			console.log('// TODO: Find a more optimised method of displaying indented Json.');
-			dataInput.value = JSON.stringify(replayData.body,null,'\t');
-			dataInput.selectionStart = selectionStart;
-			replayData.body.data.forEach((matchLog, index) => {
+		document.getElementById('invalid-input').style.display = _element_btnLock.disabled ? '' : 'none';
+		if(!_element_btnLock.disabled){
+			let selectionStart = _element_dataInput.selectionStart;
+			_element_dataInput.value = JSON.stringify(_replayData.body,null,'\t');
+			_element_dataInput.selectionStart = selectionStart;
+			_replayData.body.data.forEach((matchLog, index) => {
 				let input = document.createElement('input');
 				input.type = 'button';
 				input.value = 'Match ' + (index+1);
@@ -70,29 +68,29 @@ function a(){
 				input.classList.add('select-match-button');
 				input.classList.add('sticky');
 				input.addEventListener('click', mouseEvent=>{
-					for(const element of control.children){
+					for(const element of _element_control.children){
 						if(!element.classList.contains('sticky')){
 							element.style.display = 'none';
 						}
 					}
 					for(const input of document.getElementsByClassName('select-match-button')){
 						input.disabled = input.dataset.aborted === 'true';
-						iframe.src = viewOptions.selectedOptions[0].value + '#' + input.dataset.log;
+						_element_iframe.src = _element_viewOptions.selectedOptions[0].value + '#' + input.dataset.log;
 					}
 					input.disabled = true;
 				});
-				control.appendChild(input);
+				_element_control.appendChild(input);
 			});
 		}
 	});
 	if(1 < b.length){
-		dataInput.value = decodeURI(b.substring(1));
+		_element_dataInput.value = decodeURI(b.substring(1));
 		location.hash = b;
 		b = undefined;
-		dataInput.dispatchEvent(new Event('input', {
+		_element_dataInput.dispatchEvent(new Event('input', {
 			bubbles: true,
 			cancelable: true,
 		}));
-		btnLock.click();
+		_element_btnLock.click();
 	}
 }
