@@ -6,20 +6,28 @@ function a(){
 	let _element_control = document.getElementById('control-container');
 	let _element_viewOptions = document.getElementById('replay-viewers');
 	let _element_iframe = document.getElementById('replay-container');
+	let _element_iframe_failToLoad = document.getElementById('replay-container-failToLoad');
 	let _element_btnLock = document.getElementById('lock');
 	let _element_dataInput = document.getElementById('data-input');
 	let _parent = null;
 	window.onmessage = messageEvent => {
+		// NOTE: messageEvent can be from off site scripts.
 		switch(messageEvent.data.type){
 			case 'Init-Fetch-Replay-Height':
-				_parent = {
-					origin: messageEvent.origin,
-					source: messageEvent.source
+				if(_parent === null){
+					document.documentElement.style.paddingLeft = 0;
+					document.documentElement.style.paddingRight = 0;
+					document.documentElement.style.paddingBottom = 0;
+					_parent = {
+						origin: messageEvent.origin,
+						source: messageEvent.source
+					}
 				}
 			case 'Replay-Height':
 				if(messageEvent.data.value !== undefined){
 					_element_iframe.style.minHeight = parseFloat(messageEvent.data.value)+'px';
 					_element_iframe.classList.remove('hidden');
+					_element_iframe_failToLoad.classList.add('hidden');
 				}
 				if(_parent !== null){
 					_parent.source.postMessage({type: 'Replay-Height', value: document.documentElement.scrollHeight}, _parent.origin);
@@ -94,7 +102,13 @@ function a(){
 					for(const input of document.getElementsByClassName('select-match-button')){
 						input.disabled = input.dataset.aborted === 'true';
 						_element_iframe.src = _element_viewOptions.selectedOptions[0].value + '#' + input.dataset.log;
-						setTimeout(()=>{_element_iframe.contentWindow.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');}, 1000);
+						setTimeout(()=>{
+							_element_iframe.contentWindow.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');setTimeout(()=>{
+								if(_element_iframe.classList.contains('hidden')){
+									_element_iframe_failToLoad.classList.remove('hidden');
+								}
+							}, 1000);
+						}, 1000);
 					}
 					input.disabled = true;
 				});

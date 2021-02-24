@@ -35,6 +35,9 @@
 			.hidden {
 				display: none;
 			}
+			.error {
+				color: red;
+			}
 		</style>
 		<script src="index.js"></script>
 		<script src="../GitHubApi.js"></script>
@@ -50,5 +53,8 @@
 			</select>
 		</div>
 		<iframe id="replay-container" sandbox="allow-scripts" class="hidden"></iframe>
+		<div id="replay-container-failToLoad" class="hidden error">
+			Replay failed to load <a href="https://ai-tournaments.github.io/AI-Tournaments/ReplayHelper.js">ReplayHelper.js</a>.
+		</div>
 	</body>
 </html>
