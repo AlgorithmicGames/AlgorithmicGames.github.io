@@ -8,6 +8,24 @@ function a(){
 	let _element_iframe = document.getElementById('replay-container');
 	let _element_btnLock = document.getElementById('lock');
 	let _element_dataInput = document.getElementById('data-input');
+	let _parent = null;
+	window.onmessage = messageEvent => {
+		switch(messageEvent.data.type){
+			case 'Init-Fetch-Replay-Height':
+				_parent = {
+					origin: messageEvent.origin,
+					source: messageEvent.source
+				}
+			case 'Replay-Height':
+				if(messageEvent.data.value !== undefined){
+					_element_iframe.style.minHeight = parseFloat(messageEvent.data.value)+'px';
+					_element_iframe.classList.remove('hidden');
+				}
+				if(_parent !== null){
+					_parent.source.postMessage({type: 'Replay-Height', value: document.documentElement.scrollHeight}, _parent.origin);
+				}
+		}
+	}
 	_element_btnLock.addEventListener('click', mouseEvent=>{
 		_element_btnLock.disabled = true;
 		_element_dataInput.disabled = true;
@@ -76,6 +94,7 @@ function a(){
 					for(const input of document.getElementsByClassName('select-match-button')){
 						input.disabled = input.dataset.aborted === 'true';
 						_element_iframe.src = _element_viewOptions.selectedOptions[0].value + '#' + input.dataset.log;
+						setTimeout(()=>{_element_iframe.contentWindow.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');}, 1000);
 					}
 					input.disabled = true;
 				});
