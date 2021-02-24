@@ -11,7 +11,7 @@ function a(){
 	let _element_dataInput = document.getElementById('data-input');
 	let _parent = null;
 	window.onmessage = messageEvent => {
-		// NOTE: messageEvent can be from off site scripts.
+		// NOTE: messageEvent can come from off site scripts.
 		switch(messageEvent.data.type){
 			case 'Init-Fetch-Replay-Height':
 				if(_parent === null){
