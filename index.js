@@ -256,7 +256,7 @@ function a(){
 			charsPerRow++;
 		}
 		charsPerRow++;
-		height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+		height = document.documentElement.scrollHeight;
 		let rows = 2;
 		let charsOnFirstRow = _background.innerHTML;
 		while(_background.offsetHeight < height){
