@@ -3,7 +3,7 @@ class ReplayHelper{
 	static #initiated = false;
 	static #data;
 	static init(){
-		if(!ReplayHelper.#initiated){
+		if(ReplayHelper.#initiated){
 			fatal('ReplayHelper is already initiated.');
 		}
 		ReplayHelper.#initiated = true;
