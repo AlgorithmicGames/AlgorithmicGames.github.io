@@ -137,11 +137,11 @@ function a(){
 	}
 	function loadArenas(amount=undefined){
 		let arenaContainer = document.getElementById('arena-dropdown');
-		GitHubApi.fetchArenas().then(repos => {
+		GitHubApi.fetchArenas().then(arenas => {
 			let officialRepos = [];
-			repos.forEach(repo => {
-				if(repo.owner.login === 'AI-Tournaments'){
-					officialRepos.push(repo);
+			arenas.forEach(arena => {
+				if(arena.official){
+					officialRepos.push(arena);
 				}
 			});
 			officialRepos.sort(function(a,b){

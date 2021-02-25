@@ -55,7 +55,35 @@ class GitHubApi{
 		});
 	}
 	static fetchArenas(){
-		return GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Arena-v1').then(response => response.json()).then(json => json.items);
+		return GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Arena-v1').then(response => response.json()).then(json => {
+			let arenas = [];
+			let promises = [];
+			json.items.forEach(repo => {
+				console.log('// TODO: Populate includeScripts.');
+				let data = {
+					official: repo.owner.login === 'AI-Tournaments',
+					name: repo.full_name.replace(/.*\/|-Arena/g, ''),
+					raw_url: 'https://raw.githubusercontent.com/'+repo.full_name+'/'+repo.default_branch+'/',
+					html_url: repo.html_url,
+					full_name: repo.full_name,
+					default_branch: repo.default_branch,
+					stars: repo.stargazers_count,
+					commit: null,
+					version: null,
+					includeScripts: {arena: [], participants: []}
+				};
+				promises.push(GitHubApi.fetch(repo.commits_url.replace(/https:\/\/api.github.com\/|{\/sha}/g, '')).then(response => response.json()).then(commits => {
+					data.commit = commits.sort((a,b)=>new Date(b.commit.author.date) - new Date(a.commit.author.date))[0].sha;
+				}));
+				promises.push(GitHubApi.fetch(repo.releases_url.replace(/https:\/\/api.github.com\/|{\/id}/g, '')).then(response => response.json()).then(tags => {
+					if(0 < tags.length){
+						arenas.push(data);
+						data.version = tags.sort((a,b)=>new Date(b.published_at) - new Date(a.published_at))[0].tag_name;
+					}
+				}));
+			});
+			return Promise.all(promises).then(()=>arenas);
+		});
 	}
 	static login(){
 		let oAuthCode = null;
