@@ -152,7 +152,7 @@ function a(){
 			officialRepos.slice(0,amount).forEach(repo => {
 				let item = document.createElement('div');
 				item.innerHTML = repo.name.replace('-Arena','')
-				item.dataset.stars = repo.stargazers_count;
+				item.dataset.stars = repo.stars;
 				item.dataset.full_name = repo.full_name;
 				item.addEventListener('click', ()=>{
 					openScreen('Arena/#'+repo.full_name)
