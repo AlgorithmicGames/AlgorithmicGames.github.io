@@ -63,7 +63,7 @@ class GitHubApi{
 				let data = {
 					official: repo.owner.login === 'AI-Tournaments',
 					name: repo.full_name.replace(/.*\/|-Arena/g, ''),
-					raw_url: 'https://raw.githubusercontent.com/'+repo.full_name+'/'+repo.default_branch+'/',
+					raw_url: null,
 					html_url: repo.html_url,
 					full_name: repo.full_name,
 					default_branch: repo.default_branch,
@@ -72,13 +72,21 @@ class GitHubApi{
 					version: null,
 					includeScripts: {arena: [], participants: []}
 				};
-				promises.push(GitHubApi.fetch(repo.commits_url.replace(/https:\/\/api.github.com\/|{\/sha}/g, '')).then(response => response.json()).then(commits => {
-					data.commit = commits.sort((a,b)=>new Date(b.commit.author.date) - new Date(a.commit.author.date))[0].sha;
-				}));
-				promises.push(GitHubApi.fetch(repo.releases_url.replace(/https:\/\/api.github.com\/|{\/id}/g, '')).then(response => response.json()).then(tags => {
-					if(0 < tags.length){
+				let tagPromise = GitHubApi.fetch(repo.tags_url.replace('https://api.github.com/','')).then(response => response.json());
+				promises.push(GitHubApi.fetch(repo.releases_url.replace(/https:\/\/api.github.com\/|{\/id}/g,'')).then(response => response.json()).then(releases => {
+					if(0 < releases.length){
 						arenas.push(data);
-						data.version = tags.sort((a,b)=>new Date(b.published_at) - new Date(a.published_at))[0].tag_name;
+						data.version = releases.sort((a,b)=>new Date(b.published_at) - new Date(a.published_at))[0].tag_name;
+						data.raw_url = 'https://raw.githubusercontent.com/'+repo.full_name+'/'+data.version+'/';
+						promises.push(tagPromise.then(tags => {
+							let index = 0;
+							while(data.commit === null){
+								let tag = tags[index++];
+								if(tag.name === data.version){
+									data.commit = tag.commit.sha;
+								}
+							}
+						}));
 					}
 				}));
 			});
