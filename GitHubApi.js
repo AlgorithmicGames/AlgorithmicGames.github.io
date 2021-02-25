@@ -1,5 +1,6 @@
 'use strict'
 class GitHubApi{
+	static #ARENA_VERSION = 1;
 	static #CLIENT_ID = '19698a5006b153e8a671';
 	static #STARTED = localStorage.getItem('PageLoaded');
 	static #waitUntil = timestamp => new Promise(resolve => setTimeout(resolve, timestamp-Date.now()));
@@ -55,7 +56,7 @@ class GitHubApi{
 		});
 	}
 	static fetchArenas(){
-		return GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Arena-v1').then(response => response.json()).then(json => {
+		return GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Arena-v'+GitHubApi.#ARENA_VERSION).then(response => response.json()).then(json => {
 			let arenas = [];
 			let promises = [];
 			json.items.forEach(repo => {
