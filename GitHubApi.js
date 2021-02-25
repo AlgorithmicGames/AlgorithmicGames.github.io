@@ -66,7 +66,6 @@ class GitHubApi{
 					raw_url: null,
 					html_url: repo.html_url,
 					full_name: repo.full_name,
-					default_branch: repo.default_branch,
 					stars: repo.stargazers_count,
 					commit: null,
 					version: null,
