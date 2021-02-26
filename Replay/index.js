@@ -10,6 +10,8 @@ function a(){
 	let _element_btnLock = document.getElementById('lock');
 	let _element_dataInput = document.getElementById('data-input');
 	let _parent = null;
+	let _replayOptionsPromise_resolve;
+	let _replayOptionsPromise = new Promise(resolve=>_replayOptionsPromise_resolve=resolve);
 	window.onmessage = messageEvent => {
 		// NOTE: messageEvent can come from off site scripts.
 		switch(messageEvent.data.type){
@@ -40,7 +42,7 @@ function a(){
 		for(const input of document.getElementsByClassName('select-match-button')){
 			input.disabled = input.dataset.aborted === 'true';
 		}
-		GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:Replay+topic:'+_replayData.body.arena).then(response => response.json()).then(response => {
+		_replayOptionsPromise_resolve(GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Replay+topic:'+_replayData.body.arena.full_name.replace('/','--')).then(response => response.json()).then(response => {
 			document.getElementById('default-option').value = _replayData.header !== undefined && _replayData.header.defaultReplay !== undefined && _replayData.header.defaultReplay !== '' ? _replayData.header.defaultReplay : 'https://ai-tournaments.github.io/'+_replayData.body.arena.name.split('/')[1].replace('Arena','Replay')+'/';
 			response.items.forEach(repo => {
 				if(repo.has_pages){
@@ -63,7 +65,7 @@ function a(){
 				_element_viewOptions.add(option);
 			}
 			_element_viewOptions.classList.remove('hidden');
-		});
+		}));
 	});
 	_element_dataInput.addEventListener('input', inputEvent=>{
 		[...document.getElementsByClassName('select-match-button')].forEach(input=>{
@@ -93,7 +95,7 @@ function a(){
 				input.disabled = true;
 				input.classList.add('select-match-button');
 				input.classList.add('sticky');
-				input.addEventListener('click', mouseEvent=>{
+				function onClick(mouseEvent){
 					for(const element of _element_control.children){
 						if(!element.classList.contains('sticky')){
 							element.style.display = 'none';
@@ -111,8 +113,13 @@ function a(){
 						}, 1000);
 					}
 					input.disabled = true;
-				});
+				}
+				input.addEventListener('click', onClick);
 				_element_control.appendChild(input);
+				if(_replayData.body.data.length === 1){
+					input.classList.add('hidden');
+					_replayOptionsPromise.then(onClick);
+				}
 			});
 		}
 	});
