@@ -65,6 +65,7 @@ class GitHubApi{
 					official: repo.owner.login === 'AI-Tournaments',
 					name: repo.full_name.replace(/.*\/|-Arena/g, ''),
 					raw_url: null,
+					preview_url: 'https://raw.githubusercontent.com/'+repo.full_name+'/'+repo.default_branch+'/',
 					html_url: repo.html_url,
 					full_name: repo.full_name,
 					stars: repo.stargazers_count,
@@ -72,10 +73,10 @@ class GitHubApi{
 					version: null,
 					includeScripts: {arena: [], participants: []}
 				};
+				arenas.push(data);
 				let tagPromise = GitHubApi.fetch(repo.tags_url.replace('https://api.github.com/','')).then(response => response.json());
 				promises.push(GitHubApi.fetch(repo.releases_url.replace(/https:\/\/api.github.com\/|{\/id}/g,'')).then(response => response.json()).then(releases => {
 					if(0 < releases.length){
-						arenas.push(data);
 						data.version = releases.sort((a,b)=>new Date(b.published_at) - new Date(a.published_at))[0].tag_name;
 						data.raw_url = 'https://raw.githubusercontent.com/'+repo.full_name+'/'+data.version+'/';
 						promises.push(tagPromise.then(tags => {
