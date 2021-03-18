@@ -60,7 +60,7 @@ class GitHubApi{
 			let arenas = [];
 			let promises = [];
 			json.items.forEach(repo => {
-				console.log('// TODO: Populate includeScripts.');
+				console.log('// TODO: Populate includeScripts by searching for .js-files in repo folders. E.g: dependencies.arena/ and dependencies.participants/');
 				let data = {
 					official: repo.owner.login === 'AI-Tournaments',
 					name: repo.full_name.replace(/.*\/|-Arena/g, ''),
