@@ -450,6 +450,6 @@ function a(){
 		var hadDecimal = 0 < value%1;
 		var base = Math.pow(10, decimals);
 		var newValue = Math.round(value*base)/base;
-		return newValue + (newValue%1 == 0 && hadDecimal ? '.0' : '')
+		return newValue + (newValue%1 === 0 && hadDecimal ? '.0' : '')
 	}
 }

@@ -38,9 +38,9 @@ class GitHubApi{
 					localStorage.setItem('_GitHub '+a+' x-ratelimit-limit', value);
 				}
 			}
-			if(response.status == 200){
+			if(response.status === 200){
 				return response;
-			}else if(response.status == 401){
+			}else if(response.status === 401){
 				localStorage.removeItem('GitHub OAuth-Token');
 				throw new Error('Unauthorized GitHub OAuth-Token. Logged out.');
 			}else if([403, 429/*Unconfirmed*/].includes(response.status)){
