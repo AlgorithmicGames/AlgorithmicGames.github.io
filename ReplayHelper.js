@@ -7,17 +7,18 @@ class ReplayHelper{
 			fatal('ReplayHelper is already initiated.');
 		}
 		ReplayHelper.#initiated = true;
-		let hash = location.hash;
-		ReplayHelper.#data = JSON.parse(decodeURI(hash.substring(1)));
-		location.hash = '';
-		window.addEventListener('load', ()=>{location.hash = hash;});
 		window.addEventListener('message', messageEvent => {
-			if(messageEvent.data.type === 'Init-Fetch-Replay-Height'){
-				function postHeight(){
-					messageEvent.source.postMessage({type: 'Replay-Height', value: document.documentElement.scrollHeight}, messageEvent.origin);
-				}
-				window.addEventListener('resize', postHeight);
-				postHeight();
+			switch(messageEvent.data.type){
+				case 'Init-Fetch-Replay-Height':
+					function postHeight(){
+						messageEvent.source.postMessage({type: 'Replay-Height', value: document.documentElement.scrollHeight}, messageEvent.origin);
+					}
+					window.addEventListener('resize', postHeight);
+					postHeight();
+					break;
+				case 'Match-Log':
+					ReplayHelper.#data = JSON.parse(messageEvent.data.matchLog);
+					break;
 			}
 		});
 	}
