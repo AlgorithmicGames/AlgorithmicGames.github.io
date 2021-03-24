@@ -1,29 +1,41 @@
 'use strict'
 class ReplayHelper{
 	static #initiated = false;
-	static #data;
-	static init(){
+	static #postHeight = null;
+	static init = null;
+	static preInit(){
 		if(ReplayHelper.#initiated){
-			fatal('ReplayHelper is already initiated.');
+			console.error('ReplayHelper is already initiated.');
 		}
 		ReplayHelper.#initiated = true;
+		let resolve = null;
+		let promise = new Promise(r=>resolve=r);
+		ReplayHelper.init = (callback=matchLog=>{})=>{
+			promise.then(callback);
+		}
 		window.addEventListener('message', messageEvent => {
 			switch(messageEvent.data.type){
 				case 'Init-Fetch-Replay-Height':
-					function postHeight(){
-						messageEvent.source.postMessage({type: 'Replay-Height', value: document.documentElement.scrollHeight}, messageEvent.origin);
+					if(ReplayHelper.#postHeight === null){
+						ReplayHelper.#postHeight = ()=>messageEvent.source.postMessage({type: 'Replay-Height', value: document.documentElement.scrollHeight}, messageEvent.origin);
 					}
-					window.addEventListener('resize', postHeight);
-					postHeight();
+					window.addEventListener('resize', ReplayHelper.#postHeight);
+					ReplayHelper.#postHeight();
 					break;
 				case 'Match-Log':
-					ReplayHelper.#data = JSON.parse(messageEvent.data.matchLog);
+					class MatchLog{
+						constructor(settings={}){
+							for(const key in settings){
+								if(Object.hasOwnProperty.call(settings, key)){
+									this[key] = settings[key];
+								}
+							}
+						}
+					}
+					resolve(new MatchLog(messageEvent.data.matchLog));
 					break;
 			}
 		});
 	}
-	static getData(){
-		return JSON.parse(JSON.stringify(ReplayHelper.#data));
-	}
 }
-ReplayHelper.init();
+ReplayHelper.preInit();
