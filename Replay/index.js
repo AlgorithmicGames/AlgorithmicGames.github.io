@@ -1,7 +1,6 @@
 'use strict'
-let b = location.hash;
-location.hash = '';
 function a(){
+	console.log('// TODO: Readd ACE editor. https://github.com/ajaxorg/ace');
 	let _replayData;
 	let _element_control = document.getElementById('control-container');
 	let _element_viewOptions = document.getElementById('replay-viewers');
@@ -34,6 +33,15 @@ function a(){
 				if(_parent !== null){
 					_parent.source.postMessage({type: 'Replay-Height', value: document.documentElement.scrollHeight}, _parent.origin);
 				}
+				break;
+			case 'Replay-Data':
+				_element_dataInput.value = messageEvent.data.replayData;
+				_element_dataInput.dispatchEvent(new Event('input', {
+					bubbles: true,
+					cancelable: true,
+				}));
+				_element_btnLock.click();
+				break;
 		}
 	}
 	_element_btnLock.addEventListener('click', mouseEvent=>{
@@ -61,9 +69,6 @@ function a(){
 				if(parseFloat(b.dataset.stars) < parseFloat(a.dataset.stars)){return 1;}
 				return 0;
 			});
-			for(let option of options){
-				_element_viewOptions.add(option);
-			}
 			_element_viewOptions.classList.remove('hidden');
 		}));
 	});
@@ -85,33 +90,35 @@ function a(){
 				let input = document.createElement('input');
 				input.type = 'button';
 				input.value = 'Match ' + (index+1);
-				let log_done = matchLog.find(d=>d.type==='Done');
-				if(log_done === undefined){
+				let aborted = matchLog === null;
+				if(aborted){
 					input.value += ' (aborted)';
-					input.dataset.aborted = 'true';
-				}else{
-					input.dataset.log = JSON.stringify(log_done.value);
 				}
+				input.dataset.aborted = aborted;
 				input.disabled = true;
 				input.classList.add('select-match-button');
 				input.classList.add('sticky');
 				function onClick(mouseEvent){
+					for(const matchButton of document.getElementsByClassName('select-match-button')){
+						if(matchButton !== input && matchButton.dataset.aborted !== 'true'){
+							matchButton.disabled = false;
+						}
+					}
 					for(const element of _element_control.children){
 						if(!element.classList.contains('sticky')){
 							element.style.display = 'none';
 						}
 					}
-					for(const input of document.getElementsByClassName('select-match-button')){
-						input.disabled = input.dataset.aborted === 'true';
-						_element_iframe.src = _element_viewOptions.selectedOptions[0].value + '#' + input.dataset.log;
+					_element_iframe.src = _element_viewOptions.selectedOptions[0].value;
+					setTimeout(()=>{
+						_element_iframe.contentWindow.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
+						_element_iframe.contentWindow.postMessage({type: 'Match-Log', matchLog: matchLog}, '*');
 						setTimeout(()=>{
-							_element_iframe.contentWindow.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');setTimeout(()=>{
-								if(_element_iframe.classList.contains('hidden')){
-									_element_iframe_failToLoad.classList.remove('hidden');
-								}
-							}, 1000);
+							if(_element_iframe.classList.contains('hidden')){
+								_element_iframe_failToLoad.classList.remove('hidden');
+							}
 						}, 1000);
-					}
+					}, 1000);
 					input.disabled = true;
 				}
 				input.addEventListener('click', onClick);
@@ -123,14 +130,4 @@ function a(){
 			});
 		}
 	});
-	if(1 < b.length){
-		_element_dataInput.value = decodeURI(b.substring(1));
-		location.hash = b;
-		b = undefined;
-		_element_dataInput.dispatchEvent(new Event('input', {
-			bubbles: true,
-			cancelable: true,
-		}));
-		_element_btnLock.click();
-	}
 }
