@@ -52,7 +52,7 @@ function a(){
 			input.disabled = input.dataset.aborted === 'true';
 		}
 		_replayOptionsPromise_resolve(GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Replay+topic:'+_replayData.body.arena.full_name.replace('/','--')).then(response => response.json()).then(response => {
-			document.getElementById('default-option').value = _replayData.header !== undefined && _replayData.header.defaultReplay !== undefined && _replayData.header.defaultReplay !== '' ? _replayData.header.defaultReplay : 'https://ai-tournaments.github.io/'+_replayData.body.arena.name.split('/')[1].replace('Arena','Replay')+'/';
+			document.getElementById('default-option').value = _replayData.header !== undefined && _replayData.header.defaultReplay !== undefined && _replayData.header.defaultReplay !== '' ? _replayData.header.defaultReplay : 'https://ai-tournaments.github.io/'+_replayData.body.arena.full_name.split('/')[1].replace('Arena','Replay')+'/';
 			response.items.forEach(repo => {
 				if(repo.has_pages){
 					let cssStar = getComputedStyle(document.documentElement).getPropertyValue('--github-stars').trim();
