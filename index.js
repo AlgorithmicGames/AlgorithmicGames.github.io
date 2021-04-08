@@ -32,6 +32,7 @@ function a(){
 	if(navigator.userAgent.indexOf("Firefox") === -1){
 		openWindow('Known problem: browser crash','AI-Tournaments can crash in some browsers when running matches in the client, Chrome is for example calling it "Oh, snap! STATUS_ACCESS_VIOLATION". If you are facing this problem, try using Firefox until it is sorted. Read more <a href="https://github.com/AI-Tournaments/AI-Tournaments/issues/2" target="_blank">here</a>.',false,'424px');
 	}
+	openWindow('Renovation in progress','AI-Tournaments is going through a redesign, so expect problems until next release. Jump into the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord</a> server if you want more information.',false,'424px');
 	fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
 		let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
 		fetch('https://gitlab.com/api/v4/markdown',{method: 'POST', body: JSON.stringify({text: why}),
