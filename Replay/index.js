@@ -41,6 +41,7 @@ function a(){
 					cancelable: true,
 				}));
 				_element_btnLock.click();
+				_element_dataInput.classList.add('hidden');
 				break;
 		}
 	}
