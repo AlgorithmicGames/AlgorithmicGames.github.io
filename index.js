@@ -35,7 +35,6 @@ function a(){
 	if(localStorage.getItem('Local arena development') !== null){
 		openWindow('Local arena development','Automatic addition of local arena is set.<br><button onclick="localStorage.removeItem(\'Local arena development\'); location.reload();">Remove</button>',false);
 	}
-	openWindow('Renovation in progress','AI-Tournaments is going through a redesign, so expect problems until next release. Jump into the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord</a> server if you want more information.',false,'424px');
 	fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
 		let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
 		fetch('https://gitlab.com/api/v4/markdown',{method: 'POST', body: JSON.stringify({text: why}),
