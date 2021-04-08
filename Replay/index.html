@@ -45,9 +45,9 @@
 	<body onload="a()">
 		<div id="control-container">
 			<label id="lblData" for="data">Data:</label>
-			<textarea id="data-input"></textarea>
+			<textarea id="data-input" class="hidden"></textarea>
 			<input type="button" id="lock" value="Lock" disabled/>
-			<span id="invalid-input" style="color:red;display:none;">Invalid input.</span>
+			<span id="invalid-input" class="hidden error">Invalid input.</span>
 			<select id="replay-viewers" class="hidden sticky">
 				<option id="default-option" selected>Default</option>
 			</select>

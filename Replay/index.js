@@ -82,7 +82,7 @@ function a(){
 			_replayData = JSON.parse(_element_dataInput.value);
 			_element_btnLock.disabled = typeof _replayData !== 'object';
 		}catch(error){}
-		document.getElementById('invalid-input').style.display = _element_btnLock.disabled ? '' : 'none';
+		document.getElementById('invalid-input').classList[_element_btnLock.disabled ? 'remove' : 'add']('hidden');
 		if(!_element_btnLock.disabled){
 			let selectionStart = _element_dataInput.selectionStart;
 			_element_dataInput.value = JSON.stringify(_replayData.body,null,'\t');
@@ -107,7 +107,7 @@ function a(){
 					}
 					for(const element of _element_control.children){
 						if(!element.classList.contains('sticky')){
-							element.style.display = 'none';
+							element.classList.add('hidden');
 						}
 					}
 					_element_iframe.src = _element_viewOptions.selectedOptions[0].value;
