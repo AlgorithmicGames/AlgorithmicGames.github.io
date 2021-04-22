@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>AI Tournaments Highscore</title>
+		<title>AI Tournaments Replay</title>
 		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-173346924-1"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-173346924-1');</script>
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
 		<meta content="yes" name="mobile-web-app-capable">
@@ -23,14 +23,8 @@
 			iframe {
 				border: 0;
 			}
-			#lblData {
-				display: block;
-			}
 			#control-container>* {
 				vertical-align: top;
-			}
-			#data-input {
-				white-space: pre;
 			}
 			.hidden {
 				display: none;
@@ -47,9 +41,9 @@
 	<body onload="a()">
 		<div id="control-container">
 			<label id="lblData" for="data">Data:</label>
-			<textarea id="data-input" class="hidden"></textarea>
-			<input type="button" id="lock" value="Lock" disabled/>
 			<span id="invalid-input" class="hidden error">Invalid input.</span>
+			<div id="editor" style="height: 200px;" class="hidden"></div>
+			<input type="button" id="lock" value="Lock" disabled/>
 			<select id="replay-viewers" class="hidden sticky">
 				<option id="default-option" selected>Default</option>
 			</select>
