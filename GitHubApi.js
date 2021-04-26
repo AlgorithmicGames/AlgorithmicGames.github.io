@@ -4,6 +4,9 @@ class GitHubApi{
 	static #CLIENT_ID = '19698a5006b153e8a671';
 	static #STARTED = localStorage.getItem('PageLoaded');
 	static #waitUntil = timestamp => new Promise(resolve => setTimeout(resolve, timestamp-Date.now()));
+	static getClientId(){
+		return GitHubApi.#CLIENT_ID;
+	}
 	static fetch(path='', init={}){
 		let token = localStorage.getItem('GitHub OAuth-Token');
 		if(token !== null && token !== undefined && token[0] !== '!'){
