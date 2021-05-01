@@ -7,6 +7,8 @@
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
 		<meta content="yes" name="mobile-web-app-capable">
 		<link rel="stylesheet" href="../defaults.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.4.1/jsoneditor.min.js"></script>
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.4.1/jsoneditor.min.css" rel="stylesheet">
 		<style>
 			html {
 				padding: 8px;
@@ -32,17 +34,24 @@
 			.error {
 				color: red;
 			}
+			#editor{
+				height: 400px;
+			}
+			.jsoneditor-menu{
+				background-color: var(--main-color);
+			}
+			.jsoneditor, .jsoneditor-menu{
+				border-color: var(--main-color);
+			}
 		</style>
 		<script src="index.js"></script>
-		<script src="https://ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js"></script>
-		<script src="https://ajaxorg.github.io/ace-builds/src-min-noconflict/mode-json.js"></script>
 		<script src="../GitHubApi.js"></script>
 	</head>
 	<body onload="a()">
 		<div id="control-container">
 			<label id="lblData" for="data">Data:</label>
 			<span id="invalid-input" class="hidden error">Invalid input.</span>
-			<div id="editor" style="height: 200px;" class="hidden"></div>
+			<div id="editor" class="hidden"></div>
 			<input type="button" id="lock" value="Lock" disabled/>
 			<select id="replay-viewers" class="hidden sticky">
 				<option id="default-option" selected>Default</option>

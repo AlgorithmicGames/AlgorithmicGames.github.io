@@ -10,10 +10,9 @@ function a(){
 	let _parent = null;
 	let _replayOptionsPromise_resolve;
 	let _replayOptionsPromise = new Promise(resolve=>_replayOptionsPromise_resolve=resolve);
-	let _editor = ace.edit('editor');
-	_editor.session.setMode("ace/mode/json");
+	let _editor = new JSONEditor(_element_editor, {'modes': ['code', 'view'], 'name': 'matchLog', 'onChange': onChange});
 	setTimeout(()=>{
-		if(_replayData === undefined){
+		if(_editor.getText() === '{}'){
 			_element_editor.classList.remove('hidden');
 		}
 	}, 1000);
@@ -41,17 +40,15 @@ function a(){
 				}
 				break;
 			case 'Replay-Data':
-				_editor.getSession().on('changeAnnotation', ()=>{
-					_element_btnLock.click();
-					_element_editor.classList.add('hidden');
-				});
-				_editor.setValue(messageEvent.data.replayData);
+				_editor.setText(messageEvent.data.replayData);
+				onChange();
+				_element_btnLock.onclick();
 				break;
 		}
 	}
-	_element_btnLock.addEventListener('click', mouseEvent=>{
+	_element_btnLock.onclick = mouseEvent=>{
 		_element_btnLock.disabled = true;
-		_editor.setReadOnly(true);
+		_editor.setMode('view');
 		for(const input of document.getElementsByClassName('select-match-button')){
 			input.disabled = input.dataset.aborted === 'true';
 		}
@@ -76,61 +73,59 @@ function a(){
 			});
 			_element_viewOptions.classList.remove('hidden');
 		}));
-	});
-	_editor.getSession().on('changeAnnotation', ()=>{
-		let value = _editor.getValue();
-		if(value !== ""){
-			let containsError = 0 < _editor.getSession().getAnnotations().filter(a=>a.type==='error').length;
-			[...document.getElementsByClassName('select-match-button')].forEach(input=>{
-				input.parentElement.removeChild(input);
-			});
-			_element_btnLock.disabled = containsError;
-			document.getElementById('invalid-input').classList[containsError ? 'remove' : 'add']('hidden');
-			if(!containsError){
-				_replayData = JSON.parse(value);
-				_replayData.body.data.forEach((matchLog, index) => {
-					let input = document.createElement('input');
-					input.type = 'button';
-					input.value = 'Match ' + (index+1);
-					let aborted = matchLog === null;
-					if(aborted){
-						input.value += ' (aborted)';
+	};
+	function onChange(){
+		console.log('TODO: Get/Set containsError. Old code: 0 < _editor.getSession().getAnnotations().filter(a=>a.type===\'error\').length;');
+		let containsError = false;
+		[...document.getElementsByClassName('select-match-button')].forEach(input=>{
+			input.parentElement.removeChild(input);
+		});
+		_element_btnLock.disabled = containsError;
+		document.getElementById('invalid-input').classList[containsError ? 'remove' : 'add']('hidden');
+		if(!containsError){
+			_replayData = JSON.parse(_editor.getText());
+			_replayData.body.data.forEach((matchLog, index) => {
+				let input = document.createElement('input');
+				input.type = 'button';
+				input.value = 'Match ' + (index+1);
+				let aborted = matchLog === null;
+				if(aborted){
+					input.value += ' (aborted)';
+				}
+				input.dataset.aborted = aborted;
+				input.disabled = true;
+				input.classList.add('select-match-button');
+				input.classList.add('sticky');
+				function onClick(mouseEvent){
+					for(const matchButton of document.getElementsByClassName('select-match-button')){
+						if(matchButton !== input && matchButton.dataset.aborted !== 'true'){
+							matchButton.disabled = false;
+						}
 					}
-					input.dataset.aborted = aborted;
-					input.disabled = true;
-					input.classList.add('select-match-button');
-					input.classList.add('sticky');
-					function onClick(mouseEvent){
-						for(const matchButton of document.getElementsByClassName('select-match-button')){
-							if(matchButton !== input && matchButton.dataset.aborted !== 'true'){
-								matchButton.disabled = false;
-							}
+					for(const element of _element_control.children){
+						if(!element.classList.contains('sticky')){
+							element.classList.add('hidden');
 						}
-						for(const element of _element_control.children){
-							if(!element.classList.contains('sticky')){
-								element.classList.add('hidden');
-							}
-						}
-						_element_iframe.src = _element_viewOptions.selectedOptions[0].value;
+					}
+					_element_iframe.src = _element_viewOptions.selectedOptions[0].value;
+					setTimeout(()=>{
+						_element_iframe.contentWindow.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
+						_element_iframe.contentWindow.postMessage({type: 'Match-Log', matchLog: matchLog}, '*');
 						setTimeout(()=>{
-							_element_iframe.contentWindow.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
-							_element_iframe.contentWindow.postMessage({type: 'Match-Log', matchLog: matchLog}, '*');
-							setTimeout(()=>{
-								if(_element_iframe.classList.contains('hidden')){
-									_element_iframe_failToLoad.classList.remove('hidden');
-								}
-							}, 1000);
+							if(_element_iframe.classList.contains('hidden')){
+								_element_iframe_failToLoad.classList.remove('hidden');
+							}
 						}, 1000);
-						input.disabled = true;
-					}
-					input.addEventListener('click', onClick);
-					_element_control.appendChild(input);
-					if(_replayData.body.data.length === 1){
-						input.classList.add('hidden');
-						_replayOptionsPromise.then(onClick);
-					}
-				});
-			}
+					}, 1000);
+					input.disabled = true;
+				}
+				input.addEventListener('click', onClick);
+				_element_control.appendChild(input);
+				if(_replayData.body.data.length === 1){
+					input.classList.add('hidden');
+					_replayOptionsPromise.then(onClick);
+				}
+			});
 		}
-	});
+	}
 }

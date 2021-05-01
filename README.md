@@ -20,6 +20,8 @@ Alternatively it is possible to put the `addArena` inputs to local storage `Loca
 | --- |---|
 | `Local arena development` | `["http://127.0.0.1:8080/Community-Arena/","New-Community-Arena","http://127.0.0.1:8080/Community-Arena-Replay/", "http://127.0.0.1:8080/Community-Arena-Test-Participants/participant.js", ["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js", "Temp-Participant"]]` |
 ## Special thanks
+- JSON Editor<br>
+AI-Tournaments uses [JSON Editor](https://github.com/josdejong/jsoneditor/) by [Jos de Jong](https://github.com/josdejong), powered by [Ace (Ajax.org Cloud9 Editor)](https://github.com/ajaxorg/ace/) and [Ajv JSON schema validator](https://github.com/ajv-validator/ajv/), for editing, rendering and validating JSON.
 - seedrandom<br>
 AI-Tournaments uses [seedrandom](https://github.com/davidbau/seedrandom) by [David Bau](https://github.com/davidbau) for overriding `Math.random()` to generate repeatable numbers.
 
