@@ -1,6 +1,7 @@
 'use strict'
 function a(){
 	let _replayData;
+	let _autoStart = false;
 	let _element_control = document.getElementById('control-container');
 	let _element_viewOptions = document.getElementById('replay-viewers');
 	let _element_iframe = document.getElementById('replay-container');
@@ -10,7 +11,7 @@ function a(){
 	let _parent = null;
 	let _replayOptionsPromise_resolve;
 	let _replayOptionsPromise = new Promise(resolve=>_replayOptionsPromise_resolve=resolve);
-	let _editor = new JSONEditor(_element_editor, {'modes': ['code', 'view'], 'name': 'matchLog', 'onChange': onChange});
+	let _editor = new JSONEditor(_element_editor, {'modes': ['code', 'view'], 'name': 'matchLog', 'onChange': onChange, 'onValidate': onValidate});
 	setTimeout(()=>{
 		if(_editor.getText() === '{}'){
 			_element_editor.classList.remove('hidden');
@@ -41,8 +42,8 @@ function a(){
 				break;
 			case 'Replay-Data':
 				_editor.setText(messageEvent.data.replayData);
+				_autoStart = true;
 				onChange();
-				_element_btnLock.onclick();
 				break;
 		}
 	}
@@ -74,58 +75,92 @@ function a(){
 			_element_viewOptions.classList.remove('hidden');
 		}));
 	};
-	function onChange(){
-		console.log('TODO: Get/Set containsError. Old code: 0 < _editor.getSession().getAnnotations().filter(a=>a.type===\'error\').length;');
-		let containsError = false;
-		[...document.getElementsByClassName('select-match-button')].forEach(input=>{
-			input.parentElement.removeChild(input);
-		});
-		_element_btnLock.disabled = containsError;
-		document.getElementById('invalid-input').classList[containsError ? 'remove' : 'add']('hidden');
-		if(!containsError){
-			_replayData = JSON.parse(_editor.getText());
-			_replayData.body.data.forEach((matchLog, index) => {
-				let input = document.createElement('input');
-				input.type = 'button';
-				input.value = 'Match ' + (index+1);
-				let aborted = matchLog === null;
-				if(aborted){
-					input.value += ' (aborted)';
-				}
-				input.dataset.aborted = aborted;
-				input.disabled = true;
-				input.classList.add('select-match-button');
-				input.classList.add('sticky');
-				function onClick(mouseEvent){
-					for(const matchButton of document.getElementsByClassName('select-match-button')){
-						if(matchButton !== input && matchButton.dataset.aborted !== 'true'){
-							matchButton.disabled = false;
-						}
-					}
-					for(const element of _element_control.children){
-						if(!element.classList.contains('sticky')){
-							element.classList.add('hidden');
-						}
-					}
-					_element_iframe.src = _element_viewOptions.selectedOptions[0].value;
-					setTimeout(()=>{
-						_element_iframe.contentWindow.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
-						_element_iframe.contentWindow.postMessage({type: 'Match-Log', matchLog: matchLog}, '*');
-						setTimeout(()=>{
-							if(_element_iframe.classList.contains('hidden')){
-								_element_iframe_failToLoad.classList.remove('hidden');
-							}
-						}, 1000);
-					}, 1000);
-					input.disabled = true;
-				}
-				input.addEventListener('click', onClick);
-				_element_control.appendChild(input);
-				if(_replayData.body.data.length === 1){
-					input.classList.add('hidden');
-					_replayOptionsPromise.then(onClick);
-				}
+	function onValidate(json){
+		function isUrl(string){
+			let url;
+			try{
+				url = new URL(string);
+			}catch(e){
+				return false;
+			}
+			return url.protocol === "http:" || url.protocol === "https:";
+		}
+		let errors = [];
+		if(json.header === undefined || !isUrl(json.header.defaultReplay)){
+			errors.push({
+				path: ['header'],
+				message: 'Property "defaultReplay" is missing or not a URL.'
 			});
 		}
+		if(json.body === undefined || typeof json.body.data !== 'object'){
+			errors.push({
+				path: ['body'],
+				message: 'Property "data" is missing or not a array.'
+			});
+		}
+		return errors;
+	}
+	function onChange(){
+		_editor.validate().then(errors => {
+			let containsError = 0 < errors.length;
+			[...document.getElementsByClassName('select-match-button')].forEach(input=>{
+				input.parentElement.removeChild(input);
+			});
+			_element_btnLock.disabled = containsError;
+			document.getElementById('invalid-input').classList[containsError ? 'remove' : 'add']('hidden');
+			if(containsError){
+				_element_editor.classList.remove('hidden');
+			}else{
+				_replayData = _editor.get();
+				_replayData.body.data.forEach((matchLog, index) => {
+					let input = document.createElement('input');
+					input.type = 'button';
+					input.value = 'Match ' + (index+1);
+					let aborted = matchLog === null;
+					if(aborted){
+						input.value += ' (aborted)';
+					}
+					input.dataset.aborted = aborted;
+					input.disabled = true;
+					input.classList.add('select-match-button');
+					input.classList.add('sticky');
+					function onClick(mouseEvent){
+						for(const matchButton of document.getElementsByClassName('select-match-button')){
+							if(matchButton !== input && matchButton.dataset.aborted !== 'true'){
+								matchButton.disabled = false;
+							}
+						}
+						for(const element of _element_control.children){
+							if(!element.classList.contains('sticky')){
+								element.classList.add('hidden');
+							}
+						}
+						_element_iframe.src = _element_viewOptions.selectedOptions[0].value;
+						setTimeout(()=>{
+							_element_iframe.contentWindow.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
+							_element_iframe.contentWindow.postMessage({type: 'Match-Log', matchLog: matchLog}, '*');
+							setTimeout(()=>{
+								if(_element_iframe.classList.contains('hidden')){
+									_element_iframe_failToLoad.classList.remove('hidden');
+								}
+							}, 1000);
+						}, 1000);
+						input.disabled = true;
+					}
+					input.addEventListener('click', onClick);
+					_element_control.appendChild(input);
+					if(_replayData.body.data.length === 1){
+						input.classList.add('hidden');
+						_replayOptionsPromise.then(onClick);
+					}
+				});
+			}
+			if(_autoStart){
+				_autoStart = false;
+				if(!containsError){
+					_element_btnLock.onclick();
+				}
+			}
+		});
 	}
 }
