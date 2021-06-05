@@ -31,3 +31,9 @@ select>* {
 .cross-close::after {
 	content: var(--cross-close);
 }
+.jsoneditor-menu{
+	background-color: var(--main-color);
+}
+.jsoneditor, .jsoneditor-menu{
+	border-color: var(--main-color);
+}
