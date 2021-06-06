@@ -19,7 +19,7 @@
 				position: static;
 			}
 			header>.header {
-				border: 2px solid;
+				border: var(--window-border);
 			}
 
 			#content, #screens {
@@ -127,10 +127,10 @@
 			}
 
 			#header-content-row>*:not(:last-child) {
-				border-right: 2px solid;
+				border-right: var(--window-border);;
 			}
 			#header-right>*:not(:first-child) {
-				border-left: 2px solid;
+				border-left: var(--window-border);;
 			}
 
 			#header-content-row, #header-right {
@@ -146,7 +146,7 @@
 				background-color: var(--transparency);
 			}
 			.window .border {
-				border: 2px solid;
+				border: var(--window-border);;
 				margin: 7px 3px 7px 3px;
 			}
 			.window .border .header {
@@ -155,11 +155,11 @@
 				padding: 0px 13px 0px 13px;
 			}
 			.window .border iframe {
-				border-top: 2px solid;
+				border-top: var(--window-border);;
 			}
 			.window .border .message {
-				padding: 7px 13px 7px 13px;
-				border-top: 2px solid;
+				padding: var(--window-padding);
+				border-top: var(--window-border);;
 				white-space: break-spaces;
 			}
 			.draggable {
@@ -171,7 +171,7 @@
 				right: 11px;
 				cursor: pointer;
 				padding-left: 6px;
-				border-left: 2px solid;
+				border-left: var(--window-border);;
 				padding-top: 7px;
 				padding-bottom: 7px;
 			}
