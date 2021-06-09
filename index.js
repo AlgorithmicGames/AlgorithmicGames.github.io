@@ -13,7 +13,7 @@ function a(){
 	Array.from(document.getElementsByClassName('open-screen')).forEach(element => {
 		element.addEventListener('click', ()=>{openScreen(element.dataset.url)});
 	});
-	window.onresize = calcSize;
+	window.onresize = resizeBackground;
 	window.onresize();
 	GitHubApi.login();
 	frameLoop();
@@ -246,7 +246,7 @@ function a(){
 			}
 		}
 	}
-	function calcSize(){
+	function resizeBackground(){
 		_background.className = 'force-new-row';
 		let charsPerRow = 0;
 		_background.innerHTML = '0';
