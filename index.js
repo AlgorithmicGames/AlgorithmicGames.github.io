@@ -34,8 +34,9 @@ function a(){
 	}
 	fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
 		let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
+		console.log('// TODO: Use GitHub\'s markdown API. https://docs.github.com/en/rest/reference/markdown');
 		fetch('https://gitlab.com/api/v4/markdown',{method: 'POST', body: JSON.stringify({text: why}),
-			headers: {Accept: 'application/vnd.github.v3+json', 'Content-Type':'application/json'}
+		headers: {Accept: 'application/vnd.github.v3+json', 'Content-Type':'application/json'} // TODO: https://docs.github.com/en/rest/reference/markdown
 		}).then(response => response.json()).then(response => {
 			document.getElementById('source-available').addEventListener('click', ()=>{
 				openWindow('Why "Source Available"?', '<span class="source-available">'+response.html+'</span>\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '705px');
