@@ -11,7 +11,7 @@
 	--cross-close:'\2716';/*✖*/
 	--github-stars:'\2605';/*★*/
 	--score-stars:'\2606';/*☆*/
-	--link:'\1F517';/*🔗*/
+	--open-book:'\1F4D6';/*📖*/
 
 	color: var(--main-color);
 	border-color: var(--main-color);
