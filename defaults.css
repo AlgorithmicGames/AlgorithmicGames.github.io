@@ -39,3 +39,6 @@ select>* {
 .jsoneditor, .jsoneditor-menu{
 	border-color: var(--main-color);
 }
+.hidden {
+	display: none;
+}
