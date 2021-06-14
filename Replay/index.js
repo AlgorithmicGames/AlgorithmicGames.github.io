@@ -86,10 +86,10 @@ function a(){
 			return url.protocol === "http:" || url.protocol === "https:";
 		}
 		let errors = [];
-		if(json.header === undefined || !isUrl(json.header.defaultReplay)){
+		if(json.header !== undefined && !isUrl(json.header.defaultReplay)){
 			errors.push({
 				path: ['header'],
-				message: 'Property "defaultReplay" is missing or not a URL.'
+				message: 'Property "defaultReplay" is not a URL.'
 			});
 		}
 		if(json.body === undefined || typeof json.body.data !== 'object'){
