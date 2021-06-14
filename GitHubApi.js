@@ -1,8 +1,12 @@
 'use strict'
 class GitHubApi{
+	static #ARENA_VERSION = 1;
 	static #CLIENT_ID = '19698a5006b153e8a671';
 	static #STARTED = localStorage.getItem('PageLoaded');
 	static #waitUntil = timestamp => new Promise(resolve => setTimeout(resolve, timestamp-Date.now()));
+	static getClientId(){
+		return GitHubApi.#CLIENT_ID;
+	}
 	static fetch(path='', init={}){
 		let token = localStorage.getItem('GitHub OAuth-Token');
 		if(token !== null && token !== undefined && token[0] !== '!'){
@@ -37,9 +41,9 @@ class GitHubApi{
 					localStorage.setItem('_GitHub '+a+' x-ratelimit-limit', value);
 				}
 			}
-			if(response.status == 200){
+			if(response.status === 200){
 				return response;
-			}else if(response.status == 401){
+			}else if(response.status === 401){
 				localStorage.removeItem('GitHub OAuth-Token');
 				throw new Error('Unauthorized GitHub OAuth-Token. Logged out.');
 			}else if([403, 429/*Unconfirmed*/].includes(response.status)){
@@ -55,7 +59,43 @@ class GitHubApi{
 		});
 	}
 	static fetchArenas(){
-		return GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Arena-v1').then(response => response.json()).then(json => json.items);
+		return GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Arena-v'+GitHubApi.#ARENA_VERSION).then(response => response.json()).then(json => {
+			let arenas = [];
+			let promises = [];
+			json.items.forEach(repo => {
+				console.log('// TODO: Populate includeScripts by searching for .js-files in repo folders. E.g: includeScripts/name.arena.js and includeScripts/name.participants.js');
+				let data = {
+					official: repo.owner.login === 'AI-Tournaments',
+					name: repo.full_name.replace(/.*\/|-Arena/g, ''),
+					raw_url: null,
+					preview_url: 'https://raw.githubusercontent.com/'+repo.full_name+'/'+repo.default_branch+'/',
+					html_url: repo.html_url,
+					full_name: repo.full_name,
+					stars: repo.stargazers_count,
+					commit: null,
+					version: null,
+					includeScripts: {arena: [], participants: []}
+				};
+				arenas.push(data);
+				let tagPromise = GitHubApi.fetch(repo.tags_url.replace('https://api.github.com/','')).then(response => response.json());
+				promises.push(GitHubApi.fetch(repo.releases_url.replace(/https:\/\/api.github.com\/|{\/id}/g,'')).then(response => response.json()).then(releases => {
+					if(0 < releases.length){
+						data.version = releases.sort((a,b)=>new Date(b.published_at) - new Date(a.published_at))[0].tag_name;
+						data.raw_url = 'https://raw.githubusercontent.com/'+repo.full_name+'/'+data.version+'/';
+						promises.push(tagPromise.then(tags => {
+							let index = 0;
+							while(data.commit === null){
+								let tag = tags[index++];
+								if(tag.name === data.version){
+									data.commit = tag.commit.sha;
+								}
+							}
+						}));
+					}
+				}));
+			});
+			return Promise.all(promises).then(()=>arenas);
+		});
 	}
 	static login(){
 		let oAuthCode = null;
@@ -68,9 +108,16 @@ class GitHubApi{
 		}
 		if(oAuthCode !== null){
 			localStorage.setItem('GitHub OAuth-Token', '!'+oAuthCode);
-			Backend.call('login', {oAuthCode: oAuthCode, client_id: GitHubApi.#CLIENT_ID}).then(json => {
-				if(json.data !== undefined){
-					localStorage.setItem('GitHub OAuth-Token', json.data);
+			let init = {
+				'method': 'POST',
+				'body': JSON.stringify({
+					'oAuthCode': oAuthCode,
+					'client_id': GitHubApi.#CLIENT_ID
+				})
+			};
+			fetch(new Request('https://ai-tournaments.azurewebsites.net/api/GitHub-Login'), init).then(response => response.text()).then(accessToken => {
+				if(accessToken !== ''){
+					localStorage.setItem('GitHub OAuth-Token', accessToken);
 				}
 				location.replace(location.protocol+'//'+location.host+location.pathname);
 			}).catch(error => {

@@ -2,10 +2,12 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>AI Tournaments Highscore</title>
+		<title>AI Tournaments Replay</title>
 		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-173346924-1"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-173346924-1');</script>
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
 		<meta content="yes" name="mobile-web-app-capable">
+		<script src="https://cdn.jsdelivr.net/npm/jsoneditor@9.5.0/dist/jsoneditor.min.js"></script>
+		<link href="https://cdn.jsdelivr.net/npm/jsoneditor@9.5.0/dist/jsoneditor.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="../defaults.css">
 		<style>
 			html {
@@ -22,20 +24,15 @@
 			}
 			iframe {
 				border: 0;
-				width: -webkit-fill-available;
-				height: -webkit-fill-available;
-			}
-			#lblData {
-				display: block;
 			}
 			#control-container>* {
 				vertical-align: top;
 			}
-			#data-input {
-				white-space: pre;
+			.error {
+				color: red;
 			}
-			.hidden {
-				display: none;
+			#editor{
+				height: 400px;
 			}
 		</style>
 		<script src="index.js"></script>
@@ -44,13 +41,19 @@
 	<body onload="a()">
 		<div id="control-container">
 			<label id="lblData" for="data">Data:</label>
-			<textarea id="data-input"></textarea>
+			<span id="invalid-input" class="hidden error">Invalid input.</span>
+			<div id="editor" class="hidden"></div>
 			<input type="button" id="lock" value="Lock" disabled/>
-			<span id="invalid-input" style="color:red;display:none;">Invalid input.</span>
 			<select id="replay-viewers" class="hidden sticky">
 				<option id="default-option" selected>Default</option>
 			</select>
+			<div id="external-page-warning">
+				<img src="" onerror="console.log('// TODO: Display a warning that only Default associated with AI-Tournaments. Confirm to allow load more options. Store confirmation with GitHub user.')"></img>
+			</div>
 		</div>
-		<iframe id="replay-container" sandbox="allow-scripts"></iframe>
+		<iframe id="replay-container" sandbox="allow-scripts" class="hidden"></iframe>
+		<div id="replay-container-failToLoad" class="hidden error">
+			Replay failed to load <a href="https://ai-tournaments.github.io/AI-Tournaments/ReplayHelper.js">ReplayHelper.js</a>.
+		</div>
 	</body>
 </html>

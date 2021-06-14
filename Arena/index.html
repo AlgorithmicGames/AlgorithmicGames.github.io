@@ -19,9 +19,6 @@
 			input[type="button" i]:disabled{
 				visibility: hidden;
 			}
-			#outputSum {
-				display: none;
-			}
 			#arena-description>*:first-child{
 				margin-top: 0;
 			}
@@ -30,17 +27,12 @@
 				width: -webkit-fill-available;
 				height: -webkit-fill-available;
 			}
-			fieldset>legend {
-				cursor: pointer;
-				user-select: none;
-			}fieldset>legend::after {
-				content: ' ' var(--arrow-down);
-			}
-			fieldset.hidden>legend::after {
-				content: ' ' var(--arrow-up);
-			}
-			fieldset.hidden>:not(legend) {
-				display: none;
+			#wrapper {
+				border-width: 0;
+				border-top: 2px;
+				border-style: solid;
+				border-color: var(--main-color);
+				padding-top: 4px;
 			}
 		</style>
 		<script src="ArenaHelper.js"></script>
@@ -49,21 +41,12 @@
 	</head>
 	<body onload="a()">
 		<iframe id="selectArena" src="iframe.selectArena.html"></iframe>
-		<fieldset class="hidden">
-			<legend>Readme</legend>
-			<div id="arena-description"></div>
-		</fieldset>
-		<input type="button" id="add-team" value="Add team" disabled>
-		<div id="participant-groups">
-			<div>
-				<input type="button" id="transfer" data-select="participants-selectable" value="Transfer here">
-				<label for="participants-selectable">Available participants</label>
-				<select id="participants-selectable" class="participants" multiple></select>
-			</div>
+		<div id="wrapper" class="hidden">
+			<input type="button" id="add-team" value="Add team" disabled>
+			<div id="participant-groups"></div>
+			<iframe id="settings" style="height: 0;" src="iframe.sandbox.settings.html" sandbox="allow-scripts"></iframe>
+			<input type="button" id="btnStart" value="Start" disabled>
+			<div id="logContainer"></div>
 		</div>
-		<iframe id="settings" style="height: 0;" src="iframe.settings.html"></iframe>
-		<input type="button" id="btnStart" value="Start" disabled>
-		<pre id="outputSum" class="log"></pre>
-		<div id="logContainer"></div>
 	</body>
 </html>

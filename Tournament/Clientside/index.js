@@ -366,7 +366,11 @@ function a(){
 					tableCell.dataset.team2 = name;
 					tableCell.addEventListener('click', mouseEvent=>{
 						if(tableCell.dataset.log !== undefined){
-							window.open('../../Replay/#'+tableCell.dataset.log, '_blank').focus();
+							console.log('// TODO: Fix replay init.');
+							let windowClassName = window.open('../../Replay/#'+tableCell.dataset.log, '_blank');
+							console.log('// TODO: Replace variable name "windowClassName" with value of windowClassName.constructor.name.');
+							windowClassName.focus();
+							windowClassName.postMessage({type: 'Replay-Data', replayData: tableCell.dataset.log}, '*');
 						}
 					});
 					tableRow.appendChild(tableCell);
@@ -450,6 +454,6 @@ function a(){
 		var hadDecimal = 0 < value%1;
 		var base = Math.pow(10, decimals);
 		var newValue = Math.round(value*base)/base;
-		return newValue + (newValue%1 == 0 && hadDecimal ? '.0' : '')
+		return newValue + (newValue%1 === 0 && hadDecimal ? '.0' : '')
 	}
 }

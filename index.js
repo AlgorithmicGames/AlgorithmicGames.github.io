@@ -13,7 +13,7 @@ function a(){
 	Array.from(document.getElementsByClassName('open-screen')).forEach(element => {
 		element.addEventListener('click', ()=>{openScreen(element.dataset.url)});
 	});
-	window.onresize = calcSize;
+	window.onresize = resizeBackground;
 	window.onresize();
 	GitHubApi.login();
 	frameLoop();
@@ -26,13 +26,14 @@ function a(){
 		'If you want to you can join the community discussions over at the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord server</a>.\n'+
 		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
 	true, '582px', true);
-	if(Backend.isOverride()){
-		openWindow('⚠️Attention: Backend override⚠️','Backend is currently set to: '+Backend.getBackend()+'<br><button onclick="localStorage.removeItem(\'backend\'); location.reload();">Reset</button>',false);
+	if(localStorage.getItem('Local arena development') !== null){
+		openWindow('Local arena development','Automatic addition of local arena is set.<br><button onclick="localStorage.removeItem(\'Local arena development\'); location.reload();">Remove</button>',false);
 	}
 	fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
 		let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
+		console.log('// TODO: Use GitHub\'s markdown API. https://docs.github.com/en/rest/reference/markdown');
 		fetch('https://gitlab.com/api/v4/markdown',{method: 'POST', body: JSON.stringify({text: why}),
-			headers: {Accept: 'application/vnd.github.v3+json', 'Content-Type':'application/json'}
+		headers: {Accept: 'application/vnd.github.v3+json', 'Content-Type':'application/json'} // TODO: https://docs.github.com/en/rest/reference/markdown
 		}).then(response => response.json()).then(response => {
 			document.getElementById('source-available').addEventListener('click', ()=>{
 				openWindow('Why "Source Available"?', '<span class="source-available">'+response.html+'</span>\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '705px');
@@ -134,11 +135,11 @@ function a(){
 	}
 	function loadArenas(amount=undefined){
 		let arenaContainer = document.getElementById('arena-dropdown');
-		GitHubApi.fetchArenas().then(repos => {
+		GitHubApi.fetchArenas().then(arenas => {
 			let officialRepos = [];
-			repos.forEach(repo => {
-				if(repo.owner.login === 'AI-Tournaments'){
-					officialRepos.push(repo);
+			arenas.forEach(arena => {
+				if(arena.official){
+					officialRepos.push(arena);
 				}
 			});
 			officialRepos.sort(function(a,b){
@@ -149,7 +150,7 @@ function a(){
 			officialRepos.slice(0,amount).forEach(repo => {
 				let item = document.createElement('div');
 				item.innerHTML = repo.name.replace('-Arena','')
-				item.dataset.stars = repo.stargazers_count;
+				item.dataset.stars = repo.stars;
 				item.dataset.full_name = repo.full_name;
 				item.addEventListener('click', ()=>{
 					openScreen('Arena/#'+repo.full_name)
@@ -243,7 +244,7 @@ function a(){
 			}
 		}
 	}
-	function calcSize(){
+	function resizeBackground(){
 		_background.className = 'force-new-row';
 		let charsPerRow = 0;
 		_background.innerHTML = '0';
@@ -253,7 +254,7 @@ function a(){
 			charsPerRow++;
 		}
 		charsPerRow++;
-		height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+		height = document.documentElement.scrollHeight;
 		let rows = 2;
 		let charsOnFirstRow = _background.innerHTML;
 		while(_background.offsetHeight < height){

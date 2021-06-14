@@ -4,39 +4,59 @@ let addParticipant;
 function a(){
 	let _sortByStars = false;
 	let _json;
+	let _replayContainer;
 	let localArenas = {};
 	let localParticipants = null
 	let arenaProperties;
+	let arenaMatches = null;
 	let selectArena = document.getElementById('selectArena');
-	let participantList = document.getElementById('participants-selectable');
 	let settingsIframe = document.getElementById('settings');
 	let logContainer = document.getElementById('logContainer');
-	let outputSum = document.getElementById('outputSum');
 	let btnAddTeam = document.getElementById('add-team');
-	let arenaDescription = document.getElementById('arena-description');
-	arenaDescription.parentElement.getElementsByTagName('legend')[0].addEventListener('click', ()=>{
-		arenaDescription.parentElement.classList.toggle('hidden');
+	let participantGroups = document.getElementById('participant-groups');
+	requestAnimationFrame(()=>{
+		let item = localStorage.getItem('Local arena development');
+		if(item !== null){
+			addArena(...JSON.parse(item));
+		}
 	});
 	btnAddTeam.onclick = createTeam;
 	let btnStart = document.getElementById('btnStart');
 	btnStart.onclick = start;
-	let btnTransfer = document.getElementById('transfer');
-	btnTransfer.onclick = transferToTeam;
-	let contentWindows = {
-		iFrameLog: []
-	};
+	let pendingArenaSandboxes = [];
 	let arenaListReady;
 	let arenaListReadyPromise = new Promise(resolve => arenaListReady = resolve);
+	let availableParticipantsWrapper = document.createElement('div');
+	let availableParticipants_btn = document.createElement('input');
+	availableParticipants_btn.type = 'button';
+	availableParticipants_btn.id = 'transfer';
+	availableParticipants_btn.onclick = transferToTeam;
+	availableParticipants_btn.dataset.select = 'participants-selectable';
+	availableParticipants_btn.value = 'Transfer here';
+	availableParticipantsWrapper.appendChild(availableParticipants_btn);
+	let availableParticipants_label = document.createElement('label');
+	availableParticipants_label.for = 'participants-selectable';
+	availableParticipants_label.innerHTML = 'Available participants';
+	availableParticipantsWrapper.appendChild(availableParticipants_label);
+	let availableParticipants_select = document.createElement('select');
+	availableParticipants_select.id = 'participants-selectable';
+	availableParticipants_select.classList.add('participants');
+	availableParticipants_select.multiple = true;
+	availableParticipantsWrapper.appendChild(availableParticipants_select);
+	participantGroups.appendChild(availableParticipantsWrapper);
 	window.onhashchange = ()=>selectArena.contentWindow.postMessage({type: 'get-arenas', value: location.hash.substring(1)});
 	window.onhashchange();
 	window.onmessage = messageEvent => {
-		if(messageEvent.data.type === 'auto-run'){
+		if(messageEvent.data.type === 'Replay-Height'){
+			_replayContainer.style.height = parseFloat(messageEvent.data.value) + 'px';
+		}else if(messageEvent.data.type === 'auto-run'){
 			_json = messageEvent.data.arena;
 			document.title = messageEvent.data.type;
 			begin(messageEvent.data.settings, messageEvent.data.bracket);
-			sendLog(messageEvent);
+			getTournamentLog(messageEvent);
 		}else if(messageEvent.data.type === 'arena-changed'){
 			if(document.title !== 'auto-run'){
+				document.getElementById('wrapper').classList.remove('hidden');
 				_sortByStars = messageEvent.data.value.settings.sortByStars;
 				selectArena.style.height = messageEvent.data.value.settings.height + 'px';
 				_json = messageEvent.data.value.option;
@@ -45,28 +65,36 @@ function a(){
 					element.parentNode.removeChild(element);
 				});
 				document.title = _json.name + ' Arena';
-				settingsIframe.contentWindow.postMessage({type: 'SetArena', value: _json.raw_url});
+				settingsIframe.contentWindow.postMessage({type: 'SetArena', value: _json.raw_url}, '*');
 				getParticipants(_json.full_name);
-				fetch(_json.raw_url+'README.md').then(response => response.text()).then(readme => {
-					fetch('https://gitlab.com/api/v4/markdown',{method: 'POST', body: JSON.stringify({text: readme}),
-					headers: {Accept: 'application/vnd.github.v3+json', 'Content-Type':'application/json'}
-				}).then(response => response.json()).then(response => {
-					arenaDescription.innerHTML = response.html;
-					});
-				});
 			}
-		}else if(contentWindows.iFrameLog.includes(messageEvent.source)){
+		}else if(pendingArenaSandboxes.includes(messageEvent.source)){
 			writeArenaLog(messageEvent);
 		}else if(settingsIframe.contentWindow === messageEvent.source){
 			switch(messageEvent.data.type){
 				case 'properties':
 					arenaProperties = messageEvent.data.value.properties;
-					settingsIframe.style.height = messageEvent.data.value.height + 'px';
 					for(let i = 0; i < Math.max(1, arenaProperties.header.limits.teams.min); i++){
 						createTeam();
 					}
+					if(localParticipants !== null){
+						localParticipants.reverse().forEach((participant, index) => {
+							if(typeof participant === 'object'){
+								let option = addParticipant(participant[0], participant[1]);
+								let select = document.getElementById('participant-team-' + participant[2]);
+								if(select){
+									select.add(option);
+								}
+							}else{
+								addParticipant(participant, 'Manually added participant '+(index+1));
+							}
+						});
+						localParticipants = null;
+						btnStart.disabled = !validateStart();
+					}
 					break;
 				case 'settings': begin(messageEvent.data.value); break;
+				case 'size-changed': settingsIframe.style.height = messageEvent.data.value.height + 'px'; break;
 			}
 		}else{
 			console.error('Source element not defined!');
@@ -74,103 +102,80 @@ function a(){
 		}
 	}
 	addArena = (url='', name='', replayURL='', ...participants) => {
-		if(name === ''){
-			name = url;
+		if(url === ''){return;}
+		if(typeof url === 'string'){
+			url = {arena: url, includeScripts: {arena: [], participants: []}};
 		}
-		localArenas[url] = replayURL;
+		if(name === ''){
+			name = url.arena;
+		}
+		localArenas[url.arena] = replayURL;
+		let json = {
+			name: name,
+			raw_url: url.arena,
+			html_url: url.arena,
+			full_name: 'local/'+name,
+			default_branch: null,
+			stars: -1,
+			commit: null,
+			version: null,
+			includeScripts: url.includeScripts
+		};
 		arenaListReadyPromise.then(()=>{
 			localParticipants = participants;
-		selectArena.contentWindow.postMessage({type: 'add-arena', value: [url, name]});
+			selectArena.contentWindow.postMessage({type: 'add-arena', value: json});
 		});
 	}
 	addParticipant = (url='', name='Manually added participant') => {
 		let option = addParticipantOption(url, name);
 		option.classList.add('local');
-		sortOptions(participantList);
+		sortOptions(availableParticipants_select);
+		return option;
 	}
-	function sendLog(messageEvent){
-		if(outputSum.dataset.done){
-			messageEvent.source.postMessage({type: 'log', value: {id: messageEvent.data.id, log: JSON.parse(outputSum.dataset.array)}}, messageEvent.origin);
+	function getTournamentLog(messageEvent){
+		if(pendingArenaSandboxes.length === 0){
+			let dataset = [];
+			for(const key in arenaMatches){
+				if(Object.hasOwnProperty.call(arenaMatches, key)){
+					const arenaMatch = arenaMatches[key];
+					debugger;
+					console.log(arenaMatch);
+				}
+			}
+			messageEvent.source.postMessage({type: 'log', value: {id: messageEvent.data.id, log: dataset}}, messageEvent.origin);
 		}else{
-			setTimeout(()=>{sendLog(messageEvent)}, 1000);
+			setTimeout(()=>{getTournamentLog(messageEvent)}, 1000);
 		}
 	}
 	function writeArenaLog(messageEvent){
-		let iframe = document.getElementById(messageEvent.data.id);
-		let output = iframe.parentElement.getElementsByClassName('log')[0];
+		let iframe = document.getElementById(messageEvent.data.iframeID);
+		let arenaMatch = arenaMatches[iframe];
+		if(arenaMatch === undefined){
+			arenaMatch = [];
+			arenaMatches[iframe] = arenaMatch;
+		}
 		if(messageEvent.origin === 'null'){
-			while(0 < output.childElementCount){
-				output.removeChild(output.firstChild);
-			}
-			let isDone = true;
-			let aborted = []; // TODO: Use.
-			messageEvent.data.value.data.forEach(posts => {
-				let container = document.createElement('div');
-				output.appendChild(container);
-				let isDone_local = false;
-				let score = undefined;
-				posts.forEach(post => {
-					isDone_local |= post.type === 'Done' || post.type === 'Aborted';
-					if(post.type === 'Done'){
-						score = post.value.score;
-					}else if(post.type === 'Aborted'){
-						score = null;
-						aborted.push(post.value);
-					}
-					let label = document.createElement('label');
-					label.htmlFor = iframe.src + ':' + post.id;
-					label.classList.add(post.type);
-					label.innerHTML = post.type;
-					container.appendChild(label);
-					let pre = document.createElement('pre');
-					pre.id = iframe.src + ':' + post.id;
-					pre.classList.add(post.type);
-					pre.innerHTML = JSON.stringify(post.value,null,'\t');
-					container.appendChild(pre);
-				});
-				isDone &= isDone_local;
-				if(isDone_local){
-					if(score === null){
-						outputSum.dataset.aborted = JSON.stringify(aborted);
-					}else{
-						let array = outputSum.dataset.array === undefined ? [] : JSON.parse(outputSum.dataset.array);
-						score.forEach(s => {
-							let entry = array.find(entry => entry.name === s.name);
-							if(entry === undefined){
-								entry = {type: 'score', name: s.name, score: 0, scores: []};
-								array.push(entry);
-							}
-							entry.scores.push(s.score);
-							entry.score = entry.scores.reduce(function(a,b){return a+b;})/entry.scores.length;
-						});
-						outputSum.dataset.array = JSON.stringify(array);
-						outputSum.innerHTML = JSON.stringify(array,null,'\t');
-					}
-				}
+			iframe.parentElement.removeChild(iframe);
+			let defaultReplay = localArenas[_json.raw_url];
+			let replayData = {
+				header: {
+					defaultReplay: defaultReplay
+				},
+				body: messageEvent.data.value
+			};
+			pendingArenaSandboxes.splice(pendingArenaSandboxes.indexOf(messageEvent.source), 1);
+			Array.from(document.getElementsByClassName('replay-container')).forEach(element => {
+				element.parentNode.removeChild(element);
 			});
-			if(isDone){
-				let defaultReplay = localArenas[_json.raw_url];
-				let replayData = {
-					header: {
-						defaultReplay: defaultReplay
-					},
-					body: messageEvent.data.value
-				};
-				outputSum.dataset.array = JSON.stringify(messageEvent.data.value);
-				outputSum.dataset.done = true;
-				outputSum.innerHTML = JSON.stringify(messageEvent.data.value,null,'\t');
-				contentWindows.iFrameLog.splice(contentWindows.iFrameLog.indexOf(messageEvent.source), 1);
-				Array.from(document.getElementsByClassName('replay-container')).forEach(element => {
-					element.parentNode.removeChild(element);
-				});
-				if(!document.title.startsWith('auto-run')){
-					let replayContainer = document.createElement('iframe');
-					replayContainer.classList.add('replay-container');
-					replayContainer.src = '../Replay/#'+JSON.stringify(replayData);
-					document.body.appendChild(replayContainer);
-				}
-			}else{
-				getIFrameLog(iframe);
+			if(!document.title.startsWith('auto-run')){
+				_replayContainer = document.createElement('iframe');
+				_replayContainer.classList.add('replay-container');
+				_replayContainer.src = '../Replay/';
+				document.body.appendChild(_replayContainer);
+				setTimeout(()=>{
+					_replayContainer.contentWindow.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
+					_replayContainer.contentWindow.postMessage({type: 'Replay-Data', replayData: JSON.stringify(replayData)}, '*');
+				}, 1000);
 			}
 		}
 	}
@@ -259,19 +264,10 @@ function a(){
 					}
 				});
 				Promise.all(promises).then(() => {
-					sortOptions(participantList);
+					sortOptions(availableParticipants_select);
 					arenaListReady();
 				})
 			});
-		}else{
-			localParticipants.reverse().forEach((participant, index) => {
-				if(typeof participant === 'object'){
-					addParticipant(participant[0], participant[1]);
-				}else{
-					addParticipant(participant, 'Manually added participant '+(index+1));
-				}
-			});
-			localParticipants = null;
 		}
 	}
 	function addParticipantOption(url, name){
@@ -279,7 +275,7 @@ function a(){
 		option.dataset.raw_url = url;
 		option.dataset.name = name;
 		option.innerHTML = option.dataset.name;
-		participantList.appendChild(option);
+		availableParticipants_select.appendChild(option);
 		return option;
 	}
 	function createTeam(){
@@ -296,7 +292,7 @@ function a(){
 		participantTeam.appendChild(select);
 		input.type = 'button';
 		input.dataset.select = teamID;
-		input.value = btnTransfer.value;
+		input.value = availableParticipants_btn.value;
 		input.onclick = transferToTeam;
 		label.htmlFor = teamID;
 		label.innerHTML = 'Team ' + teamIndex;
@@ -304,27 +300,24 @@ function a(){
 		select.classList.add('participants');
 		select.classList.add('participant-team');
 		select.multiple = true;
-		document.getElementById('participant-groups').appendChild(participantTeam);
+		participantGroups.appendChild(participantTeam);
 	}
 	function start(){
 		while(0 < logContainer.childElementCount){
 			logContainer.removeChild(logContainer.firstChild);
 		}
-		outputSum.innerHTML = '';
-		for(var key in outputSum.dataset){
-			delete outputSum.dataset[key];
-		}
-		settingsIframe.contentWindow.postMessage({type: 'GetSettings'});
+		arenaMatches = {};
+		settingsIframe.contentWindow.postMessage({type: 'GetSettings'}, '*');
 	}
 	function begin(settings, bracket=[]){
 		let json = {
-			arena: _json.full_name+'/'+_json.default_branch,
+			arena: _json,
 			urls: {
-				arena: _json.raw_url,
 				ArenaHelper: location.origin+location.pathname.replace(/[^\/]*$/,'')+'ArenaHelper.js',
 				ParticipantHelper: location.origin+location.pathname.replace(/[^\/]*$/,'')+'ParticipantHelper.js',
 				randomseed: 'https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js'
 			},
+			iframeID: Date()+'_'+Math.random(),
 			participants: bracket,
 			settings: settings
 		};
@@ -346,10 +339,10 @@ function a(){
 		let div = document.createElement('div');
 		logContainer.appendChild(div);
 		let iframe = document.createElement('iframe');
-		iframe.src = 'iframe.sandbox.arena.html'+(isDebugMode?'?debug':'')+'#' + JSON.stringify(json);
+		iframe.src = 'iframe.sandbox.arena.html'+(isDebugMode?'?debug':'');
 		iframe.sandbox = 'allow-scripts';
 		iframe.style.display = 'none';
-		iframe.id = Date() + '_' + Math.random();
+		iframe.id = json.iframeID;
 		div.appendChild(iframe);
 		let output = document.createElement('div');
 		if(!isDebugMode){
@@ -357,10 +350,7 @@ function a(){
 		}
 		output.classList.add('log');
 		div.appendChild(output);
-		setTimeout(()=>{getIFrameLog(iframe, output)}, 1000);
-	}
-	function getIFrameLog(iframe){
-		contentWindows.iFrameLog.push(iframe.contentWindow);
-		iframe.contentWindow.postMessage(iframe.id, '*');
+		pendingArenaSandboxes.push(iframe.contentWindow);
+		setTimeout(()=>iframe.contentWindow.postMessage(json, '*'), 1000);
 	}
 }
