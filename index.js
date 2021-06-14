@@ -27,7 +27,19 @@ function a(){
 		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
 	true, '582px', true);
 	if(localStorage.getItem('Local arena development') !== null){
-		openWindow('Local arena development','Automatic addition of local arena is set.<br><button onclick="localStorage.removeItem(\'Local arena development\'); location.reload();">Remove</button>',false);
+		let header = document.getElementById('header-left');
+		let wrapper = document.createElement('div');
+		wrapper.classList.add('dropdown');
+		let title = document.createElement('div');
+		title.innerHTML = '🚧Local arena development🚧';
+		let contentWrapper = document.createElement('div');
+		contentWrapper.classList.add('dropdown-content');
+		let content = document.createElement('div');
+		content.innerHTML = 'Automatic addition of local arena is set.<br><br><button onclick="localStorage.removeItem(\'Local arena development\'); location.reload();">Clear</button>';
+		wrapper.appendChild(title);
+		contentWrapper.appendChild(content);
+		wrapper.appendChild(contentWrapper);
+		header.appendChild(wrapper);
 	}
 	fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
 		let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');

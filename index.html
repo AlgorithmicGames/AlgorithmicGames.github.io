@@ -52,7 +52,7 @@
 				text-decoration: none;
 			}
 
-			#header-content-row>*:not(:last-child), #header-right>* {
+			#header-content-row>*>*, #header-right>* {
 				cursor: pointer;
 				padding: 7px 12px;
 			}
@@ -126,14 +126,14 @@
 				/*content: ' ' var(--github-stars) attr(data-stars);*/
 			}
 
-			#header-content-row>*:not(:last-child) {
-				border-right: var(--window-border);;
+			#header-content-row>*>*:not(:last-child) {
+				border-right: var(--window-border);
 			}
-			#header-right>*:not(:first-child) {
-				border-left: var(--window-border);;
+			#header-right>*>*:not(:first-child) {
+				border-left: var(--window-border);
 			}
 
-			#header-content-row, #header-right {
+			#header-content-row, #header-left, #header-right {
 				display: flex;
 			}
 
@@ -244,26 +244,28 @@
 		<header>
 			<div class="header">
 				<div id="header-content-row">
-					<div id="header-title">
-						<div id="header-title-real"></div>
-						<div id="header-title-fake">GitHub.com</div>
-					</div>
-					<div class="dropdown">
-						<a href="https://github.com/AI-Tournaments/AI-Tournaments/releases/" target="_blank">News</a>
-						<div class="dropdown-content" id="news-dropdown"></div>
-					</div>
-					<div class="dropdown">
-						<div class="open-screen" data-url="Arena/">Arena</div>
-						<div class="dropdown-content" id="arena-dropdown"></div>
-					</div>
-					<!-- Temp disabled.
-					<div class="dropdown">
-						<label>Tournament</label>
-						<div class="dropdown-content">
-							< !--<div class="open-screen" data-url="Tournament/Backend/">Backend</div>-- >
-							<div class="open-screen" data-url="Tournament/Clientside/">Client-side</div>
+					<div id="header-left">
+						<div id="header-title">
+							<div id="header-title-real"></div>
+							<div id="header-title-fake">GitHub.com</div>
 						</div>
-					</div>-->
+						<div class="dropdown">
+							<a href="https://github.com/AI-Tournaments/AI-Tournaments/releases/" target="_blank">News</a>
+							<div class="dropdown-content" id="news-dropdown"></div>
+						</div>
+						<div class="dropdown">
+							<div class="open-screen" data-url="Arena/">Arena</div>
+							<div class="dropdown-content" id="arena-dropdown"></div>
+						</div>
+						<!-- Temp disabled.
+						<div class="dropdown">
+							<label>Tournament</label>
+							<div class="dropdown-content">
+								< !--<div class="open-screen" data-url="Tournament/Backend/">Backend</div>-- >
+								<div class="open-screen" data-url="Tournament/Clientside/">Client-side</div>
+							</div>
+						</div>-->
+					</div>
 					<div id="header-right">
 						<div class="dropdown">
 							<label>Contact</label>
