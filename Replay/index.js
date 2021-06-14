@@ -86,7 +86,6 @@ function a(){
 			return url.protocol === "http:" || url.protocol === "https:";
 		}
 		let errors = [];
-		debugger;
 		if(json.header !== undefined && json.header.defaultReplay !== undefined && !isUrl(json.header.defaultReplay)){
 			errors.push({
 				path: ['header'],
