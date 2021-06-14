@@ -19,6 +19,9 @@ function a(){
 	frameLoop();
 	loadTheNews();
 	loadArenas();
+	if(window.location.hash.startsWith('#Arena/')){
+		openScreen(window.location.hash.substr(1));
+	}
 	document.getElementById('login-button').href += '?origin='+encodeURI(location.protocol+'//'+location.host+location.pathname);
 	// Hidden until a fun "lore" has been established. openWindow('Welcome to the tournament, servant!','You have been sent here by your proud Master to showcasing what you have learned in our arenas. [TODO: How to?]\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px', true);
 	openWindow(
@@ -53,13 +56,19 @@ function a(){
 		});
 	});
 	window.onmessage = messageEvent => {
-		if(messageEvent.data.type === 'resize'){
-			let iframe = document.getElementById(messageEvent.data.value.id);
-			iframe.style.height = messageEvent.data.value.height+'px';
-			iframe.style.width = messageEvent.data.value.width+'px';
-		}else{
-			console.error('Source element not defined!');
-			console.error(messageEvent.source.frameElement);
+		switch(messageEvent.data.type){
+			case 'resize':
+				let iframe = document.getElementById(messageEvent.data.value.id);
+				iframe.style.height = messageEvent.data.value.height+'px';
+				iframe.style.width = messageEvent.data.value.width+'px';
+				break;
+			case 'arena-changed':
+				window.location.hash = 'Arena/#'+messageEvent.data.value;
+				break;
+			default:
+				console.error('Source element not defined!');
+				console.error(messageEvent.source.frameElement);
+				break;
 		}
 	}
 	function frameLoop(){
@@ -165,7 +174,7 @@ function a(){
 				item.dataset.stars = repo.stars;
 				item.dataset.full_name = repo.full_name;
 				item.addEventListener('click', ()=>{
-					openScreen('Arena/#'+repo.full_name)
+					openScreen('Arena/#'+repo.full_name);
 				});
 				arenaContainer.appendChild(item);
 			});
@@ -186,6 +195,7 @@ function a(){
 			_screens.appendChild(iframe);
 			iframe.src = src;
 			iframe.dataset.targetSrc = src;
+			setTimeout(()=>iframe.contentWindow.postMessage({type: 'SetParent'}, '*'), 1000);
 		}
 	}
 	function makeDraggable(trigger, draggable=trigger){
