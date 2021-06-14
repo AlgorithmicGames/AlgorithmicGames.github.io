@@ -19,7 +19,7 @@
 				position: static;
 			}
 			header>.header {
-				border: 2px solid;
+				border: var(--window-border);
 			}
 
 			#content, #screens {
@@ -52,7 +52,7 @@
 				text-decoration: none;
 			}
 
-			#header-content-row>*:not(:last-child), #header-right>* {
+			#header-content-row>*>*, #header-right>* {
 				cursor: pointer;
 				padding: 7px 12px;
 			}
@@ -126,14 +126,14 @@
 				/*content: ' ' var(--github-stars) attr(data-stars);*/
 			}
 
-			#header-content-row>*:not(:last-child) {
-				border-right: 2px solid;
+			#header-content-row>*>*:not(:last-child) {
+				border-right: var(--window-border);
 			}
-			#header-right>*:not(:first-child) {
-				border-left: 2px solid;
+			#header-right>*>*:not(:first-child) {
+				border-left: var(--window-border);
 			}
 
-			#header-content-row, #header-right {
+			#header-content-row, #header-left, #header-right {
 				display: flex;
 			}
 
@@ -146,7 +146,7 @@
 				background-color: var(--transparency);
 			}
 			.window .border {
-				border: 2px solid;
+				border: var(--window-border);;
 				margin: 7px 3px 7px 3px;
 			}
 			.window .border .header {
@@ -155,11 +155,11 @@
 				padding: 0px 13px 0px 13px;
 			}
 			.window .border iframe {
-				border-top: 2px solid;
+				border-top: var(--window-border);;
 			}
 			.window .border .message {
-				padding: 7px 13px 7px 13px;
-				border-top: 2px solid;
+				padding: var(--window-padding);
+				border-top: var(--window-border);;
 				white-space: break-spaces;
 			}
 			.draggable {
@@ -171,7 +171,7 @@
 				right: 11px;
 				cursor: pointer;
 				padding-left: 6px;
-				border-left: 2px solid;
+				border-left: var(--window-border);;
 				padding-top: 7px;
 				padding-bottom: 7px;
 			}
@@ -238,38 +238,39 @@
 			localStorage.setItem('PageLoaded', Date.now());
 		</script>
 		<script src="index.js"></script>
-		<script src="Backend.js"></script>
 		<script src="GitHubApi.js"></script>
 	</head>
 	<body onload="a()">
 		<header>
 			<div class="header">
 				<div id="header-content-row">
-					<div id="header-title">
-						<div id="header-title-real"></div>
-						<div id="header-title-fake">GitHub.com</div>
-					</div>
-					<div class="dropdown">
-						<a href="https://github.com/AI-Tournaments/AI-Tournaments/releases/" target="_blank">News</a>
-						<div class="dropdown-content" id="news-dropdown"></div>
-					</div>
-					<div class="dropdown">
-						<div class="open-screen" data-url="Arena/">Arena</div>
-						<div class="dropdown-content" id="arena-dropdown"></div>
-					</div>
-					<!-- Temp disabled.
-					<div class="dropdown">
-						<label>Tournament</label>
-						<div class="dropdown-content">
-							< !--<div class="open-screen" data-url="Tournament/Backend/">Backend</div>-- >
-							<div class="open-screen" data-url="Tournament/Clientside/">Client-side</div>
+					<div id="header-left">
+						<div id="header-title">
+							<div id="header-title-real"></div>
+							<div id="header-title-fake">GitHub.com</div>
 						</div>
-					</div>-->
+						<div class="dropdown">
+							<a href="https://github.com/AI-Tournaments/AI-Tournaments/releases/" target="_blank">News</a>
+							<div class="dropdown-content" id="news-dropdown"></div>
+						</div>
+						<div class="dropdown">
+							<div class="open-screen" data-url="Arena/">Arena</div>
+							<div class="dropdown-content" id="arena-dropdown"></div>
+						</div>
+						<!-- Temp disabled.
+						<div class="dropdown">
+							<label>Tournament</label>
+							<div class="dropdown-content">
+								< !--<div class="open-screen" data-url="Tournament/Backend/">Backend</div>-- >
+								<div class="open-screen" data-url="Tournament/Clientside/">Client-side</div>
+							</div>
+						</div>-->
+					</div>
 					<div id="header-right">
 						<div class="dropdown">
 							<label>Contact</label>
 							<div class="dropdown-content">
-								<a href="https://discord.gg/jhUJNsN" target="_blank">Community <i class="discord-logo"></i><!-- TODO: Replace color with matching green. --></a>
+								<a href="https://discord.gg/jhUJNsN" target="_blank">Community <i class="discord-logo"></i><img src="" onerror="console.log('// TODO: Replace color with matching green.')"></img></a>
 								<!--<a href="mailto:overlord@aitournaments.io">E-mail</a>-->
 							</div>
 						</div>

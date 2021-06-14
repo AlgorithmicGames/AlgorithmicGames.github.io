@@ -1,7 +1,8 @@
 # AI-Tournaments
 AI Tournaments is still in an early prototype stage. See the section on [`Participate`](#Participate) if you want to join a arena, then analyze how other have solved the arena until better documentation has been written. The name of the repository will be the name used in the arena, except if it starts with `AI-Tournaments-Participant-` then that part is removed.
 
-Click here to [join the Discord community](https://discord.gg/jhUJNsN).
+Click image below to join the Discord community.
+<br>[![Discord banner2](https://discord.com/api/guilds/765291928454823936/widget.png?style=banner2)](https://discord.gg/jhUJNsN)
 
 ## Participate
 To participate in a Arena you need to [create a GitHub repository](https://github.com/AI-Tournaments/Participant-Template) and add three topics: `AI-Tournaments`, `AI-Tournaments-Participant` and the full repository name of the arena (`UserAuthor--ExampleArena`). The created repository also has to have a file in root called `participant.js`, this is the file that will be called to the arena.
@@ -11,9 +12,21 @@ If you want to test your participant without publicly uploading it to GitHub you
 If you need more insight and maybe even add some debug logs to the Arena you can download the `arena.js`, add it to a webserver and then spawn a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Spawning_a_dedicated_worker) with the arena file and [post a message](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Sending_messages_to_and_from_a_dedicated_worker) matching [Participants.js](https://github.com/AI-Tournaments/AI-Tournaments/blob/master/Arena/Participants.js)' constructor.
 ## Community arena
 ### Testing
+addArena(`url`, `name`, `replayURL`, (...``participantObjects``)).
+Either `participantObject` is a url string to a script or an array ([`url`, `name`, (`teamNumber`)]).
 ``` JavaScript
-addArena('http://127.0.0.1:8080/Community-Arena/','New-Community-Arena','http://127.0.0.1:8080/Community-Arena-Replay/'/*, 'http://127.0.0.1:8080/Community-Arena-Test-Participants/participant.js', ['http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js', 'Temp-Participant'], ...*/);
+/* Example */
+addArena('http://127.0.0.1:8080/Community-Arena/','New-Community-Arena','http://127.0.0.1:8080/Community-Arena-Replay/', 'http://127.0.0.1:8080/Community-Arena-Test-Participants/participant.js', ['http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js', 'Temp-Participant', 1]);
 ```
+Alternatively it is possible to put the `addArena` inputs to local storage `Local arena development` as a JSON formatted sting to automatically add the local arena on page reload.
+| Key | Value |
+| --- |---|
+| `Local arena development` | `["http://127.0.0.1:8080/Community-Arena/","New-Community-Arena","http://127.0.0.1:8080/Community-Arena-Replay/", "http://127.0.0.1:8080/Community-Arena-Test-Participants/participant.js", ["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js", "Temp-Participant", 1]]` |
+## Special thanks
+- JSON Editor<br>
+AI-Tournaments uses [JSON Editor](https://github.com/josdejong/jsoneditor/) by [Jos de Jong](https://github.com/josdejong), powered by [Ace (Ajax.org Cloud9 Editor)](https://github.com/ajaxorg/ace/) and [Ajv JSON schema validator](https://github.com/ajv-validator/ajv/), for editing, rendering and validating JSON.
+- seedrandom<br>
+AI-Tournaments uses [seedrandom](https://github.com/davidbau/seedrandom) by [David Bau](https://github.com/davidbau) for overriding `Math.random()` to generate repeatable numbers.
 
 ## Why Source Available?
 First of, [AI-Tournaments](https://github.com/AI-Tournaments) is _not_ Open Source by the [Open Source Initiative's definition](https://opensource.org/docs/osd) but rather [Source Available](https://en.wikipedia.org/wiki/Source-available_software), except were a MIT license is in place.

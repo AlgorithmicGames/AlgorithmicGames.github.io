@@ -13,12 +13,15 @@ function a(){
 	Array.from(document.getElementsByClassName('open-screen')).forEach(element => {
 		element.addEventListener('click', ()=>{openScreen(element.dataset.url)});
 	});
-	window.onresize = calcSize;
+	window.onresize = resizeBackground;
 	window.onresize();
 	GitHubApi.login();
 	frameLoop();
 	loadTheNews();
 	loadArenas();
+	if(window.location.hash.startsWith('#Arena/')){
+		openScreen(window.location.hash.substr(1));
+	}
 	document.getElementById('login-button').href += '?origin='+encodeURI(location.protocol+'//'+location.host+location.pathname);
 	// Hidden until a fun "lore" has been established. openWindow('Welcome to the tournament, servant!','You have been sent here by your proud Master to showcasing what you have learned in our arenas. [TODO: How to?]\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px', true);
 	openWindow(
@@ -26,17 +29,26 @@ function a(){
 		'If you want to you can join the community discussions over at the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord server</a>.\n'+
 		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
 	true, '582px', true);
-	if(Backend.isOverride()){
-		openWindow('⚠️Attention: Backend override⚠️','Backend is currently set to: '+Backend.getBackend()+'<br><button onclick="localStorage.removeItem(\'backend\'); location.reload();">Reset</button>',false);
+	if(localStorage.getItem('Local arena development') !== null){
+		let header = document.getElementById('header-left');
+		let wrapper = document.createElement('div');
+		wrapper.classList.add('dropdown');
+		let title = document.createElement('div');
+		title.innerHTML = '🚧Local arena development🚧';
+		let contentWrapper = document.createElement('div');
+		contentWrapper.classList.add('dropdown-content');
+		let content = document.createElement('div');
+		content.innerHTML = 'Automatic addition of local arena is set.<br><br><button onclick="localStorage.removeItem(\'Local arena development\'); location.reload();">Clear</button>';
+		wrapper.appendChild(title);
+		contentWrapper.appendChild(content);
+		wrapper.appendChild(contentWrapper);
+		header.appendChild(wrapper);
 	}
-	if(navigator.userAgent.indexOf("Firefox") === -1){
-		openWindow('Known problem: browser crash','AI-Tournaments can crash in some browsers when running matches in the client, Chrome is for example calling it "Oh, snap! STATUS_ACCESS_VIOLATION". If you are facing this problem, try using Firefox until it is sorted. Read more <a href="https://github.com/AI-Tournaments/AI-Tournaments/issues/2" target="_blank">here</a>.',false,'424px');
-	}
-	openWindow('Renovation in progress','AI-Tournaments is going through a redesign, so expect problems until next release. Jump into the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord</a> server if you want more information.',false,'424px');
 	fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
 		let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
+		console.log('// TODO: Use GitHub\'s markdown API. https://docs.github.com/en/rest/reference/markdown');
 		fetch('https://gitlab.com/api/v4/markdown',{method: 'POST', body: JSON.stringify({text: why}),
-			headers: {Accept: 'application/vnd.github.v3+json', 'Content-Type':'application/json'}
+		headers: {Accept: 'application/vnd.github.v3+json', 'Content-Type':'application/json'} // TODO: https://docs.github.com/en/rest/reference/markdown
 		}).then(response => response.json()).then(response => {
 			document.getElementById('source-available').addEventListener('click', ()=>{
 				openWindow('Why "Source Available"?', '<span class="source-available">'+response.html+'</span>\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '705px');
@@ -44,13 +56,19 @@ function a(){
 		});
 	});
 	window.onmessage = messageEvent => {
-		if(messageEvent.data.type === 'resize'){
-			let iframe = document.getElementById(messageEvent.data.value.id);
-			iframe.style.height = messageEvent.data.value.height+'px';
-			iframe.style.width = messageEvent.data.value.width+'px';
-		}else{
-			console.error('Source element not defined!');
-			console.error(messageEvent.source.frameElement);
+		switch(messageEvent.data.type){
+			case 'resize':
+				let iframe = document.getElementById(messageEvent.data.value.id);
+				iframe.style.height = messageEvent.data.value.height+'px';
+				iframe.style.width = messageEvent.data.value.width+'px';
+				break;
+			case 'arena-changed':
+				window.location.hash = 'Arena/#'+messageEvent.data.value;
+				break;
+			default:
+				console.error('Source element not defined!');
+				console.error(messageEvent.source.frameElement);
+				break;
 		}
 	}
 	function frameLoop(){
@@ -138,11 +156,11 @@ function a(){
 	}
 	function loadArenas(amount=undefined){
 		let arenaContainer = document.getElementById('arena-dropdown');
-		GitHubApi.fetchArenas().then(repos => {
+		GitHubApi.fetchArenas().then(arenas => {
 			let officialRepos = [];
-			repos.forEach(repo => {
-				if(repo.owner.login === 'AI-Tournaments'){
-					officialRepos.push(repo);
+			arenas.forEach(arena => {
+				if(arena.official){
+					officialRepos.push(arena);
 				}
 			});
 			officialRepos.sort(function(a,b){
@@ -153,10 +171,10 @@ function a(){
 			officialRepos.slice(0,amount).forEach(repo => {
 				let item = document.createElement('div');
 				item.innerHTML = repo.name.replace('-Arena','')
-				item.dataset.stars = repo.stargazers_count;
+				item.dataset.stars = repo.stars;
 				item.dataset.full_name = repo.full_name;
 				item.addEventListener('click', ()=>{
-					openScreen('Arena/#'+repo.full_name)
+					openScreen('Arena/#'+repo.full_name);
 				});
 				arenaContainer.appendChild(item);
 			});
@@ -177,6 +195,7 @@ function a(){
 			_screens.appendChild(iframe);
 			iframe.src = src;
 			iframe.dataset.targetSrc = src;
+			setTimeout(()=>iframe.contentWindow.postMessage({type: 'SetParent'}, '*'), 1000);
 		}
 	}
 	function makeDraggable(trigger, draggable=trigger){
@@ -247,7 +266,7 @@ function a(){
 			}
 		}
 	}
-	function calcSize(){
+	function resizeBackground(){
 		_background.className = 'force-new-row';
 		let charsPerRow = 0;
 		_background.innerHTML = '0';
@@ -257,7 +276,7 @@ function a(){
 			charsPerRow++;
 		}
 		charsPerRow++;
-		height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+		height = document.documentElement.scrollHeight;
 		let rows = 2;
 		let charsOnFirstRow = _background.innerHTML;
 		while(_background.offsetHeight < height){

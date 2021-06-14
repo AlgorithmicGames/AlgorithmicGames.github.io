@@ -6,13 +6,39 @@
 		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-173346924-1"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-173346924-1');</script>
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
 		<meta content="yes" name="mobile-web-app-capable">
+		<script src="https://cdn.jsdelivr.net/npm/jsoneditor@9.5.0/dist/jsoneditor.min.js"></script>
+		<link href="https://cdn.jsdelivr.net/npm/jsoneditor@9.5.0/dist/jsoneditor.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="../defaults.css">
 		<style>
+			:root {
+				--margin-length: 8px;
+			}
 			body {
 				margin: 0;
 			}
+			fieldset {
+				border-color: var(--main-color);
+			}
 			fieldset>div>label:first-child {
-				margin-right: 8px;
+				margin-right: var(--margin-length);
+			}
+			.setting-wrapper {
+				display: flex;
+			}
+			.comment {
+				margin-left: var(--margin-length);
+			}
+			.comment>.icon::after {
+				content: '🛈';
+			}
+			.comment>.message {
+				display: none;
+				position: absolute;
+				background-color: var(--transparency);
+				border: var(--window-border);
+			}
+			.comment:hover>.message {
+				display: unset;
 			}
 			.radio-set>label {
 				text-align: left;
@@ -25,7 +51,7 @@
 				grid-template-columns: auto auto;
 			}
 		</style>
-		<script src="iframe.settings.js"></script>
+		<script src="iframe.sandbox.settings.js"></script>
 	</head>
 	<body onload="a()">
 		<form id="settings"></form>

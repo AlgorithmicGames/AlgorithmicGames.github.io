@@ -1,10 +1,15 @@
 'use strict'
 function a(){
+	console.log('// TODO: Fix height of iframe or scroll of parent when this takes two rows on small screen.');
+	let _arenas = [];
+	let _preSelectedArena = '';
 	let sourceWindow = undefined;
 	let arenaList = document.getElementById('arena');
 	let arenaFilter = document.getElementById('arena-filter');
 	let inputSortByStars = document.getElementById('sort-by-stars');
+	let includePreviews = document.getElementById('include-previews');
 	arenaFilter.addEventListener('change', getArenas);
+	includePreviews.addEventListener('change', filterPreviews);
 	arenaList.onchange = event => {
 		let option = getOption(arenaList, event);
 		if(option !== undefined){
@@ -18,24 +23,17 @@ function a(){
 			case 'get-arenas':
 				if(sourceWindow === undefined){
 					sourceWindow = messageEvent.source;
-					getArenas(messageEvent.data.value.preSelectedArena);
+					_preSelectedArena = messageEvent.data.value.preSelectedArena;
+					getArenas();
 				}
 				break;
 			case 'add-arena':
-				addArena(messageEvent.data.value[0], messageEvent.data.value[1]);
+				addArena_local(messageEvent.data.value);
 				break;
 		}
 	}
-	function addArena(url, name){
+	function addArena_local(json){
 		let option = document.createElement('option');
-		let json = {
-			name: name,
-			raw_url: url,
-			html_url: url,
-			full_name: name,
-			default_branch: null,
-			stars: -1
-		};
 		option.innerHTML = json.name;
 		option.dataset.json = JSON.stringify(json);
 		arenaList.appendChild(option);
@@ -47,45 +45,42 @@ function a(){
 		option.selected = true;
 		arenaList.onchange({target: option});
 	}
-	function getArenas(preSelectedArena=''){
+	function getArenas(){
 		while(0 < arenaList.length){
 			arenaList.remove(0);
 		}
-		GitHubApi.fetchArenas().then(repos => {
-			let preSelected = undefined;
-			let options = [...arenaFilter.selectedOptions].flatMap(selectedOption => selectedOption.value);
-			repos.forEach(repo => {
-				let official = repo.owner.login === 'AI-Tournaments';
-				if(options.includes('all') || (official && options.includes('official')) || (!official && options.includes('community'))){
-					let cssStar = getComputedStyle(document.documentElement).getPropertyValue('--github-stars').trim();
-					cssStar = cssStar.substring(1,cssStar.length-1);
-					let option = document.createElement('option');
-					if(preSelectedArena === repo.full_name){
-						preSelected = option;
-					}
-					let json = {
-						official: official,
-						name: repo.full_name.replace(/.*\/|-Arena/g, ''),
-						raw_url: 'https://raw.githubusercontent.com/'+repo.full_name+'/'+repo.default_branch+'/',
-						html_url: repo.html_url,
-						full_name: repo.full_name,
-						default_branch: repo.default_branch,
-						stars: repo.stargazers_count
-					};
-					option.innerHTML = json.name + ' ' + cssStar + repo.stargazers_count;
-					option.dataset.json = JSON.stringify(json);
-					arenaList.appendChild(option);
+		GitHubApi.fetchArenas().then(arenas => {
+			_arenas = arenas;
+			filterPreviews();
+		});
+	}
+	function filterPreviews(){
+		while(0 < arenaList.length){
+			arenaList.remove(0);
+		}
+		let preSelected = undefined;
+		let options = [...arenaFilter.selectedOptions].flatMap(selectedOption => selectedOption.value);
+		_arenas.filter(arena => includePreviews.checked ? true : arena.version !== null).forEach(arena => {
+			if(options.includes('all') || (arena.official && options.includes('official')) || (!arena.official && options.includes('community'))){
+				let cssStar = getComputedStyle(document.documentElement).getPropertyValue('--github-stars').trim();
+				cssStar = cssStar.substring(1,cssStar.length-1);
+				let option = document.createElement('option');
+				if(_preSelectedArena === arena.full_name){
+					preSelected = option;
 				}
-			});
-			sortOptions(arenaList);
-			if(preSelected === undefined){
-				arenaList.onchange({target: arenaList.options[0]});
-			}else{
-				arenaList.options[0].selected = false;
-				preSelected.selected = true;
-				arenaList.onchange({target: preSelected});
+				option.innerHTML = arena.name + ' ' + cssStar + arena.stars;
+				option.dataset.json = JSON.stringify(arena);
+				arenaList.appendChild(option);
 			}
 		});
+		sortOptions(arenaList);
+		if(preSelected === undefined){
+			arenaList.onchange({target: arenaList.options[0]});
+		}else{
+			arenaList.options[0].selected = false;
+			preSelected.selected = true;
+			arenaList.onchange({target: preSelected});
+		}
 	}
 	function getOption(element, event){
 		for(const option of element.getElementsByTagName('option')){
