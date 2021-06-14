@@ -39,3 +39,9 @@ select {
 .hidden {
 	display: none;
 }
+/* Disable style if page is not viewed from root. */
+:root.top * {
+	color: unset;
+	background-color: unset;
+	border-color: unset;
+}
