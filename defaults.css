@@ -22,6 +22,11 @@
 :root, .jsoneditor, .jsoneditor-menu{
 	border-color: var(--main-color);
 }
+input {
+	color: var(--secondary-background-color);
+	background-color: var(--transparency);
+	border-color: var(--main-color);
+}
 select {
 	background: transparent;
 }
