@@ -86,7 +86,8 @@ function a(){
 			return url.protocol === "http:" || url.protocol === "https:";
 		}
 		let errors = [];
-		if(json.header !== undefined && !isUrl(json.header.defaultReplay)){
+		debugger;
+		if(json.header !== undefined && json.header.defaultReplay !== undefined && !isUrl(json.header.defaultReplay)){
 			errors.push({
 				path: ['header'],
 				message: 'Property "defaultReplay" is not a URL.'
