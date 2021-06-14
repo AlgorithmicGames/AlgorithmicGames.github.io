@@ -26,9 +26,6 @@ function a(){
 		'If you want to you can join the community discussions over at the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord server</a>.\n'+
 		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
 	true, '582px', true);
-	if(navigator.userAgent.indexOf("Firefox") === -1){
-		openWindow('Known problem: browser crash','AI-Tournaments can crash in some browsers when running matches in the client, Chrome is for example calling it "Oh, snap! STATUS_ACCESS_VIOLATION". If you are facing this problem, try using Firefox until it is sorted. Read more <a href="https://github.com/AI-Tournaments/AI-Tournaments/issues/2" target="_blank">here</a>.',false,'424px');
-	}
 	if(localStorage.getItem('Local arena development') !== null){
 		openWindow('Local arena development','Automatic addition of local arena is set.<br><button onclick="localStorage.removeItem(\'Local arena development\'); location.reload();">Remove</button>',false);
 	}
