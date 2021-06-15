@@ -34,11 +34,13 @@ function a(){
 		let wrapper = document.createElement('div');
 		wrapper.classList.add('dropdown');
 		let title = document.createElement('div');
-		title.innerHTML = '🚧Local arena development🚧';
+		title.innerHTML = '🚧Arena development🚧';
 		let contentWrapper = document.createElement('div');
 		contentWrapper.classList.add('dropdown-content');
 		let content = document.createElement('div');
-		content.innerHTML = 'Automatic addition of local arena is set.<br><br><button onclick="localStorage.removeItem(\'Local arena development\'); location.reload();">Clear</button>';
+		let arenaObj = JSON.parse(localStorage.getItem('Local arena development'));
+		let arena = arenaObj[1] ? arenaObj[1] : 'local arena';
+		content.innerHTML = 'Automatic addition of <i>'+arena+'</i> is set.<br><br><button onclick="localStorage.removeItem(\'Local arena development\'); location.reload();">Clear</button>';
 		wrapper.appendChild(title);
 		contentWrapper.appendChild(content);
 		wrapper.appendChild(contentWrapper);
