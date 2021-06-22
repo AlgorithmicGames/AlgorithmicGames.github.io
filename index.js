@@ -16,6 +16,7 @@ function a(){
 	window.onresize = resizeBackground;
 	window.onresize();
 	GitHubApi.login();
+	checkGitHubStatus();
 	frameLoop();
 	loadTheNews();
 	loadArenas();
