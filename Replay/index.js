@@ -49,6 +49,7 @@ function a(){
 	}
 	_element_btnLock.onclick = mouseEvent=>{
 		_element_btnLock.disabled = true;
+		console.log('// TODO: Save current replay and add list to display previous replays. Don\'t add if replay is from list. Add "Replays" to header menu.');
 		_editor.setMode('view');
 		for(const input of document.getElementsByClassName('select-match-button')){
 			input.disabled = input.dataset.aborted === 'true';
