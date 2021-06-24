@@ -36,7 +36,7 @@ select {
 	background-color: var(--main-color);
 }
 .hidden {
-	display: none;
+	display: none !important;
 }
 /* Disable style if page is not viewed from root. */
 :root.top * {
