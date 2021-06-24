@@ -36,14 +36,14 @@ function a(){
 		let content = document.createElement('div');
 		let arenaObj = JSON.parse(localStorage.getItem('Local arena development'));
 		let arena = arenaObj[1] ? arenaObj[1] : 'local arena';
-		content.innerHTML = 'Automatic addition of local <i>'+arena+'</i>.<br><br><button onclick="localStorage.removeItem(\'Local arena development\'); location.reload();">Clear</button>';
+		content.innerHTML = '<b>Arena development</b><br>Automatic addition of local <i>'+arena+'</i>.<br><br><button onclick="localStorage.removeItem(\'Local arena development\'); location.reload();">Clear</button>';
 		dropdown.appendChild(content);
 	}
 	if(Backend.isOverride()){
 		let dropdown = document.getElementById('development-dropdown');
 		dropdown.parentElement.classList.remove('hidden');
 		let content = document.createElement('div');
-		content.innerHTML = 'Backend is redirected to <i style="background: var(--secondary-background-color); color: var(--secondary-background-color)" onmouseover="this.style.background=\'var(--main-color)\';this.style.color=\'var(--main-color)\'" onmouseleave="this.style.background=\'var(--secondary-background-color)\';this.style.color=\'var(--secondary-background-color)\'" onclick="this.style.background=\'\';this.style.color=\'\'; this.onmouseover=undefined; this.onmouseleave=undefined;">'+Backend.getBackend()+'</i>.<br><br><button onclick="localStorage.removeItem(\'backend\'); location.reload();">Clear</button>';
+		content.innerHTML = '<b>Backend development</b><br>Backend is redirected to <i style="background: var(--secondary-background-color); color: var(--secondary-background-color)" onmouseover="this.style.background=\'var(--main-color)\';this.style.color=\'var(--main-color)\'" onmouseleave="this.style.background=\'var(--secondary-background-color)\';this.style.color=\'var(--secondary-background-color)\'" onclick="this.style.background=\'\';this.style.color=\'\'; this.onmouseover=undefined; this.onmouseleave=undefined;">'+Backend.getBackend()+'</i>.<br><br><button onclick="localStorage.removeItem(\'backend\'); location.reload();">Clear</button>';
 		dropdown.appendChild(content);
 	}
 	fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
