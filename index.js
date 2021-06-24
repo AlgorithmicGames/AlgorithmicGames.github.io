@@ -30,6 +30,9 @@ function a(){
 		'If you want to you can join the community discussions over at the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord server</a>.\n'+
 		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
 	true, '582px', true);
+	if(Backend.isOverride()){
+		openWindow('⚠️Attention: Backend override⚠️','Backend is currently set to: '+Backend.getBackend()+'<br><button onclick="localStorage.removeItem(\'backend\'); location.reload();">Reset</button>',false);
+	}
 	if(localStorage.getItem('Local arena development') !== null){
 		let header = document.getElementById('header-left');
 		let wrapper = document.createElement('div');

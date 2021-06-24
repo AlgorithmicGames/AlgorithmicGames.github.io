@@ -108,16 +108,9 @@ class GitHubApi{
 		}
 		if(oAuthCode !== null){
 			localStorage.setItem('GitHub OAuth-Token', '!'+oAuthCode);
-			let init = {
-				'method': 'POST',
-				'body': JSON.stringify({
-					'oAuthCode': oAuthCode,
-					'client_id': GitHubApi.#CLIENT_ID
-				})
-			};
-			fetch(new Request('https://ai-tournaments.azurewebsites.net/api/GitHub-Login'), init).then(response => response.text()).then(accessToken => {
-				if(accessToken !== ''){
-					localStorage.setItem('GitHub OAuth-Token', accessToken);
+			Backend.call('login', {oAuthCode: oAuthCode, client_id: GitHubApi.#CLIENT_ID}).then(json => {
+				if(json.data !== undefined){
+					localStorage.setItem('GitHub OAuth-Token', json.data);
 				}
 				location.replace(location.protocol+'//'+location.host+location.pathname);
 			}).catch(error => {
