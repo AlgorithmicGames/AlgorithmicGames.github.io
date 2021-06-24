@@ -30,25 +30,21 @@ function a(){
 		'If you want to you can join the community discussions over at the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord server</a>.\n'+
 		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
 	true, '582px', true);
-	if(Backend.isOverride()){
-		openWindow('⚠️Attention: Backend override⚠️','Backend is currently set to: '+Backend.getBackend()+'<br><button onclick="localStorage.removeItem(\'backend\'); location.reload();">Reset</button>',false);
-	}
 	if(localStorage.getItem('Local arena development') !== null){
-		let header = document.getElementById('header-left');
-		let wrapper = document.createElement('div');
-		wrapper.classList.add('dropdown');
-		let title = document.createElement('div');
-		title.innerHTML = '🚧Arena development🚧';
-		let contentWrapper = document.createElement('div');
-		contentWrapper.classList.add('dropdown-content');
+		let dropdown = document.getElementById('development-dropdown');
+		dropdown.parentElement.classList.remove('hidden');
 		let content = document.createElement('div');
 		let arenaObj = JSON.parse(localStorage.getItem('Local arena development'));
 		let arena = arenaObj[1] ? arenaObj[1] : 'local arena';
-		content.innerHTML = 'Automatic addition of <i>'+arena+'</i> is set.<br><br><button onclick="localStorage.removeItem(\'Local arena development\'); location.reload();">Clear</button>';
-		wrapper.appendChild(title);
-		contentWrapper.appendChild(content);
-		wrapper.appendChild(contentWrapper);
-		header.appendChild(wrapper);
+		content.innerHTML = 'Automatic addition of local <i>'+arena+'</i>.<br><br><button onclick="localStorage.removeItem(\'Local arena development\'); location.reload();">Clear</button>';
+		dropdown.appendChild(content);
+	}
+	if(Backend.isOverride()){
+		let dropdown = document.getElementById('development-dropdown');
+		dropdown.parentElement.classList.remove('hidden');
+		let content = document.createElement('div');
+		content.innerHTML = 'Backend is redirected to <i style="background: var(--secondary-background-color); color: var(--secondary-background-color)" onmouseover="this.style.background=\'var(--main-color)\';this.style.color=\'var(--main-color)\'" onmouseleave="this.style.background=\'var(--secondary-background-color)\';this.style.color=\'var(--secondary-background-color)\'" onclick="this.style.background=\'\';this.style.color=\'\'; this.onmouseover=undefined; this.onmouseleave=undefined;">'+Backend.getBackend()+'</i>.<br><br><button onclick="localStorage.removeItem(\'backend\'); location.reload();">Clear</button>';
+		dropdown.appendChild(content);
 	}
 	fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
 		let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
