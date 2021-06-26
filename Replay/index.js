@@ -4,7 +4,9 @@ function a(){
 	let _autoStart = false;
 	let _element_control = document.getElementById('control-container');
 	let _element_viewOptions = document.getElementById('replay-viewers');
+	let _element_previousReplayOptions = document.getElementById('previous-replays');
 	let _element_iframe = document.getElementById('replay-container');
+	let _element_previousReplayContainer = document.getElementById('previous-replay-container');
 	let _element_iframe_failToLoad = document.getElementById('replay-container-failToLoad');
 	let _element_btnLock = document.getElementById('lock');
 	let _element_editor = document.getElementById('editor');
@@ -17,6 +19,46 @@ function a(){
 			_element_editor.classList.remove('hidden');
 		}
 	}, 1000);
+	function refreshStoredReplays(){
+		while(0 < _element_previousReplayOptions.length){
+			_element_previousReplayOptions.remove(0);
+		}
+		getStoredReplays().forEach((storedReplay, index) => {
+			let participants = storedReplay.data.body.data[0].score.slice();
+			participants.forEach((item, index) => participants[index] = item.members.map(member => member.name).join(', '));
+			let option = document.createElement('option');
+			option.innerHTML = new Date(storedReplay.stored).toLocaleString()+' '+storedReplay.data.body.arena.full_name+' ('+participants.join(' vs. ')+')';
+			option.dataset.header = storedReplay.header;
+			option.dataset.index = index;
+			option.value = JSON.stringify(storedReplay.data);
+			_element_previousReplayOptions.appendChild(option);
+		});
+		_element_control.classList.add('hidden');
+		_element_previousReplayContainer.classList.remove('hidden');
+	}
+	document.getElementById('load-previous-replay').addEventListener('click', refreshStoredReplays);
+	document.getElementById('load-previous-replay-confirm').addEventListener('click', () => {
+		_element_previousReplayContainer.classList.add('hidden');
+		_element_control.classList.remove('hidden');
+		let option = _element_previousReplayOptions.selectedOptions[0];
+		_editor.setMode('view');
+		_editor.setText(option.value);
+		onChange();
+	});
+	document.getElementById('load-previous-replay-delete').addEventListener('click', () => {
+		let option = _element_previousReplayOptions.selectedOptions[0];
+		if(confirm('Are you sure want to remove replay "'+option.innerHTML+'"?')){
+			_element_previousReplayContainer.classList.add('hidden');
+			let storedReplays = getStoredReplays();
+			storedReplays.splice(_element_previousReplayOptions.selectedIndex, 1);
+			setStoredReplays(storedReplays);
+			refreshStoredReplays();
+		}
+	});
+	document.getElementById('load-previous-replay-cancel').addEventListener('click', () => {
+		_element_previousReplayContainer.classList.add('hidden');
+		_element_control.classList.remove('hidden');
+	});
 	window.onmessage = messageEvent => {
 		// NOTE: messageEvent can come from off site scripts.
 		switch(messageEvent.data.type){
@@ -47,10 +89,31 @@ function a(){
 				break;
 		}
 	}
+	function getStoredReplays(){
+		let storedReplays = localStorage.getItem('stored-replays');
+		if(storedReplays === null){
+			return [];
+		}
+		return JSON.parse(storedReplays);
+	}
+	function setStoredReplays(storedReplays=[]){
+		localStorage.setItem('stored-replays', JSON.stringify(storedReplays));
+	}
+	function addReplayToStorage(replay={}){
+		let replayString = JSON.stringify(replay);
+		let storedReplays = getStoredReplays();
+		for(let index = 0; index < storedReplays.length; index++){
+			if(replayString === JSON.stringify(storedReplays[index].data)){
+				return; // Don't add if replay already exist in list.
+			}
+		}
+		storedReplays.push({data: replay, stored: Date.now()});
+		setStoredReplays(storedReplays);
+	}
 	_element_btnLock.onclick = mouseEvent=>{
 		_element_btnLock.disabled = true;
-		console.log('// TODO: Save current replay and add list to display previous replays. Don\'t add if replay is from list. Add "Replays" to header menu.');
 		_editor.setMode('view');
+		addReplayToStorage(_editor.get());
 		for(const input of document.getElementsByClassName('select-match-button')){
 			input.disabled = input.dataset.aborted === 'true';
 		}

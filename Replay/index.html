@@ -40,6 +40,7 @@
 	</head>
 	<body onload="a()">
 		<div id="control-container">
+			<input type="button" id="load-previous-replay" value="Load previous replay"/>
 			<label id="lblData" for="data">Data:</label>
 			<span id="invalid-input" class="hidden error">Invalid input.</span>
 			<div id="editor" class="hidden"></div>
@@ -54,6 +55,13 @@
 		<iframe id="replay-container" sandbox="allow-scripts" class="hidden"></iframe>
 		<div id="replay-container-failToLoad" class="hidden error">
 			Replay failed to load <a href="https://ai-tournaments.github.io/AI-Tournaments/ReplayHelper.js">ReplayHelper.js</a>.
+		</div>
+		<div id="previous-replay-container" class="hidden">
+			<label>Previous replay:</label>
+			<select id="previous-replays"></select>
+			<input type="button" id="load-previous-replay-confirm" value="Load"/>
+			<input type="button" id="load-previous-replay-delete" value="Delete"/>
+			<input type="button" id="load-previous-replay-cancel" value="Close"/>
 		</div>
 	</body>
 </html>
