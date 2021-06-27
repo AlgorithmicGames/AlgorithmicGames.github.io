@@ -20,8 +20,8 @@ function a(){
 			_element_editor.classList.remove('hidden');
 		}
 	}, 1000);
-	_element_previousReplayOptions.onfocus = ()=>[..._element_previousReplayOptions.getElementsByTagName('option')].forEach(option => option.innerHTML = option.dataset.longName);
-	_element_previousReplayOptions.onblur = ()=>[..._element_previousReplayOptions.getElementsByTagName('option')].forEach(option => option.innerHTML = option.dataset.shortName);
+	_element_previousReplayOptions.onfocus = ()=>[..._element_previousReplayOptions.getElementsByTagName('option')].forEach(option => option.innerHTML = option.dataset.shortName);
+	_element_previousReplayOptions.onblur = ()=>[..._element_previousReplayOptions.getElementsByTagName('option')].forEach(option => option.innerHTML = option.dataset.longName);
 	_element_previousReplayOptions.onchange = event=>document.activeElement.blur();
 	function onValidate(json){
 		function isUrl(string){
