@@ -20,6 +20,9 @@ function a(){
 			_element_editor.classList.remove('hidden');
 		}
 	}, 1000);
+	_element_previousReplayOptions.onfocus = ()=>[..._element_previousReplayOptions.getElementsByTagName('option')].forEach(option => option.innerHTML = option.dataset.longName);
+	_element_previousReplayOptions.onblur = ()=>[..._element_previousReplayOptions.getElementsByTagName('option')].forEach(option => option.innerHTML = option.dataset.shortName);
+	_element_previousReplayOptions.onchange = event=>document.activeElement.blur();
 	function onValidate(json){
 		function isUrl(string){
 			let url;
@@ -110,9 +113,7 @@ function a(){
 	}
 	(()=>{
 		let idbOpenDBRequest = indexedDB.open('replays', 1);
-		idbOpenDBRequest.onerror = event=>{
-			console.error('openDb:', event.target.errorCode);
-		};
+		idbOpenDBRequest.onerror = event=>console.error('openDb:', event.target.errorCode);
 		idbOpenDBRequest.onupgradeneeded = idbVersionChangeEvent=>{
 			let idbObjectStore = idbVersionChangeEvent.currentTarget.result.createObjectStore('records', {keyPath: 'id', autoIncrement: true});
 			idbObjectStore.createIndex('stored', 'stored', {unique: false});
@@ -120,19 +121,38 @@ function a(){
 		idbOpenDBRequest.onsuccess = event=>{
 			let _idbDatabase = idbOpenDBRequest.result;
 			function refreshStoredReplays(){
-				while(0 < _element_previousReplayOptions.length){
-					_element_previousReplayOptions.remove(0);
+				while(0 < _element_previousReplayOptions.childElementCount){
+					_element_previousReplayOptions.removeChild(_element_previousReplayOptions.firstChild);
 				}
 				getStoredReplays().then(storedReplays => {
+					let groupedReplays = [];
 					storedReplays.forEach(storedReplay => {
-						let participants = storedReplay.data.body.data[0].score.slice();
-						participants.forEach((item, index) => participants[index] = item.members.map(member => member.name).join(', '));
-						let option = document.createElement('option');
-						option.innerHTML = new Date(storedReplay.stored).toLocaleString()+' '+storedReplay.data.body.arena.full_name+' ('+participants.join(' vs. ')+')';
-						option.dataset.header = JSON.stringify(storedReplay.data.header);
-						option.dataset.databaseId = storedReplay.id;
-						option.value = JSON.stringify(storedReplay.data);
-						_element_previousReplayOptions.appendChild(option);
+						let name = storedReplay.data.body.arena.full_name;
+						if(groupedReplays.find(groupedReplay => groupedReplay.name === name) === undefined){
+							groupedReplays.push({name: name, list: []});
+						}
+						groupedReplays.filter(r => r.name === name)[0].list.push(storedReplay);
+					});
+					groupedReplays.forEach(groupedReplay => {
+						let optgroup = document.createElement('optgroup');
+						optgroup.label = groupedReplay.name;
+						groupedReplay.list.forEach(storedReplay => {
+							let participants = storedReplay.data.body.data[0].score.slice();
+							let scores = [];
+							storedReplay.data.body.data.forEach(match=>{
+								scores.push(storedReplay.data.body.data[0].score.map(item => item.score).join('-'));
+							})
+							participants.forEach((item, index) => participants[index] = item.members.map(member => member.name).join(', '));
+							let option = document.createElement('option');
+							option.dataset.header = JSON.stringify(storedReplay.data.header);
+							option.dataset.databaseId = storedReplay.id;
+							option.dataset.shortName = new Date(storedReplay.stored).toLocaleString()+' '+participants.join(' vs. ')+' ('+scores.join(', ')+')';
+							option.dataset.longName = groupedReplay.name+' '+option.dataset.shortName;
+							option.innerHTML = option.dataset.longName;
+							option.value = JSON.stringify(storedReplay.data);
+							optgroup.appendChild(option);
+						});
+						_element_previousReplayOptions.appendChild(optgroup);
 					});
 					_element_control.classList.add('hidden');
 					_element_previousReplayContainer.classList.remove('hidden');
