@@ -34,6 +34,12 @@
 			#editor{
 				height: 400px;
 			}
+			#load-previous-replay-clear{
+				color: red;
+			}
+			#load-previous-replay-clear[type="button"]:disabled{
+				color: darkred;
+			}
 		</style>
 		<script src="index.js"></script>
 		<script src="../GitHubApi.js"></script>
@@ -62,6 +68,7 @@
 			<input type="button" id="load-previous-replay-confirm" value="Load"/>
 			<input type="button" id="load-previous-replay-delete" value="Delete"/>
 			<input type="button" id="load-previous-replay-cancel" value="Close"/>
+			<input type="button" id="load-previous-replay-clear" value="Remove all"/>
 		</div>
 	</body>
 </html>
