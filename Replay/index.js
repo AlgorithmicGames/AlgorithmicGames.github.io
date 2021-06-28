@@ -22,7 +22,8 @@ function a(){
 	}, 1000);
 	_element_previousReplayOptions.onfocus = ()=>[..._element_previousReplayOptions.getElementsByTagName('option')].forEach(option => option.innerHTML = option.dataset.shortName);
 	_element_previousReplayOptions.onblur = ()=>[..._element_previousReplayOptions.getElementsByTagName('option')].forEach(option => option.innerHTML = option.dataset.longName);
-	_element_previousReplayOptions.onchange = event=>document.activeElement.blur();
+	_element_previousReplayOptions.onchange = ()=>document.activeElement.blur();
+	_element_previousReplayOptions.onmousedown = ()=>_element_previousReplayOptions.onblur();
 	function onValidate(json){
 		function isUrl(string){
 			let url;
@@ -121,6 +122,7 @@ function a(){
 		idbOpenDBRequest.onsuccess = event=>{
 			let _idbDatabase = idbOpenDBRequest.result;
 			function refreshStoredReplays(){
+				console.log('// TODO: Hide <select> when options are visible?');
 				while(0 < _element_previousReplayOptions.childElementCount){
 					_element_previousReplayOptions.removeChild(_element_previousReplayOptions.firstChild);
 				}
