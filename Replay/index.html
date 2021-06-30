@@ -65,11 +65,17 @@
 		<div id="previous-replay-container" class="hidden">
 			<label>Previous replay:</label>
 			<select id="previous-replays"></select>
-			<div>
+			<div id="previous-replays-controller">
 				<input type="button" id="load-previous-replay-confirm" value="Load"/>
+				<input type="button" id="load-previous-replay-rename" value="Rename"/>
 				<input type="button" id="load-previous-replay-delete" value="Delete"/>
 				<input type="button" id="load-previous-replay-cancel" value="Close"/>
 				<input type="button" id="load-previous-replay-clear" value="Remove all"/>
+			</div>
+			<div id="previous-replay-rename" class="hidden">
+				<input type="text" id="previous-replay-rename-input" value=""/>
+				<input type="button" id="previous-replay-rename-save" value="Save"/>
+				<input type="button" id="previous-replay-rename-cancel" value="Cancel"/>
 			</div>
 		</div>
 	</body>

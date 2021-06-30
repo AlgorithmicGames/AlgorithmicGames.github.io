@@ -11,6 +11,12 @@ function a(){
 	let _element_btnLock = document.getElementById('lock');
 	let _element_editor = document.getElementById('editor');
 	let _element_btnClearStoredReplays = document.getElementById('load-previous-replay-clear');
+	let _element_previousReplayRenameInput = document.getElementById('previous-replay-rename-input');
+	let _element_loadPreviousReplayRename = document.getElementById('load-previous-replay-rename');
+	let _element_previousReplayRename = document.getElementById('previous-replay-rename');
+	let _element_previousReplayRenameCancel = document.getElementById('previous-replay-rename-cancel');
+	let _element_previousReplayRenameSave = document.getElementById('previous-replay-rename-save');
+	let _element_previousReplaysController = document.getElementById('previous-replays-controller');
 	let _parent = null;
 	let _replayOptionsPromise_resolve;
 	let _replayOptionsPromise = new Promise(resolve=>_replayOptionsPromise_resolve=resolve);
@@ -20,15 +26,26 @@ function a(){
 			_element_editor.classList.remove('hidden');
 		}
 	}, 1000);
-	_element_previousReplayOptions.onfocus = ()=>{
+	_element_previousReplayOptions.addEventListener('focus', ()=>{
 		_element_previousReplayOptions.style.height = 0;
-		[..._element_previousReplayOptions.getElementsByTagName('option')].forEach(option => option.innerHTML = option.dataset.shortName);
-	};
-	_element_previousReplayOptions.onblur = ()=>{
+		[..._element_previousReplayOptions.getElementsByTagName('option')].forEach(option => option.innerHTML = option.dataset.name);
+	});
+	_element_previousReplayOptions.addEventListener('blur', ()=>{
 		_element_previousReplayOptions.style.height = '';
-		[..._element_previousReplayOptions.getElementsByTagName('option')].forEach(option => option.innerHTML = option.dataset.longName);
-	};
-	_element_previousReplayOptions.onclick = ()=>document.activeElement.blur();
+		[..._element_previousReplayOptions.getElementsByTagName('option')].forEach(option => option.innerHTML = option.dataset.arena+' '+option.dataset.name);
+	});
+	_element_previousReplayOptions.addEventListener('click', ()=>document.activeElement.blur());
+	_element_loadPreviousReplayRename.addEventListener('click', ()=>{
+		let option = _element_previousReplayOptions.selectedOptions[0];
+		_element_previousReplayRenameInput.value = option.dataset.name === option.dataset.nameDefault ? '' : option.dataset.name;
+		_element_previousReplayRenameInput.placeholder = option.dataset.nameDefault;
+		_element_previousReplaysController.classList.add('hidden');
+		_element_previousReplayRename.classList.remove('hidden');
+	});
+	_element_previousReplayRenameCancel.addEventListener('click', ()=>{
+		_element_previousReplayRename.classList.add('hidden');
+		_element_previousReplaysController.classList.remove('hidden');
+	});
 	function onValidate(json){
 		function isUrl(string){
 			let url;
@@ -123,10 +140,12 @@ function a(){
 		idbOpenDBRequest.onupgradeneeded = idbVersionChangeEvent=>{
 			let idbObjectStore = idbVersionChangeEvent.currentTarget.result.createObjectStore('records', {keyPath: 'id', autoIncrement: true});
 			idbObjectStore.createIndex('stored', 'stored', {unique: false});
+			idbObjectStore.createIndex('name', 'name', {unique: false});
 		}
 		idbOpenDBRequest.onsuccess = event=>{
 			let _idbDatabase = idbOpenDBRequest.result;
 			function refreshStoredReplays(){
+				let oldOption = _element_previousReplayOptions.selectedOptions[0];
 				while(0 < _element_previousReplayOptions.childElementCount){
 					_element_previousReplayOptions.removeChild(_element_previousReplayOptions.firstChild);
 				}
@@ -152,10 +171,14 @@ function a(){
 							let option = document.createElement('option');
 							option.dataset.header = JSON.stringify(storedReplay.data.header);
 							option.dataset.databaseId = storedReplay.id;
-							option.dataset.shortName = new Date(storedReplay.stored).toLocaleString()+' '+participants.join(' vs. ')+' ('+scores.join(', ')+')';
-							option.dataset.longName = groupedReplay.name+' '+option.dataset.shortName;
-							option.innerHTML = option.dataset.longName;
+							option.dataset.nameDefault = new Date(storedReplay.stored).toLocaleString()+' '+participants.join(' vs. ')+' ('+scores.join(', ')+')';
+							option.dataset.name = [undefined, ''].includes(storedReplay.name) ? option.dataset.nameDefault : storedReplay.name;
+							option.dataset.arena = groupedReplay.name;
+							option.innerHTML = option.dataset.arena+' '+option.dataset.name;
 							option.value = JSON.stringify(storedReplay.data);
+							if(oldOption){
+								option.selected = oldOption.dataset.databaseId === option.dataset.databaseId;
+							}
 							optgroup.appendChild(option);
 						});
 						_element_previousReplayOptions.appendChild(optgroup);
@@ -192,6 +215,22 @@ function a(){
 					getIdbObjectStore().clear();
 					refreshStoredReplays();
 				}
+			});
+			_element_previousReplayRenameSave.addEventListener('click', ()=>{
+				let option = _element_previousReplayOptions.selectedOptions[0];
+				getIdbObjectStore().openCursor().onsuccess = event=>{
+					const cursor = event.target.result;
+					if(cursor){
+						if(cursor.value.id === parseInt(option.dataset.databaseId)){
+							cursor.value.name = _element_previousReplayRenameInput.value;
+							cursor.update(cursor.value);
+							refreshStoredReplays();
+							_element_previousReplayRenameCancel.click();
+						}else{
+							cursor.continue();
+						}
+					}
+				};
 			});
 			window.onmessage = messageEvent => {
 				// NOTE: messageEvent can come from off site scripts.
