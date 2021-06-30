@@ -20,9 +20,15 @@ function a(){
 	frameLoop();
 	loadTheNews();
 	loadArenas();
-	if(window.location.hash.startsWith('#Arena/')){
-		openScreen(window.location.hash.substr(1));
-	}
+	window.onhashchange = ()=>{
+		while(1 < window.location.hash.length && window.location.hash[1] === '#'){
+			window.location.hash = window.location.hash.substr(2);
+		}
+		if(1 < window.location.hash.length){
+			openScreen(window.location.hash.substr(1));
+		}
+	};
+	window.onhashchange();
 	document.getElementById('login-button').href += '?origin='+encodeURI(location.protocol+'//'+location.host+location.pathname);
 	// Hidden until a fun "lore" has been established. openWindow('Welcome to the tournament, servant!','You have been sent here by your proud Master to showcasing what you have learned in our arenas. [TODO: How to?]\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px', true);
 	openWindow(
@@ -183,6 +189,15 @@ function a(){
 		});
 	}
 	function openScreen(src=''){
+		window.location.hash = src;
+		let root = window.location.href.substr(0,window.location.href.indexOf('#'));
+		if(!root){
+			root = window.location.href;
+		}
+		if(root[root.length-1] !== '/'){
+			root += '/';
+		}
+		src = root+src;
 		let screenFound = false;
 		for(const screen of _screens.children){
 			if(screen.dataset.targetSrc === src){
