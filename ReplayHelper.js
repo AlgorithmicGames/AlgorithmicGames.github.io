@@ -17,7 +17,11 @@ class ReplayHelper{
 			switch(messageEvent.data.type){
 				case 'Init-Fetch-Replay-Height':
 					if(ReplayHelper.#postHeight === null){
-						ReplayHelper.#postHeight = ()=>messageEvent.source.postMessage({type: 'Replay-Height', value: document.documentElement.scrollHeight}, messageEvent.origin);
+						ReplayHelper.#postHeight = ()=>{
+							messageEvent.source.postMessage({type: 'Replay-Height', value: document.documentElement.scrollHeight}, messageEvent.origin);
+							document.documentElement.style.padding = 0;
+							document.documentElement.style.margin = 0;
+						};
 					}
 					window.addEventListener('resize', ReplayHelper.#postHeight);
 					ReplayHelper.#postHeight();
