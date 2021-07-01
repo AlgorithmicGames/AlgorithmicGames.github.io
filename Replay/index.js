@@ -275,7 +275,6 @@ function a(){
 			}
 			function addReplayToStorage(replay={}){
 				let idbObjectStore = getIdbObjectStore();
-				idbObjectStore.put({data: replay, stored: Date.now()});
 				let replayString = JSON.stringify(replay);
 				getStoredReplays().then(storedReplays => {
 					for(let index = 0; index < storedReplays.length; index++){
@@ -283,7 +282,7 @@ function a(){
 							return; // Don't add if replay already exist in list.
 						}
 					}
-					storedReplays.push({data: replay, stored: Date.now()});
+					idbObjectStore.put({data: replay, stored: Date.now()});
 				});
 			}
 			_element_btnLock.onclick = mouseEvent=>{
