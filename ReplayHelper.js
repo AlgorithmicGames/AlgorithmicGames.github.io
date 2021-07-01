@@ -21,6 +21,8 @@ class ReplayHelper{
 							messageEvent.source.postMessage({type: 'Replay-Height', value: document.documentElement.scrollHeight}, messageEvent.origin);
 							document.documentElement.style.padding = 0;
 							document.documentElement.style.margin = 0;
+							document.body.style.padding = 0;
+							document.body.style.margin = 0;
 						};
 					}
 					window.addEventListener('resize', ReplayHelper.#postHeight);
