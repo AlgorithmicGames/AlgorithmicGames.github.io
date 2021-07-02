@@ -2,6 +2,7 @@
 class ReplayHelper{
 	static #initiated = false;
 	static #postHeight = null;
+	static #previousHeight = null;
 	static init = null;
 	static preInit(){
 		if(ReplayHelper.#initiated){
@@ -16,13 +17,18 @@ class ReplayHelper{
 		window.addEventListener('message', messageEvent => {
 			switch(messageEvent.data.type){
 				case 'Init-Fetch-Replay-Height':
+					document.documentElement.style.padding = 0;
+					document.documentElement.style.margin = 0;
+					if(document.body){
+						document.body.style.padding = 0;
+						document.body.style.margin = 0;
+					}
 					if(ReplayHelper.#postHeight === null){
 						ReplayHelper.#postHeight = ()=>{
-							messageEvent.source.postMessage({type: 'Replay-Height', value: document.documentElement.scrollHeight}, messageEvent.origin);
-							document.documentElement.style.padding = 0;
-							document.documentElement.style.margin = 0;
-							document.body.style.padding = 0;
-							document.body.style.margin = 0;
+							if(ReplayHelper.#previousHeight !== document.documentElement.scrollHeight){
+								ReplayHelper.#previousHeight = document.documentElement.scrollHeight;
+								messageEvent.source.postMessage({type: 'Replay-Height', value: document.documentElement.scrollHeight}, messageEvent.origin);
+							}
 						};
 					}
 					window.addEventListener('resize', ReplayHelper.#postHeight);
