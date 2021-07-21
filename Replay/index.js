@@ -247,12 +247,15 @@ function a(){
 						}
 					case 'Replay-Height':
 						if(messageEvent.data.value !== undefined){
-							_element_iframe.style.minHeight = parseFloat(messageEvent.data.value)+'px';
+							_element_iframe.style.height = messageEvent.data.value+'px';
 							_element_iframe.classList.remove('hidden');
 							_element_iframe_failToLoad.classList.add('hidden');
-						}
 						if(_parent !== null){
-							_parent.source.postMessage({type: 'Replay-Height', value: document.documentElement.scrollHeight}, _parent.origin);
+								let height = _element_control.offsetHeight;
+								height += parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue('padding-top'));
+								height += messageEvent.data.value;
+								_parent.source.postMessage({type: 'Replay-Height', value: height}, _parent.origin);
+							}
 						}
 						break;
 					case 'Replay-Data':

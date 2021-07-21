@@ -66,9 +66,11 @@ function a(){
 	window.onmessage = messageEvent => {
 		switch(messageEvent.data.type){
 			case 'resize':
-				let iframe = document.getElementById(messageEvent.data.value.id);
-				iframe.style.height = messageEvent.data.value.height+'px';
-				iframe.style.width = messageEvent.data.value.width+'px';
+				let iframe = [...document.getElementsByTagName('iframe')].find(iframe => iframe.contentWindow === messageEvent.source);
+				if(iframe){
+					let height = messageEvent.data.value.height+2;
+					iframe.style.height = height+'px';
+				}
 				break;
 			case 'arena-changed':
 				window.location.hash = 'Arena/#'+messageEvent.data.value;
@@ -212,6 +214,7 @@ function a(){
 			_screens.appendChild(iframe);
 			iframe.src = src;
 			iframe.dataset.targetSrc = src;
+			iframe.style.height = (parseFloat(window.getComputedStyle(_content, null).getPropertyValue('height'))-4/* Where does 4 come from? */) + 'px';
 			setTimeout(()=>iframe.contentWindow.postMessage({type: 'SetParent'}, '*'), 1000);
 		}
 	}
@@ -293,7 +296,7 @@ function a(){
 			charsPerRow++;
 		}
 		charsPerRow++;
-		height = document.documentElement.scrollHeight;
+		height = document.documentElement.clientHeight - 10/* Where does 10 come from? */;
 		let rows = 2;
 		let charsOnFirstRow = _background.innerHTML;
 		while(_background.offsetHeight < height){
@@ -301,8 +304,8 @@ function a(){
 			_background.innerHTML = _background.innerHTML + charsOnFirstRow;
 		}
 		_background.className = '';
+		_content.style.height = height - parseFloat(window.getComputedStyle(document.getElementsByTagName('header')[0], null).getPropertyValue('height')) + 'px';
 		initNoise(rows, charsPerRow);
-		_content.style.height = window.innerHeight - document.getElementsByTagName('header')[0].offsetHeight + 'px';
 	}
 	function initNoise(rows, charsPerRow){
 		_noise = new Array(rows);
