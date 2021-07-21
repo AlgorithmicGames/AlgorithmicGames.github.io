@@ -116,6 +116,12 @@ function a(){
 								}
 							}, 1000);
 						}, 1000);
+						document.getElementById('open-replay-in-new-tab').addEventListener('click', ()=>{
+							let win = window.open(_element_viewOptions.selectedOptions[0].value);
+							setTimeout(()=>{
+								win.postMessage({type: 'Match-Log', matchLog: matchLog}, '*');
+							}, 1000);
+						});
 						input.disabled = true;
 					}
 					input.addEventListener('click', onClick);
@@ -250,7 +256,7 @@ function a(){
 							_element_iframe.style.height = messageEvent.data.value+'px';
 							_element_iframe.classList.remove('hidden');
 							_element_iframe_failToLoad.classList.add('hidden');
-						if(_parent !== null){
+							if(_parent !== null){
 								let height = _element_control.offsetHeight;
 								height += parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue('padding-top'));
 								height += messageEvent.data.value;
@@ -277,9 +283,9 @@ function a(){
 				return new Promise((resolve, reject) => {callbackResolve = resolve; callbackReject = reject;});
 			}
 			function addReplayToStorage(replay={}){
-				let idbObjectStore = getIdbObjectStore();
 				let replayString = JSON.stringify(replay);
 				getStoredReplays().then(storedReplays => {
+					let idbObjectStore = getIdbObjectStore();
 					for(let index = 0; index < storedReplays.length; index++){
 						if(replayString === JSON.stringify(storedReplays[index].data)){
 							return; // Don't add if replay already exist in list.
