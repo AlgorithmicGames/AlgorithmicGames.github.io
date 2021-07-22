@@ -17,12 +17,12 @@ class ReplayHelper{
 		window.addEventListener('message', messageEvent => {
 			switch(messageEvent.data.type){
 				case 'Init-Fetch-Replay-Height':
-					document.documentElement.style.padding = 0;
+					/*document.documentElement.style.padding = 0;
 					document.documentElement.style.margin = 0;
 					if(document.body){
 						document.body.style.padding = 0;
 						document.body.style.margin = 0;
-					}
+					}*/
 					if(ReplayHelper.#postHeight === null){
 						ReplayHelper.#postHeight = ()=>{
 							if(ReplayHelper.#previousHeight !== document.documentElement.scrollHeight){
