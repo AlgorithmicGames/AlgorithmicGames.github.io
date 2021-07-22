@@ -253,6 +253,7 @@ function a(){
 						}
 					case 'Replay-Height':
 						if(messageEvent.data.value !== undefined){
+							_element_iframe.style.minHeight = (parseFloat(localStorage.getItem('content height')))+'px';
 							_element_iframe.style.height = messageEvent.data.value+'px';
 							_element_iframe.classList.remove('hidden');
 							_element_iframe_failToLoad.classList.add('hidden');

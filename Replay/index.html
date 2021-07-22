@@ -11,12 +11,15 @@
 		<link rel="stylesheet" href="../defaults.css">
 		<style>
 			html {
-				padding: 2px 4px 4px 4px;
+				padding: 0;
 			}
 			body {
 				margin: 0;
 				display: flex;
 				flex-direction: column;
+			}
+			#padding-wrapper {
+				padding: 2px 4px 4px 8px;
 			}
 			iframe {
 				border: 0;
@@ -41,39 +44,41 @@
 		<script src="../GitHubApi.js"></script>
 	</head>
 	<body onload="a()">
-		<div id="control-container">
-			<input type="button" id="load-previous-replay" value="Load previous replay"/>
-			<label id="lblData" for="data">Data:</label>
-			<span id="invalid-input" class="hidden error">Invalid input.</span>
-			<div id="editor" class="hidden"></div>
-			<input type="button" id="lock" value="Lock" disabled/>
-			<select id="replay-viewers" class="hidden sticky">
-				<option id="default-option" selected>Default</option>
-			</select>
-			<input type="button" id="open-replay-in-new-tab" value="New tab" class="sticky"/>
-			<div id="external-page-warning">
-				<img src="" onerror="console.log('// TODO: Display a warning that only Default associated with AI-Tournaments. Confirm to allow load more options. Store confirmation with GitHub user.')"></img>
+		<div id="padding-wrapper">
+			<div id="control-container">
+				<input type="button" id="load-previous-replay" value="Load previous replay"/>
+				<label id="lblData" for="data">Data:</label>
+				<span id="invalid-input" class="hidden error">Invalid input.</span>
+				<div id="editor" class="hidden"></div>
+				<input type="button" id="lock" value="Lock" disabled/>
+				<select id="replay-viewers" class="hidden sticky">
+					<option id="default-option" selected>Default</option>
+				</select>
+				<input type="button" id="open-replay-in-new-tab" value="New tab" class="sticky"/>
+				<div id="external-page-warning">
+					<img src="" onerror="console.log('// TODO: Display a warning that only Default associated with AI-Tournaments. Confirm to allow load more options. Store confirmation with GitHub user.')"></img>
+				</div>
+			</div>
+			<div id="replay-container-failToLoad" class="hidden error">
+				Replay failed to load <a href="https://ai-tournaments.github.io/AI-Tournaments/ReplayHelper.js">ReplayHelper.js</a>.
+			</div>
+			<div id="previous-replay-container" class="hidden">
+				<label>Previous replay:</label>
+				<select id="previous-replays"></select>
+				<div id="previous-replays-controller">
+					<input type="button" id="load-previous-replay-confirm" value="Load"/>
+					<input type="button" id="load-previous-replay-rename" value="Rename"/>
+					<input type="button" id="load-previous-replay-delete" value="Delete"/>
+					<input type="button" id="load-previous-replay-cancel" value="Close"/>
+					<input type="button" id="load-previous-replay-clear" value="Remove all"/>
+				</div>
+				<div id="previous-replay-rename" class="hidden">
+					<input type="text" id="previous-replay-rename-input" value=""/>
+					<input type="button" id="previous-replay-rename-save" value="Save"/>
+					<input type="button" id="previous-replay-rename-cancel" value="Cancel"/>
+				</div>
 			</div>
 		</div>
 		<iframe id="replay-container" sandbox="allow-scripts" class="hidden"></iframe>
-		<div id="replay-container-failToLoad" class="hidden error">
-			Replay failed to load <a href="https://ai-tournaments.github.io/AI-Tournaments/ReplayHelper.js">ReplayHelper.js</a>.
-		</div>
-		<div id="previous-replay-container" class="hidden">
-			<label>Previous replay:</label>
-			<select id="previous-replays"></select>
-			<div id="previous-replays-controller">
-				<input type="button" id="load-previous-replay-confirm" value="Load"/>
-				<input type="button" id="load-previous-replay-rename" value="Rename"/>
-				<input type="button" id="load-previous-replay-delete" value="Delete"/>
-				<input type="button" id="load-previous-replay-cancel" value="Close"/>
-				<input type="button" id="load-previous-replay-clear" value="Remove all"/>
-			</div>
-			<div id="previous-replay-rename" class="hidden">
-				<input type="text" id="previous-replay-rename-input" value=""/>
-				<input type="button" id="previous-replay-rename-save" value="Save"/>
-				<input type="button" id="previous-replay-rename-cancel" value="Cancel"/>
-			</div>
-		</div>
 	</body>
 </html>
