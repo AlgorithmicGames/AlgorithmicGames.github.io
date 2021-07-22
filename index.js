@@ -68,8 +68,7 @@ function a(){
 			case 'resize':
 				let iframe = [...document.getElementsByTagName('iframe')].find(iframe => iframe.contentWindow === messageEvent.source);
 				if(iframe){
-					let height = messageEvent.data.value.height+2;
-					iframe.style.height = height+'px';
+					iframe.style.height = messageEvent.data.value.height+'px';
 				}
 				break;
 			case 'arena-changed':
@@ -214,7 +213,7 @@ function a(){
 			_screens.appendChild(iframe);
 			iframe.src = src;
 			iframe.dataset.targetSrc = src;
-			iframe.style.height = (parseFloat(window.getComputedStyle(_content, null).getPropertyValue('height'))-4/* Where does 4 come from? */) + 'px';
+			iframe.style.height = window.getComputedStyle(_content, null).getPropertyValue('height');
 			setTimeout(()=>iframe.contentWindow.postMessage({type: 'SetParent'}, '*'), 1000);
 		}
 	}
