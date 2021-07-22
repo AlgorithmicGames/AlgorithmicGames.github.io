@@ -2,6 +2,7 @@
 function a(){
 	let _replayData;
 	let _autoStart = false;
+	let _element_paddingWrapper = document.getElementById('padding-wrapper');
 	let _element_control = document.getElementById('control-container');
 	let _element_viewOptions = document.getElementById('replay-viewers');
 	let _element_previousReplayOptions = document.getElementById('previous-replays');
@@ -259,7 +260,8 @@ function a(){
 							_element_iframe_failToLoad.classList.add('hidden');
 							if(_parent !== null){
 								let height = _element_control.offsetHeight;
-								height += parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue('padding-top'));
+								height += parseFloat(window.getComputedStyle(_element_paddingWrapper, null).getPropertyValue('padding-top'));
+								height += parseFloat(window.getComputedStyle(_element_paddingWrapper, null).getPropertyValue('padding-bottom'));
 								height += messageEvent.data.value;
 								_parent.source.postMessage({type: 'Replay-Height', value: height}, _parent.origin);
 							}
