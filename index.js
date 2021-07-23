@@ -304,7 +304,6 @@ function a(){
 		}
 		_background.className = '';
 		_content.style.height = height - parseFloat(window.getComputedStyle(document.getElementsByTagName('header')[0], null).getPropertyValue('height')) + 'px';
-		localStorage.setItem('content height', _content.style.height);
 		initNoise(rows, charsPerRow);
 	}
 	function initNoise(rows, charsPerRow){
