@@ -169,16 +169,23 @@ function a(){
 						let optgroup = document.createElement('optgroup');
 						optgroup.label = groupedReplay.name;
 						groupedReplay.list.forEach(storedReplay => {
-							let participants = storedReplay.data.body.data[0].score.slice();
+							let participants = ['Aborted'];
 							let scores = [];
-							storedReplay.data.body.data.forEach(match=>{
-								scores.push(storedReplay.data.body.data[0].score.map(item => item.score).join('-'));
-							})
-							participants.forEach((item, index) => participants[index] = item.members.map(member => member.name).join(', '));
+							let hasScore = storedReplay.data.body.data.filter(d => d.score);
+							if(hasScore.length){
+								hasScore = hasScore[0].score;
+								hasScore.forEach((item, index) => participants[index] = item.members.map(member => member.name).join(', '));
+								storedReplay.data.body.data.forEach(match=>{
+									scores.push(match.score.map(s => s.score).join('-'));
+								})
+							}
 							let option = document.createElement('option');
 							option.dataset.header = JSON.stringify(storedReplay.data.header);
 							option.dataset.databaseId = storedReplay.id;
-							option.dataset.nameDefault = new Date(storedReplay.stored).toLocaleString()+' '+participants.join(' vs. ')+' ('+scores.join(', ')+')';
+							option.dataset.nameDefault = new Date(storedReplay.stored).toLocaleString()+' '+participants.join(' vs. ')
+							if(scores.length){
+								option.dataset.nameDefault += ' ('+scores.join(', ')+')';
+							}
 							option.dataset.name = [undefined, ''].includes(storedReplay.name) ? option.dataset.nameDefault : storedReplay.name;
 							option.dataset.arena = groupedReplay.name;
 							option.innerHTML = option.dataset.arena+' '+option.dataset.name;
@@ -202,6 +209,9 @@ function a(){
 				let option = _element_previousReplayOptions.selectedOptions[0];
 				_editor.setMode('view');
 				_editor.setText(option.value);
+				while(0 < _element_previousReplayOptions.childElementCount){
+					_element_previousReplayOptions.removeChild(_element_previousReplayOptions.firstChild);
+				}
 				onChange();
 			});
 			document.getElementById('load-previous-replay-delete').addEventListener('click', () => {
