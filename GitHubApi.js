@@ -58,6 +58,69 @@ class GitHubApi{
 			throw new Error('Uncaught response: ' + response.status + ' ' + response.statusText);
 		});
 	}
+	static formatMarkdown(markdown='', options={}){
+		let resolve;
+		let reject;
+		let promise = new Promise((_resolve, _reject) => {resolve = _resolve; reject = _reject;});
+		let iframe = document.createElement('iframe');
+		iframe.sandbox = 'allow-same-origin';
+		fetch('https://api.github.com/markdown', {
+			method: 'POST',
+			body: JSON.stringify({
+				text: markdown
+			}),
+			headers: {
+				Accept: 'application/vnd.github.v3+json',
+				'Content-Type':'application/json'
+			}
+		}).then(response => response.text()).then(html => {
+			function setDimensions(){
+				if(iframe.parentElement){
+					window.requestAnimationFrame(()=>{
+						let win = iframe.contentWindow.window;
+						iframe.style.width = win.document.documentElement.scrollWidth + 'px';
+						iframe.style.height = win.document.documentElement.scrollHeight + 'px';
+					});
+				}else{
+					window.requestAnimationFrame(setDimensions);
+				}
+			}
+			setDimensions();
+			iframe.srcdoc =
+`<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			${options.removeBodyMargin?`html, body {
+				margin: 0;
+				padding: 0;
+			}
+			`:''}body>*:first-child {
+				margin-top:0
+			}
+			h3, p {
+			}
+			p {
+				white-space: initial;
+			}
+			p:not(:first-child) {
+				margin-top: -.8em;
+			}
+			ul {
+				margin-top: -1em;
+				margin-bottom: 0;
+			}
+		</style>
+		<link rel="stylesheet" href="https://ai-tournaments.github.io/AI-Tournaments/defaults.css">
+	</head>
+	<body>
+		${html.trim().replaceAll('\n', '\n\t\t')}${options.suffix?'\n\t\t'+options.suffix:''}
+	</body>
+</html>`;
+			resolve(iframe);
+		}).catch(reject);
+		return options.async ? promise : iframe;
+	}
 	static fetchArenas(){
 		return GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Arena-v'+GitHubApi.#ARENA_VERSION).then(response => response.json()).then(json => {
 			let arenas = [];

@@ -55,11 +55,9 @@ function a(){
 	fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
 		let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
 		console.log('// TODO: Use GitHub\'s markdown API. https://docs.github.com/en/rest/reference/markdown');
-		fetch('https://gitlab.com/api/v4/markdown',{method: 'POST', body: JSON.stringify({text: why}),
-		headers: {Accept: 'application/vnd.github.v3+json', 'Content-Type':'application/json'} // TODO: https://docs.github.com/en/rest/reference/markdown
-		}).then(response => response.json()).then(response => {
+		GitHubApi.formatMarkdown(why, {async: true, suffix: '<br><span style="color:var(--secondary-background-color)">- Overlord servant</span>'}).then(iframe => {
 			document.getElementById('source-available').addEventListener('click', ()=>{
-				openWindow('Why "Source Available"?', '<span class="source-available">'+response.html+'</span>\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '705px');
+				openWindow('Why "Source Available"?', iframe, true, '705px');
 			});
 		});
 	});
@@ -244,7 +242,8 @@ function a(){
 		}
 	}
 	function openWindow(header='', message='', center=false, maxWidth, displayOnce=false){
-		let combinedMessage = 'Window message - '+header+'\n'+message;
+		let isIframe = message.constructor.name === 'HTMLIFrameElement';
+		let combinedMessage = 'Window message - '+header+'\n'+(isIframe ? isIframe.srcdoc : message);
 		let display = localStorage.getItem(combinedMessage) === null;
 		if(display){
 			let windowWrapper = document.createElement('div');
@@ -271,13 +270,31 @@ function a(){
 			headerDiv.classList.add('draggable');
 			makeDraggable(headerDiv, windowWrapper);
 			messageWrapper.appendChild(headerDiv);
-			let messageDiv = document.createElement('pre');
-			messageDiv.classList.add('message');
-			messageDiv.innerHTML = message;
-			messageWrapper.appendChild(messageDiv);
+			if(isIframe){
+				message.style.width = maxWidth
+				messageWrapper.appendChild(message);
+			}else{
+				let messageDiv = document.createElement('pre');
+				messageDiv.classList.add('message');
+				messageDiv.innerHTML = message;
+				messageWrapper.appendChild(messageDiv);
+			}
 			if(center){
-				windowWrapper.style.top = (document.body.offsetHeight - windowWrapper.offsetHeight)/2 + 'px';
-				windowWrapper.style.left = (document.body.offsetWidth - windowWrapper.offsetWidth)/2 + 'px';
+				function setCenter(){
+					windowWrapper.style.top = (_content.offsetHeight - windowWrapper.offsetHeight)/2 + 'px';
+					windowWrapper.style.left = (_content.offsetWidth - windowWrapper.offsetWidth)/2 + 'px';
+				}
+				function awaitHeight(){
+					if(message.style.height){
+						setCenter()
+					}else{
+						window.requestAnimationFrame(awaitHeight);
+					}
+				}
+				setCenter();
+				if(isIframe){
+					awaitHeight();
+				}
 			}else{
 				createdWindows++;
 				windowWrapper.style.top = 10*createdWindows + 'px';
