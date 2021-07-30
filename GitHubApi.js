@@ -74,22 +74,28 @@ class GitHubApi{
 				'Content-Type':'application/json'
 			}
 		}).then(response => response.text()).then(html => {
-			function setDimensions(){
+			function awaitPlacement(){
 				if(iframe.parentElement){
-					window.requestAnimationFrame(()=>{
-						let win = iframe.contentWindow.window;
-						iframe.style.width = win.document.documentElement.scrollWidth + 'px';
-						iframe.style.height = win.document.documentElement.scrollHeight + 'px';
-					});
+					let iframeDocument = iframe.contentWindow.window.document;
+					function awaitStylesheets(){
+						if(1 < iframeDocument.styleSheets.length){
+							iframe.style.width = iframeDocument.documentElement.scrollWidth + 'px';
+							iframe.style.height = iframeDocument.documentElement.scrollHeight + 'px';
+						}else{
+							window.requestAnimationFrame(awaitStylesheets);
+						}
+					}
+					awaitStylesheets();
 				}else{
-					window.requestAnimationFrame(setDimensions);
+					window.requestAnimationFrame(awaitPlacement);
 				}
 			}
-			setDimensions();
+			awaitPlacement();
 			iframe.srcdoc =
 `<!DOCTYPE html>
 <html>
 	<head>
+		<link rel="stylesheet" href="https://ai-tournaments.github.io/AI-Tournaments/defaults.css">
 		<style>
 			${options.removeBodyMargin?`html, body {
 				margin: 0;
@@ -111,7 +117,6 @@ class GitHubApi{
 				margin-bottom: 0;
 			}
 		</style>
-		<link rel="stylesheet" href="https://ai-tournaments.github.io/AI-Tournaments/defaults.css">
 	</head>
 	<body>
 		${html.trim().replaceAll('\n', '\n\t\t')}${options.suffix?'\n\t\t'+options.suffix:''}

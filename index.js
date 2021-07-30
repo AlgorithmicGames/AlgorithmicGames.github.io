@@ -52,11 +52,13 @@ function a(){
 		content.innerHTML = '<b>Backend development</b><br>Backend is redirected to <i style="background: var(--secondary-background-color); color: var(--secondary-background-color)" onmouseover="this.style.background=\'var(--main-color)\';this.style.color=\'var(--main-color)\'" onmouseleave="this.style.background=\'var(--secondary-background-color)\';this.style.color=\'var(--secondary-background-color)\'" onclick="this.style.background=\'\';this.style.color=\'\'; this.onmouseover=undefined; this.onmouseleave=undefined;">'+Backend.getBackend()+'</i>.<br><br><button onclick="localStorage.removeItem(\'backend\'); location.reload();">Clear</button>';
 		dropdown.appendChild(content);
 	}
-	fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
-		let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
-		console.log('// TODO: Use GitHub\'s markdown API. https://docs.github.com/en/rest/reference/markdown');
-		GitHubApi.formatMarkdown(why, {async: true, suffix: '<br><span style="color:var(--secondary-background-color)">- Overlord servant</span>'}).then(iframe => {
-			document.getElementById('source-available').addEventListener('click', ()=>{
+	document.getElementById('source-available').addEventListener('click', ()=>{
+		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
+			let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
+			GitHubApi.formatMarkdown(why, {
+				async: true,
+				suffix: '<br><span style="color:var(--secondary-background-color)">- Overlord servant</span>'
+			}).then(iframe => {
 				openWindow('Why "Source Available"?', iframe, true, '705px');
 			});
 		});
