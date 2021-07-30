@@ -32,11 +32,18 @@ select {
 .cross-close::after {
 	content: var(--cross-close);
 }
-.jsoneditor-menu{
-	background-color: var(--main-color);
-}
 .hidden {
 	display: none !important;
+}
+/* ace-jsoneditor */
+.jsoneditor>.jsoneditor-menu {
+	background-color: var(--main-color);
+}
+.jsoneditor .jsoneditor-selected {
+	background-color: var(--secondary-background-color) !important;
+}
+.jsoneditor input {
+	background-color: unset;
 }
 /* Disable style if page is not viewed from root. */
 :root.top * {
