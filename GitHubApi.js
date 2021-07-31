@@ -64,7 +64,7 @@ class GitHubApi{
 		let promise = new Promise((_resolve, _reject) => {resolve = _resolve; reject = _reject;});
 		let iframe = document.createElement('iframe');
 		iframe.sandbox = 'allow-same-origin';
-		fetch('https://api.github.com/markdown', {
+		GitHubApi.fetch('markdown', {
 			method: 'POST',
 			body: JSON.stringify({
 				text: markdown
