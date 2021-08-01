@@ -107,16 +107,8 @@ function a(){
 								element.classList.add('hidden');
 							}
 						}
+						_element_iframe.dataset.matchLog = JSON.stringify(matchLog);
 						_element_iframe.src = _element_viewOptions.selectedOptions[0].value;
-						setTimeout(()=>{
-							_element_iframe.contentWindow.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
-							_element_iframe.contentWindow.postMessage({type: 'Match-Log', matchLog: matchLog}, '*');
-							setTimeout(()=>{
-								if(_element_iframe.classList.contains('hidden')){
-									_element_iframe_failToLoad.classList.remove('hidden');
-								}
-							}, 1000);
-						}, 1000);
 						document.getElementById('open-replay-in-new-tab').addEventListener('click', ()=>{
 							let win = window.open(_element_viewOptions.selectedOptions[0].value);
 							setTimeout(()=>{
@@ -281,6 +273,15 @@ function a(){
 						_editor.setText(messageEvent.data.replayData);
 						_autoStart = true;
 						onChange();
+						break;
+					case 'ReplayHelper-Initiated':
+						messageEvent.source.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
+						messageEvent.source.postMessage({type: 'Match-Log', matchLog: JSON.parse(_element_iframe.dataset.matchLog)}, '*');
+						setTimeout(()=>{
+							if(_element_iframe.classList.contains('hidden')){
+								_element_iframe_failToLoad.classList.remove('hidden');
+							}
+						}, 1000);
 						break;
 				}
 			}
