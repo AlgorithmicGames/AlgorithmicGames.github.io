@@ -48,6 +48,7 @@ class ReplayHelper{
 					break;
 			}
 		});
+		window.parent.postMessage({type: 'ReplayHelper-Initiated'}, '*')
 	}
 }
 ReplayHelper.preInit();
