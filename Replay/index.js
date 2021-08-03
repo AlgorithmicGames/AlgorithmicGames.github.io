@@ -134,6 +134,7 @@ function a(){
 		});
 	}
 	(()=>{
+		console.log('// TODO: Move to worker. First load indexes and then on select load data.');
 		let idbOpenDBRequest = indexedDB.open('replays', 1);
 		idbOpenDBRequest.onerror = event=>console.error('openDb:', event.target.errorCode);
 		idbOpenDBRequest.onupgradeneeded = idbVersionChangeEvent=>{
