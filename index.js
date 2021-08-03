@@ -1,5 +1,7 @@
 'use strict'
 function a(){
+	let _element_loginButtonWrapper = document.getElementById('login-button-wrapper');
+	let _element_logoutButtonWrapper = document.getElementById('logout-button-wrapper');
 	let _GitHubProblem = false;
 	let createdWindows = 0;
 	let _content = document.getElementById('content');
@@ -33,7 +35,7 @@ function a(){
 	};
 	window.onhashchange();
 	document.getElementById('login-button').href += '?origin='+encodeURI(location.protocol+'//'+location.host+location.pathname);
-	document.getElementById('logout-button').addEventListener('click', ()=>{alert('// TODO: `GitHubApi.logout();`')});
+	document.getElementById('logout-button').addEventListener('click', ()=>{alert('// TODO: Replace alert with `GitHubApi.logout();`.')});
 	// Hidden until a fun "lore" has been established. openWindow('Welcome to the tournament, servant!','You have been sent here by your proud Master to showcasing what you have learned in our arenas. [TODO: How to?]\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px', true);
 	openWindow(
 		'Welcome to the tournament!','Here you can participate in different games (known as Arenas) for a fun challenge to stay atop of the leaderboards. Read the <a href="https://github.com/AI-Tournaments/AI-Tournaments#participate" target="_blank">Participate</a> section in the README to get started.\n'+
@@ -87,11 +89,13 @@ function a(){
 	function frameLoop(){
 		// Check login status.
 		if(GitHubApi.isLoggedIn()){
-			document.getElementById('login-button-wrapper').classList.remove('show');
-			document.getElementById('logout-button-wrapper').classList.remove('hidden');
+			_element_loginButtonWrapper.classList.remove('show');
+			if(_element_logoutButtonWrapper.getElementsByClassName('username')[0].innerHTML){
+				_element_logoutButtonWrapper.classList.remove('hidden');
+			}
 		}else{
-			document.getElementById('login-button-wrapper').classList.add('show');
-			document.getElementById('logout-button-wrapper').classList.add('hidden');
+			_element_loginButtonWrapper.classList.add('show');
+			_element_logoutButtonWrapper.classList.add('hidden');
 		}
 		// Update background.
 		_background.innerHTML = parsToString(getNoise());
