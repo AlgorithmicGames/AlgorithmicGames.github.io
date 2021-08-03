@@ -189,12 +189,14 @@ function a(){
 						});
 						_element_previousReplayOptions.appendChild(optgroup);
 					});
-					_element_control.classList.add('hidden');
-					_element_previousReplayContainer.classList.remove('hidden');
 					_element_btnClearStoredReplays.disabled = storedReplays.length === 0;
 				});
 			}
-			document.getElementById('load-previous-replay').addEventListener('click', refreshStoredReplays);
+			refreshStoredReplays();
+			document.getElementById('load-previous-replay').addEventListener('click', ()=>{
+				_element_control.classList.add('hidden');
+				_element_previousReplayContainer.classList.remove('hidden');
+			});
 			document.getElementById('load-previous-replay-confirm').addEventListener('click', () => {
 				_element_previousReplayContainer.classList.add('hidden');
 				_element_control.classList.remove('hidden');
