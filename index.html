@@ -194,17 +194,32 @@
 					max-width: 70px;
 				}
 			}
-			#login-button-wrapper {
+			#login-button-wrapper, #logout-button-wrapper {
 				overflow: hidden;
-				max-width: 0px;
 				padding-left: 0px;
 				padding-right: 0px;
 			}
-			#login-button {
+			#login-button-wrapper {
+				max-width: 0px;
+			}
+			#login-button, #logout-button {
 				padding-left: 12px;
 				padding-right: 12px;
 			}
 			#login-button-wrapper.show {
+				animation-name: display-login;
+				animation-duration: 2s;
+				animation-timing-function: ease-in-out;
+				max-width: unset;
+			}
+			#logout-button>:first-child {
+				display: block;
+				overflow: hidden;
+				direction: rtl;
+				max-width: 0px;
+				float: left;
+			}
+			#logout-button-wrapper:hover>:first-child>:first-child {
 				animation-name: display-login;
 				animation-duration: 2s;
 				animation-timing-function: ease-in-out;
@@ -278,6 +293,9 @@
 							</div>
 						</div>
 						<div id="source-available">Source</div>
+						<div id="logout-button-wrapper" class="hidden">
+							<div id="logout-button"><div><span>&nbsp;</span>Logout</div><span class="username"></span></div>
+						</div>
 						<div id="login-button-wrapper">
 							<a id="login-button" href="https://ai-tournaments.github.io/AI-Tournaments/login">Login</a>
 						</div>
