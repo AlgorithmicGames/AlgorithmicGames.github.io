@@ -19,7 +19,7 @@ function a(){
 	window.onresize();
 	GitHubApi.login();
 	GitHubApi.fetch('user').then(response => response.json()).then(user => {
-		[...document.getElementsByClassName('username')].forEach(element => element.innerHTML = user.login);
+		[...document.getElementsByClassName('local-username')].forEach(element => element.innerHTML = user.login);
 	})
 	checkGitHubStatus();
 	frameLoop();
@@ -90,7 +90,7 @@ function a(){
 		// Check login status.
 		if(GitHubApi.isLoggedIn()){
 			_element_loginButtonWrapper.classList.remove('show');
-			if(_element_logoutButtonWrapper.getElementsByClassName('username')[0].innerHTML){
+			if(_element_logoutButtonWrapper.getElementsByClassName('local-username')[0].innerHTML){
 				_element_logoutButtonWrapper.classList.remove('hidden');
 			}
 		}else{
