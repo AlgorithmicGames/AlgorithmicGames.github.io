@@ -18,9 +18,11 @@ function a(){
 	window.onresize = resizeBackground;
 	window.onresize();
 	GitHubApi.login();
-	GitHubApi.fetch('user').then(response => response.json()).then(user => {
-		[...document.getElementsByClassName('local-username')].forEach(element => element.innerHTML = user.login);
-	})
+	if(GitHubApi.isLoggedIn()){
+		GitHubApi.fetch('user').then(response => response.json()).then(user => {
+			[...document.getElementsByClassName('local-username')].forEach(element => element.innerHTML = user.login);
+		})
+	}
 	checkGitHubStatus();
 	frameLoop();
 	loadTheNews();
