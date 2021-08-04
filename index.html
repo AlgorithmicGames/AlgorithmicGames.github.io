@@ -99,7 +99,7 @@
 			.dropdown:hover .dropdown-content {
 				display: block;
 			}
-			#header-right>.dropdown>.dropdown-content {
+			#header-right>.dropdown:first-child>.dropdown-content {
 				left: unset;
 				right: -2px;
 			}
@@ -118,9 +118,6 @@
 
 			#header-content-row>*>*:not(:last-child) {
 				border-right: var(--window-border);
-			}
-			#header-right>*>*:not(:first-child) {
-				border-left: var(--window-border);
 			}
 
 			#header-content-row, #header-left, #header-right {
@@ -195,11 +192,11 @@
 				}
 			}
 			#login-button-wrapper, #logout-button-wrapper {
-				overflow: hidden;
 				padding-left: 0px;
 				padding-right: 0px;
 			}
 			#login-button-wrapper {
+				overflow: hidden;
 				max-width: 0px;
 			}
 			#login-button, #logout-button {
@@ -224,6 +221,23 @@
 				animation-duration: 2s;
 				animation-timing-function: ease-in-out;
 				max-width: unset;
+			}
+			#logout-button-wrapper>.dropdown-content {
+				width: calc(100% + 2px);
+			}
+			#logout-button-wrapper label {
+				cursor: pointer;
+			}
+			#logout-button-wrapper {
+				cursor: unset;
+			}
+			#logout-button-wrapper>* :hover {
+				border-color: transparent;
+			}
+
+			#main-profile-image {
+				width: 64px;
+				float: right;
 			}
 
 			.discord-logo {
@@ -293,8 +307,11 @@
 							</div>
 						</div>
 						<div id="source-available">Source</div>
-						<div id="logout-button-wrapper" class="hidden">
-							<div id="logout-button"><div><span>&nbsp;</span>Logout</div><span class="local-username"></span></div>
+						<div id="logout-button-wrapper" class="hidden dropdown">
+							<label id="logout-button"><div>Logout<span>&nbsp;</span></div><span class="local-username"></span></label>
+							<div class="dropdown-content">
+								<img id="main-profile-image" class="local-profile-image" alt="Current user profile image">
+							</div>
 						</div>
 						<div id="login-button-wrapper" class="hidden">
 							<img src="" onerror="console.log('// TODO: Remove class hidden from `login-button-wrapper`.')"></img>

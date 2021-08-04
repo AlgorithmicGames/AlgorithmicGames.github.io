@@ -21,6 +21,7 @@ function a(){
 	if(GitHubApi.isLoggedIn()){
 		GitHubApi.fetch('user').then(response => response.json()).then(user => {
 			[...document.getElementsByClassName('local-username')].forEach(element => element.innerHTML = user.login);
+			[...document.getElementsByClassName('local-profile-image')].forEach(img => img.src = user.avatar_url);
 		})
 	}
 	checkGitHubStatus();
