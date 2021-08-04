@@ -17,12 +17,6 @@ class ReplayHelper{
 		window.addEventListener('message', messageEvent => {
 			switch(messageEvent.data.type){
 				case 'Init-Fetch-Replay-Height':
-					/*document.documentElement.style.padding = 0;
-					document.documentElement.style.margin = 0;
-					if(document.body){
-						document.body.style.padding = 0;
-						document.body.style.margin = 0;
-					}*/
 					if(ReplayHelper.#postHeight === null){
 						ReplayHelper.#postHeight = ()=>{
 							if(ReplayHelper.#previousHeight !== document.documentElement.scrollHeight){
@@ -34,8 +28,8 @@ class ReplayHelper{
 					window.addEventListener('resize', ReplayHelper.#postHeight);
 					ReplayHelper.#postHeight();
 					break;
-				case 'Match-Log':
-					class MatchLog{
+				case 'Match-Result':
+					class MatchResult{
 						constructor(settings={}){
 							for(const key in settings){
 								if(Object.hasOwnProperty.call(settings, key)){
@@ -44,7 +38,7 @@ class ReplayHelper{
 							}
 						}
 					}
-					resolve(new MatchLog(messageEvent.data.matchLog));
+					resolve(new MatchResult(messageEvent.data.matchResult));
 					break;
 			}
 		});
