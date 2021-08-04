@@ -267,8 +267,8 @@ function a(){
 			tableCell.colSpan = 2;
 			tableCell.rowSpan = 2;
 			tableCell.innerHTML = 'Score';
-			if(1 < arenaProperties.settings.general.averageOf){
-				tableCell.innerHTML += ', average out of ' + arenaProperties.settings.general.averageOf + ' games.';
+			if(1 < arenaProperties.settings.general.bestOf){
+				tableCell.innerHTML += ', average out of ' + arenaProperties.settings.general.bestOf + ' games.';
 			}
 			tableRow.appendChild(tableCell);
 			let tableHeaderMajor = document.createElement('th');
