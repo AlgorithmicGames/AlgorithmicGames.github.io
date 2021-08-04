@@ -28,8 +28,8 @@ class ReplayHelper{
 					window.addEventListener('resize', ReplayHelper.#postHeight);
 					ReplayHelper.#postHeight();
 					break;
-				case 'Match-Result':
-					class MatchResult{
+				case 'Arena-Result':
+					class ArenaResult{
 						constructor(settings={}){
 							for(const key in settings){
 								if(Object.hasOwnProperty.call(settings, key)){
@@ -38,7 +38,7 @@ class ReplayHelper{
 							}
 						}
 					}
-					resolve(new MatchResult(messageEvent.data.matchResult));
+					resolve(new ArenaResult(messageEvent.data.arenaResult));
 					break;
 			}
 		});
