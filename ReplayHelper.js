@@ -39,7 +39,7 @@ class ReplayHelper{
 						}
 					}
 					messageEvent.data.arenaResult.matchLogs.filter(matchLog => matchLog.error).forEach((matchLog, index) => console.error('Match '+index+' - '+matchLog.error));
-					resolve(new ArenaResult(messageEvent.data.arenaResult), messageEvent.data.wrapped);
+					resolve({arenaResult: new ArenaResult(messageEvent.data.arenaResult), wrapped: messageEvent.data.wrapped});
 					break;
 			}
 		});
