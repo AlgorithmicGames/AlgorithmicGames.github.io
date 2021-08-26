@@ -38,8 +38,14 @@ class ReplayHelper{
 							}
 						}
 					}
+					class Replay{
+						constructor(arenaResult, wrapped){
+							this.arenaResult = arenaResult;
+							this.wrapped = wrapped;
+						}
+					}
 					messageEvent.data.arenaResult.matchLogs.filter(matchLog => matchLog.error).forEach((matchLog, index) => console.error('Match '+index+' - '+matchLog.error));
-					resolve({arenaResult: new ArenaResult(messageEvent.data.arenaResult), wrapped: messageEvent.data.wrapped});
+					resolve(new Replay(new ArenaResult(messageEvent.data.arenaResult), messageEvent.data.wrapped));
 					break;
 			}
 		});
