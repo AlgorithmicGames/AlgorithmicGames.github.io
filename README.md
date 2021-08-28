@@ -12,16 +12,16 @@ If you want to test your participant without publicly uploading it to GitHub you
 If you need more insight and maybe even add some debug logs to the Arena you can download the `arena.js`, add it to a webserver and then spawn a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Spawning_a_dedicated_worker) with the arena file and [post a message](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Sending_messages_to_and_from_a_dedicated_worker) matching [Participants.js](https://github.com/AI-Tournaments/AI-Tournaments/blob/master/Arena/Participants.js)' constructor.
 ## Community arena
 ### Testing
-addArena(`url`, `name`, `replayURL`, (...``participantObjects``)).
-Either `participantObject` is a url string to a script or an array ([`url`, `name`, (`teamNumber`)]).
-``` JavaScript
-/* Example */
-addArena('http://127.0.0.1:8080/Community-Arena/','New-Community-Arena','http://127.0.0.1:8080/Community-Arena-Replay/', 'http://127.0.0.1:8080/Community-Arena-Test-Participants/participant.js', ['http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js', 'Temp-Participant', 1]);
-```
-Alternatively it is possible to put the `addArena` inputs to local storage `Local arena development` as a JSON formatted sting to automatically add the local arena on page reload.
+Set local storage variable `Local arena development` to a JSON formatted string to automatically load arena on page load.
 | Key | Value |
 | --- |---|
-| `Local arena development` | `["http://127.0.0.1:8080/Community-Arena/","New-Community-Arena","http://127.0.0.1:8080/Community-Arena-Replay/", "http://127.0.0.1:8080/Community-Arena-Test-Participants/participant.js", ["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js", "Temp-Participant", 1]]` |
+| `Local arena development` | `{"arena":"http://127.0.0.1:8080/Community-Arena/","name":"New-Community-Arena","replay":"http://127.0.0.1:8080/Community-Arena-Replay/","participants":["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-1.js",{"url":"http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js","name":"Temp-Participant","team":1}],"includeScripts":{"arena":[],"participants":[]}}` |
+Field `participants` can be either a url string to a script or a JSON object.
+Alternatively it is possible to execute the `addArena` function manually in the browsers JavaScript console at [AI-Tournaments/Arena/](https://ai-tournaments.github.io/AI-Tournaments/Arena/).
+``` JavaScript
+/* Example */
+addArena({arena:"http://127.0.0.1:8080/Community-Arena/",name:"New-Community-Arena",replay:"http://127.0.0.1:8080/Community-Arena-Replay/",participants:["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-1.js",{url:"http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js",name:"Temp-Participant",team:1}],includeScripts:{arena:[],participants:[]}});
+```
 ## Special thanks
 - JSON Editor<br>
 AI-Tournaments uses [JSON Editor](https://github.com/josdejong/jsoneditor/) by [Jos de Jong](https://github.com/josdejong), powered by [Ace (Ajax.org Cloud9 Editor)](https://github.com/ajaxorg/ace/) and [Ajv JSON schema validator](https://github.com/ajv-validator/ajv/), for editing, rendering and validating JSON.
