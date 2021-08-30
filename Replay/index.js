@@ -235,7 +235,7 @@ function a(){
 						break;
 					case 'ReplayHelper-Initiated':
 						messageEvent.source.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
-						messageEvent.source.postMessage({type: 'Arena-Result', arenaResult: JSON.parse(_element_iframe.dataset.arenaResult)}, '*');
+						messageEvent.source.postMessage({type: 'Arena-Result', arenaResult: JSON.parse(_element_iframe.dataset.arenaResult), wrapped: true}, '*');
 						setTimeout(()=>{
 							if(_element_iframe.classList.contains('hidden')){
 								_element_iframe_failToLoad.classList.remove('hidden');
@@ -302,7 +302,7 @@ function a(){
 					document.getElementById('open-replay-in-new-tab').addEventListener('click', ()=>{
 						let win = window.open(_element_viewOptions.selectedOptions[0].value);
 						setTimeout(()=>{
-							win.postMessage({type: 'Arena-Result', arenaResult: JSON.parse(_element_iframe.dataset.arenaResult)}, '*');
+							win.postMessage({type: 'Arena-Result', arenaResult: JSON.parse(_element_iframe.dataset.arenaResult), wrapped: false}, '*');
 						}, 1000);
 					});
 				}));
