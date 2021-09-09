@@ -12,10 +12,10 @@ If you want to test your participant without publicly uploading it to GitHub you
 If you need more insight and maybe even add some debug logs to the Arena you can download the `arena.js`, add it to a webserver and then spawn a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Spawning_a_dedicated_worker) with the arena file and [post a message](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Sending_messages_to_and_from_a_dedicated_worker) matching [Participants.js](https://github.com/AI-Tournaments/AI-Tournaments/blob/master/Arena/Participants.js)' constructor.
 ## Community arena
 ### Testing
-Set local storage variable `Local arena development` to a JSON formatted string to automatically load arena on page load.
+Set local storage variable `Local development` to a JSON formatted string to automatically load arena on page load.
 | Key | Value |
 | --- |---|
-| `Local arena development` | `{"arena":"http://127.0.0.1:8080/Community-Arena/","name":"New-Community-Arena","replay":"http://127.0.0.1:8080/Community-Arena-Replay/","participants":["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-1.js",{"url":"http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js","name":"Temp-Participant","team":1}],"includeScripts":{"arena":[],"participants":[]}}` |
+| `Local development` | `{"arena":"http://127.0.0.1:8080/Community-Arena/","name":"New-Community-Arena","replay":"http://127.0.0.1:8080/Community-Arena-Replay/","participants":["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-1.js",{"url":"http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js","name":"Temp-Participant","team":1}],"includeScripts":{"arena":[],"participants":[]}}` |
 Field `participants` can be either a url string to a script or a JSON object.
 Alternatively it is possible to execute the `addArena` function manually in the browsers JavaScript console at [AI-Tournaments/Arena/](https://ai-tournaments.github.io/AI-Tournaments/Arena/).
 ``` JavaScript

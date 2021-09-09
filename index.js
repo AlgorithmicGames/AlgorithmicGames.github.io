@@ -45,13 +45,13 @@ function a(){
 		'If you want to you can join the community discussions over at the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord server</a>.\n'+
 		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
 	true, '582px', true);
-	if(localStorage.getItem('Local arena development') !== null){
+	if(localStorage.getItem('Local development') !== null){
 		let dropdown = document.getElementById('development-dropdown');
 		dropdown.parentElement.classList.remove('hidden');
 		let content = document.createElement('div');
-		let arenaObj = JSON.parse(localStorage.getItem('Local arena development'));
-		let arena = arenaObj[1] ? arenaObj[1] : 'local arena';
-		content.innerHTML = '<b>Arena development</b><br>Automatic addition of local <i>'+arena+'</i>.<br><br><button onclick="localStorage.removeItem(\'Local arena development\'); location.reload();">Clear</button>';
+		let arenaObj = JSON.parse(localStorage.getItem('Local development'));
+		let arena = arenaObj[1] ? '<i>'+arenaObj[1]+'</i>' : 'arena';
+		content.innerHTML = '<b>Local development</b><br>Automatic addition of local '+arena+', participants and settings.<br><br><button onclick="localStorage.removeItem(\'Local development\'); location.reload();">Clear</button>';
 		dropdown.appendChild(content);
 	}
 	if(Backend.isOverride()){
