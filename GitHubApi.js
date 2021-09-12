@@ -163,7 +163,7 @@ class GitHubApi{
 					}
 				}));
 			});
-			return Promise.all(promises).then(()=>arenas);
+			return Promise.allSettled(promises).then(()=>arenas);
 		});
 	}
 	static login(){
