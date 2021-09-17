@@ -19,8 +19,6 @@ function a(){
 	let _element_previousReplayRenameSave = document.getElementById('previous-replay-rename-save');
 	let _element_previousReplaysController = document.getElementById('previous-replays-controller');
 	let _parent = null;
-	let _replayOptionsPromise_resolve;
-	let _replayOptionsPromise = new Promise(resolve=>_replayOptionsPromise_resolve=resolve); // Not referenced.
 	let _editor = new JSONEditor(_element_editor, {'modes': ['code', 'view'], 'name': 'Replay', 'onChange': onChange, 'onValidate': onValidate});
 	setTimeout(()=>{
 		if(_editor.getText() === '{}'){
@@ -271,7 +269,7 @@ function a(){
 				_element_btnLock.disabled = true;
 				_editor.setMode('view');
 				addReplayToStorage(_editor.get());
-				_replayOptionsPromise_resolve(GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Replay+topic:'+_replayData.body.arena.full_name.replace('/','--')).then(response => response.json()).then(response => {
+				GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Replay+topic:'+_replayData.body.arena.full_name.replace('/','--')).then(response => response.json()).then(response => {
 					document.getElementById('default-option').value = _replayData.header.defaultReplay;
 					response.items.forEach(repo => {
 						if(repo.has_pages){
@@ -305,7 +303,7 @@ function a(){
 							win.postMessage({type: 'Arena-Result', arenaResult: JSON.parse(_element_iframe.dataset.arenaResult), wrapped: false}, '*');
 						}, 1000);
 					});
-				}));
+				});
 			};
 		};
 	})();
