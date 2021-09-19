@@ -209,7 +209,8 @@ function a(){
 			_participants.forEach(b => {
 				if(a !== b){
 					let dontAdd = false;
-					if(arenaHeader.symmetric){ // True if the result is the same when participants switch places. False if the result is NOT the same when participants switch places.
+					console.error('Property "symmetric" is deprecated. Move setting to tournament definition.');
+					if(symmetric){ // True if the result is the same when participants switch places. False if the result is NOT the same when participants switch places.
 						brackets.forEach(bracket => {
 							dontAdd |= bracket[0].includes(a) && bracket[0].includes(b);
 						});
