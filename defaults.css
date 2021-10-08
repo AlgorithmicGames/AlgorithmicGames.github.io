@@ -16,13 +16,12 @@
 :root, pre {
 	font-family: consolas, "Courier New", Courier, Monaco, monospace;
 }
-:root, .jsoneditor, .jsoneditor-menu{
+:root, input, select, .jsoneditor, .jsoneditor-menu{
 	border-color: var(--main-color);
 }
 input {
 	color: var(--secondary-background-color);
 	background-color: var(--transparency);
-	border-color: var(--main-color);
 }
 select {
 	background: transparent;
