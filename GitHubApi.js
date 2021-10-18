@@ -132,7 +132,6 @@ class GitHubApi{
 			let arenas = [];
 			let promises = [];
 			json.items.forEach(repo => {
-				console.log('// TODO: Populate includeScripts by searching for .js-files in repo folders. E.g: includeScripts/name.arena.js and includeScripts/name.participants.js');
 				let data = {
 					official: repo.owner.login === 'AI-Tournaments',
 					name: repo.full_name.replace(/.*\/|-Arena/g, ''),
@@ -142,8 +141,7 @@ class GitHubApi{
 					full_name: repo.full_name,
 					stars: repo.stargazers_count,
 					commit: null,
-					version: null,
-					includeScripts: {arena: [], participants: []}
+					version: null
 				};
 				arenas.push(data);
 				let tagPromise = GitHubApi.fetch(repo.tags_url.replace('https://api.github.com/','')).then(response => response.json());
