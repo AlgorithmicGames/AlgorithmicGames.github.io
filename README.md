@@ -15,13 +15,44 @@ If you need more insight and maybe even add some debug logs to the Arena you can
 Set local storage variable `Local development` to a JSON formatted string to automatically load arena on page load.
 | Key | Value |
 | --- |---|
-| `Local development` | `{"arena":"http://127.0.0.1:8080/Community-Arena/","name":"New-Community-Arena","replay":"http://127.0.0.1:8080/Community-Arena-Replay/","participants":["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-1.js",{"url":"http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js","name":"Temp-Participant","team":1}],"includeScripts":{"arena":[],"participants":[]}}` |
+| `Local development` | `{"arena":"http://127.0.0.1:8080/Community-Arena/","name":"New-Community-Arena","replay":"http://127.0.0.1:8080/Community-Arena-Replay/","participants":["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-1.js",{"url":"http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js","name":"Temp-Participant","team":1}]}` |
+
 Field `participants` can be either a url string to a script or a JSON object.
-Alternatively it is possible to execute the `addArena` function manually in the browsers JavaScript console at [AI-Tournaments/Arena/](https://ai-tournaments.github.io/AI-Tournaments/Arena/).
+Alternatively it is possible to call the `addArena` function manually in the browser's JavaScript console at [AI-Tournaments/Arena/](https://ai-tournaments.github.io/AI-Tournaments/Arena/).
 ``` JavaScript
 /* Example */
-addArena({arena:"http://127.0.0.1:8080/Community-Arena/",name:"New-Community-Arena",replay:"http://127.0.0.1:8080/Community-Arena-Replay/",participants:["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-1.js",{url:"http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js",name:"Temp-Participant",team:1}],includeScripts:{arena:[],participants:[]}});
+addArena({arena:"http://127.0.0.1:8080/Community-Arena/",name:"New-Community-Arena",replay:"http://127.0.0.1:8080/Community-Arena-Replay/",participants:["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-1.js",{url:"http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js",name:"Temp-Participant",team:1}]});
 ```
+## File header
+The file header has to be valid Json otherwise it is omitted. The file header can be placed anywhere in the file, but at the top is preferred.
+``` JavaScript
+/**
+{}
+**/
+```
+``` JavaScript
+/**{}**/
+```
+``` JavaScript
+/**{
+	"example": true
+}**/
+```
+### Dependencies
+To load libraries like jQuery and others, put the files in the repository and add them to the file header. The files had to be referenced locally. They are loaded in assigned order.
+``` JavaScript
+/**
+{
+	"dependencies": [
+		"exampleLib.js",
+		"other/exampleLib.js"
+	]
+}
+**/
+```
+#### Dependencies vs modules
+--- TODO: Rewrite later. ---
+Modules are loaded before dependencies, but other than that there is no real difference for arena.js. The arena can define modules that is always loaded and available to participants.
 ## Special thanks
 - JSON Editor<br>
 AI-Tournaments uses [JSON Editor](https://github.com/josdejong/jsoneditor/) by [Jos de Jong](https://github.com/josdejong), powered by [Ace (Ajax.org Cloud9 Editor)](https://github.com/ajaxorg/ace/) and [Ajv JSON schema validator](https://github.com/ajv-validator/ajv/), for editing, rendering and validating JSON.
