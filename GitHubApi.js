@@ -136,7 +136,7 @@ class GitHubApi{
 					official: repo.owner.login === 'AI-Tournaments',
 					name: repo.full_name.replace(/.*\/|-Arena/g, ''),
 					raw_url: null,
-					preview_url: 'https://raw.githubusercontent.com/'+repo.full_name+'/'+repo.default_branch+'/',
+					default: 'https://raw.githubusercontent.com/'+repo.full_name+'/'+repo.default_branch+'/',
 					html_url: repo.html_url,
 					full_name: repo.full_name,
 					stars: repo.stargazers_count,
