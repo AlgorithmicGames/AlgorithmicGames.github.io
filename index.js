@@ -66,7 +66,7 @@ function a(){
 			let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
 			GitHubApi.formatMarkdown(why, {
 				async: true,
-				suffix: '<br><span style="color:var(--secondary-background-color)">- Overlord servant</span>'
+				suffix: ''//<br><span style="color:var(--secondary-background-color)">- Overlord servant</span>'
 			}).then(iframe => {
 				openWindow('Why "Source Available"?', iframe, true, '705px');
 			});
