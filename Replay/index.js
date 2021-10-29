@@ -15,11 +15,34 @@ function a(){
 	let _element_previousReplayRenameInput = document.getElementById('previous-replay-rename-input');
 	let _element_loadPreviousReplayRename = document.getElementById('load-previous-replay-rename');
 	let _element_previousReplayRename = document.getElementById('previous-replay-rename');
-	let _element_previousReplayRenameCancel = document.getElementById('previous-replay-rename-cancel');
+	let _element_previousReplayRenameClose = document.getElementById('previous-replay-rename-cancel');
 	let _element_previousReplayRenameSave = document.getElementById('previous-replay-rename-save');
 	let _element_previousReplaysController = document.getElementById('previous-replays-controller');
 	let _parent = null;
 	let _editor = new JSONEditor(_element_editor, {'modes': ['code', 'view'], 'name': 'Replay', 'onChange': onChange, 'onValidate': onValidate});
+	class IndexedDBOperation {
+		static do = call => {
+			let worker = new Worker('indexedDB.js');
+			let resolve;
+			let reject;
+			let promise = new Promise((_resolve, _reject) => {resolve = _resolve; reject = _reject;});
+			let awaitingResponse = true;
+			worker.onmessage = m => {
+				if(awaitingResponse){
+					awaitingResponse = false;
+					resolve(m.data);
+				}
+			}
+			worker.onerror = e => {
+				if(awaitingResponse){
+					awaitingResponse = false;
+					reject(e);
+				}
+			}
+			worker.postMessage(call);
+			return promise;
+		}
+	}
 	setTimeout(()=>{
 		if(_editor.getText() === '{}'){
 			_element_editor.classList.remove('hidden');
@@ -36,12 +59,12 @@ function a(){
 	_element_previousReplayOptions.addEventListener('click', ()=>document.activeElement.blur());
 	_element_loadPreviousReplayRename.addEventListener('click', ()=>{
 		let option = _element_previousReplayOptions.selectedOptions[0];
-		_element_previousReplayRenameInput.value = option.dataset.name === option.dataset.nameDefault ? '' : option.dataset.name;
-		_element_previousReplayRenameInput.placeholder = option.dataset.nameDefault;
+		_element_previousReplayRenameInput.value = option.dataset.name === option.dataset.defaultName ? '' : option.dataset.name;
+		_element_previousReplayRenameInput.placeholder = option.dataset.defaultName;
 		_element_previousReplaysController.classList.add('hidden');
 		_element_previousReplayRename.classList.remove('hidden');
 	});
-	_element_previousReplayRenameCancel.addEventListener('click', ()=>{
+	_element_previousReplayRenameClose.addEventListener('click', ()=>{
 		_element_previousReplayRename.classList.add('hidden');
 		_element_previousReplaysController.classList.remove('hidden');
 	});
@@ -88,223 +111,173 @@ function a(){
 			}
 		});
 	}
-	(()=>{
-		console.log('// TODO: Move to worker. First load indexes and then on select load data.');
-		let idbOpenDBRequest = indexedDB.open('replays', 1);
-		idbOpenDBRequest.onerror = event=>console.error('openDb:', event.target.errorCode);
-		idbOpenDBRequest.onupgradeneeded = idbVersionChangeEvent=>{
-			let idbObjectStore = idbVersionChangeEvent.currentTarget.result.createObjectStore('records', {keyPath: 'id', autoIncrement: true});
-			idbObjectStore.createIndex('stored', 'stored', {unique: false});
-			idbObjectStore.createIndex('name', 'name', {unique: false});
+	function refreshStoredReplays(){
+		let oldOption = _element_previousReplayOptions.selectedOptions[0];
+		while(0 < _element_previousReplayOptions.childElementCount){
+			_element_previousReplayOptions.removeChild(_element_previousReplayOptions.firstChild);
 		}
-		idbOpenDBRequest.onsuccess = event=>{
-			let _idbDatabase = idbOpenDBRequest.result;
-			function refreshStoredReplays(){
-				let oldOption = _element_previousReplayOptions.selectedOptions[0];
-				while(0 < _element_previousReplayOptions.childElementCount){
-					_element_previousReplayOptions.removeChild(_element_previousReplayOptions.firstChild);
+		IndexedDBOperation.do({operation: 'getStoredReplays'}).then(storedReplays => {
+			let groupedReplays = [];
+			storedReplays.forEach(storedReplay => {
+				if(groupedReplays.find(groupedReplay => groupedReplay.name === storedReplay.arena) === undefined){
+					groupedReplays.push({name: storedReplay.arena, list: []});
 				}
-				getStoredReplays().then(storedReplays => {
-					let groupedReplays = [];
-					storedReplays.forEach(storedReplay => {
-						let name = storedReplay.data.body.arena.full_name;
-						if(groupedReplays.find(groupedReplay => groupedReplay.name === name) === undefined){
-							groupedReplays.push({name: name, list: []});
+				groupedReplays.filter(r => r.name === storedReplay.arena)[0].list.push(storedReplay);
+			});
+			groupedReplays.forEach(groupedReplay => {
+				let optgroup = document.createElement('optgroup');
+				optgroup.label = groupedReplay.name;
+				groupedReplay.list.forEach(storedReplay => {
+					let option = document.createElement('option');
+					IndexedDBOperation.do({operation: 'getStoredReplayData', data: storedReplay.id}).then(replayData => {
+						option.dataset.header = JSON.stringify(replayData.header);
+						option.dataset.databaseId = storedReplay.id;
+						option.dataset.defaultName = storedReplay.defaultName;
+						option.dataset.name = [undefined, ''].includes(storedReplay.name) ? option.dataset.defaultName : storedReplay.name;
+						option.dataset.arena = groupedReplay.name;
+						option.innerHTML = option.dataset.arena+' '+option.dataset.name;
+						option.value = JSON.stringify(storedReplay.data);
+						if(oldOption){
+							option.selected = oldOption.dataset.databaseId === option.dataset.databaseId;
 						}
-						groupedReplays.filter(r => r.name === name)[0].list.push(storedReplay);
 					});
-					groupedReplays.forEach(groupedReplay => {
-						let optgroup = document.createElement('optgroup');
-						optgroup.label = groupedReplay.name;
-						groupedReplay.list.forEach(storedReplay => {
-							debugger
-							let participants = storedReplay.data.body.teams.map(t => t.members.join(', '));
-							let scores = [];
-							let hasScore = storedReplay.data.body.matchLogs.filter(d => d.scores);
-							if(hasScore.length){
-								storedReplay.data.body.matchLogs.forEach(match=>{
-									scores.push(match.scores.map(s => s.score).join('-'));
-								})
-							}
-							let option = document.createElement('option');
-							option.dataset.header = JSON.stringify(storedReplay.data.header);
-							option.dataset.databaseId = storedReplay.id;
-							option.dataset.nameDefault = new Date(storedReplay.stored).toLocaleString()+' '+participants.join(' vs. ')
-							if(scores.length){
-								option.dataset.nameDefault += ' ('+scores.join(', ')+')';
-							}
-							option.dataset.name = [undefined, ''].includes(storedReplay.name) ? option.dataset.nameDefault : storedReplay.name;
-							option.dataset.arena = groupedReplay.name;
-							option.innerHTML = option.dataset.arena+' '+option.dataset.name;
-							option.value = JSON.stringify(storedReplay.data);
-							if(oldOption){
-								option.selected = oldOption.dataset.databaseId === option.dataset.databaseId;
-							}
-							optgroup.appendChild(option);
-						});
-						_element_previousReplayOptions.appendChild(optgroup);
-					});
-					_element_btnClearStoredReplays.disabled = storedReplays.length === 0;
+					optgroup.appendChild(option);
 				});
-			}
-			document.getElementById('load-previous-replay').addEventListener('click', ()=>{
-				refreshStoredReplays();
-				_element_control.classList.add('hidden');
-				_element_previousReplayContainer.classList.remove('hidden');
+				_element_previousReplayOptions.appendChild(optgroup);
 			});
-			document.getElementById('load-previous-replay-confirm').addEventListener('click', () => {
-				_element_previousReplayContainer.classList.add('hidden');
-				_element_control.classList.remove('hidden');
-				let option = _element_previousReplayOptions.selectedOptions[0];
-				_editor.setMode('view');
-				_editor.setText(option.value);
-				while(0 < _element_previousReplayOptions.childElementCount){
-					_element_previousReplayOptions.removeChild(_element_previousReplayOptions.firstChild);
-				}
-				onChange();
-			});
-			document.getElementById('load-previous-replay-delete').addEventListener('click', () => {
+			_element_btnClearStoredReplays.disabled = storedReplays.length === 0;
+		});
+	}
+	function closeReplayController(){
+		_element_previousReplayContainer.classList.add('hidden');
+		_element_control.classList.remove('hidden');
+	}
+	document.getElementById('load-previous-replay').addEventListener('click', ()=>{
+		refreshStoredReplays();
+		_element_control.classList.add('hidden');
+		_element_previousReplayContainer.classList.remove('hidden');
+	});
+	document.getElementById('load-previous-replay-confirm').addEventListener('click', () => {
+		closeReplayController();
+		let option = _element_previousReplayOptions.selectedOptions[0];
+		_editor.setMode('view');
+		_editor.setText(option.value);
+		while(0 < _element_previousReplayOptions.childElementCount){
+			_element_previousReplayOptions.removeChild(_element_previousReplayOptions.firstChild);
+		}
+		onChange();
+	});
+	document.getElementById('load-previous-replay-delete').addEventListener('click', ()=>{
+		let count = [..._element_previousReplayOptions.selectedOptions].length;
+		if(0 < count){
+			let question = count === 1 ? 'replay "'+_element_previousReplayOptions.selectedOptions[0].innerHTML+'"?' : ''+count+' replays?\n'+[..._element_previousReplayOptions.selectedOptions].map(o=>o.innerHTML).join('\n');
+			if(confirm('Are you sure want to remove '+question)){
+				let promises = [];
 				for(let option of [..._element_previousReplayOptions.selectedOptions]){
-					if(confirm('Are you sure want to remove replay "'+option.innerHTML+'"?')){
-						_element_previousReplayContainer.classList.add('hidden');
-						getIdbObjectStore().delete(parseInt(option.dataset.databaseId));
-						refreshStoredReplays();
-					}
-				}
-			});
-			document.getElementById('load-previous-replay-cancel').addEventListener('click', () => {
-				_element_previousReplayContainer.classList.add('hidden');
-				_element_control.classList.remove('hidden');
-			});
-			_element_btnClearStoredReplays.addEventListener('click', () => {
-				if(confirm('Are you sure want to remove ALL replays?')){
-					getIdbObjectStore().clear();
-					refreshStoredReplays();
-				}
-			});
-			_element_previousReplayRenameSave.addEventListener('click', ()=>{
-				let option = _element_previousReplayOptions.selectedOptions[0];
-				getIdbObjectStore().openCursor().onsuccess = event=>{
-					const cursor = event.target.result;
-					if(cursor){
-						if(cursor.value.id === parseInt(option.dataset.databaseId)){
-							cursor.value.name = _element_previousReplayRenameInput.value;
-							cursor.update(cursor.value);
-							refreshStoredReplays();
-							_element_previousReplayRenameCancel.click();
-						}else{
-							cursor.continue();
-						}
-					}
-				};
-			});
-			window.onmessage = messageEvent => {
-				// NOTE: messageEvent can come from off site scripts.
-				switch(messageEvent.data.type){
-					case 'Init-Fetch-Replay-Height':
-						if(_parent === null){
-							document.documentElement.style.paddingLeft = 0;
-							document.documentElement.style.paddingRight = 0;
-							document.documentElement.style.paddingBottom = 0;
-							_parent = {
-								origin: messageEvent.origin,
-								source: messageEvent.source
-							}
-						}
-					case 'Replay-Height':
-						if(messageEvent.data.value !== undefined){
-							_element_iframe.style.minHeight = window.parent.window.innerHeight +'px';
-							_element_iframe.style.height = messageEvent.data.value+'px';
-							_element_iframe.classList.remove('hidden');
-							_element_iframe_failToLoad.classList.add('hidden');
-							if(_parent !== null){
-								let height = _element_control.offsetHeight;
-								height += parseFloat(window.getComputedStyle(_element_paddingWrapper, null).getPropertyValue('padding-top'));
-								height += parseFloat(window.getComputedStyle(_element_paddingWrapper, null).getPropertyValue('padding-bottom'));
-								height += messageEvent.data.value;
-								_parent.source.postMessage({type: 'Replay-Height', value: height}, _parent.origin);
-							}
-						}
-						break;
-					case 'Replay-Data':
-						_editor.setText(messageEvent.data.replayData);
-						_autoStart = true;
-						onChange();
-						break;
-					case 'ReplayHelper-Initiated':
-						messageEvent.source.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
-						messageEvent.source.postMessage({type: 'Arena-Result', arenaResult: JSON.parse(_element_iframe.dataset.arenaResult), wrapped: true}, '*');
-						setTimeout(()=>{
-							if(_element_iframe.classList.contains('hidden')){
-								_element_iframe_failToLoad.classList.remove('hidden');
-							}
-						}, 1000);
-						break;
+					promises.push(IndexedDBOperation.do({operation: 'deleteStoredReplay', data: parseInt(option.dataset.databaseId)}));
 				}
 			}
-			function getIdbObjectStore(){
-				return _idbDatabase.transaction(['records'], 'readwrite').objectStore('records');
-			}
-			function getStoredReplays(){
-				let idbRequest = getIdbObjectStore().getAll();
-				let callbackResolve;
-				let callbackReject;
-				idbRequest.onsuccess = event=>callbackResolve(idbRequest.result);
-				idbRequest.onerror = event=>callbackReject(idbRequest.error);
-				return new Promise((resolve, reject) => {callbackResolve = resolve; callbackReject = reject;});
-			}
-			function addReplayToStorage(replay={}){
-				let replayString = JSON.stringify(replay);
-				getStoredReplays().then(storedReplays => {
-					let idbObjectStore = getIdbObjectStore();
-					for(let index = 0; index < storedReplays.length; index++){
-						if(replayString === JSON.stringify(storedReplays[index].data)){
-							return; // Don't add if replay already exist in list.
-						}
+			Promise.allSettled(promises).then(refreshStoredReplays);
+		}
+	});
+	document.getElementById('load-previous-replay-cancel').addEventListener('click', closeReplayController);
+	_element_btnClearStoredReplays.addEventListener('click', () => {
+		if(confirm('Are you sure want to remove ALL '+[..._element_previousReplayOptions.children].map(o => o.childElementCount).reduce((a,b)=>a+b)+' replays?')){
+			IndexedDBOperation.do({operation: 'removeAllStoredReplays'}).then(()=>{
+				refreshStoredReplays();
+				_element_previousReplayRenameClose.click();
+			});
+		}
+	});
+	_element_previousReplayRenameSave.addEventListener('click', ()=>{
+		let option = _element_previousReplayOptions.selectedOptions[0];
+		IndexedDBOperation.do({operation: 'renameStoredReplay', data: {id: parseInt(option.dataset.databaseId), name: _element_previousReplayRenameInput.value}}).then(()=>{
+			refreshStoredReplays();
+			_element_previousReplayRenameClose.click();
+		});
+	});
+	window.onmessage = messageEvent => {
+		// NOTE: messageEvent can come from off site scripts.
+		switch(messageEvent.data.type){
+			case 'Init-Fetch-Replay-Height':
+				if(_parent === null){
+					document.documentElement.style.paddingLeft = 0;
+					document.documentElement.style.paddingRight = 0;
+					document.documentElement.style.paddingBottom = 0;
+					_parent = {
+						origin: messageEvent.origin,
+						source: messageEvent.source
 					}
-					idbObjectStore.put({data: replay, stored: Date.now()});
-				});
-			}
-			_element_btnLock.onclick = mouseEvent=>{
-				_element_btnLock.disabled = true;
-				_editor.setMode('view');
-				addReplayToStorage(_editor.get());
-				GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Replay+topic:'+_replayData.body.arena.full_name.replace('/','--')).then(response => response.json()).then(response => {
-					document.getElementById('default-option').value = _replayData.header.defaultReplay;
-					response.items.forEach(repo => {
-						if(repo.has_pages){
-							let cssStar = getComputedStyle(document.documentElement).getPropertyValue('--github-stars').trim();
-							cssStar = cssStar.substring(1,cssStar.length-1);
-							let option = document.createElement('option');
-							option.innerHTML = repo.full_name.replace(/.*\/|-Arena/g, '') + ' ' + cssStar + repo.stars;
-							option.dataset.stars = repo.stars;
-							option.value = 'https://'+repo.owner.login+'.github.io/'+repo.name;
-							_element_viewOptions.appendChild(option);
-						}
-					});
-					let options = [..._element_viewOptions.options];
-					options.sort(function(a, b){
-						if(parseFloat(a.dataset.stars) < parseFloat(b.dataset.stars)){return -1;}
-						if(parseFloat(b.dataset.stars) < parseFloat(a.dataset.stars)){return 1;}
-						return 0;
-					});
-					_element_viewOptions.classList.remove('hidden');
-					// Load replay.
-					for(const element of _element_control.children){
-						if(!element.classList.contains('sticky')){
-							element.classList.add('hidden');
-						}
+				}
+			case 'Replay-Height':
+				if(messageEvent.data.value !== undefined){
+					_element_iframe.style.minHeight = window.parent.window.innerHeight +'px';
+					_element_iframe.style.height = messageEvent.data.value+'px';
+					_element_iframe.classList.remove('hidden');
+					_element_iframe_failToLoad.classList.add('hidden');
+					if(_parent !== null){
+						let height = _element_control.offsetHeight;
+						height += parseFloat(window.getComputedStyle(_element_paddingWrapper, null).getPropertyValue('padding-top'));
+						height += parseFloat(window.getComputedStyle(_element_paddingWrapper, null).getPropertyValue('padding-bottom'));
+						height += messageEvent.data.value;
+						_parent.source.postMessage({type: 'Replay-Height', value: height}, _parent.origin);
 					}
-					_element_iframe.dataset.arenaResult = JSON.stringify(_replayData.body);
-					_element_iframe.src = _element_viewOptions.selectedOptions[0].value;
-					document.getElementById('open-replay-in-new-tab').addEventListener('click', ()=>{
-						let win = window.open(_element_viewOptions.selectedOptions[0].value);
-						setTimeout(()=>{
-							win.postMessage({type: 'Arena-Result', arenaResult: JSON.parse(_element_iframe.dataset.arenaResult), wrapped: false}, '*');
-						}, 1000);
-					});
-				});
-			};
-		};
-	})();
+				}
+				break;
+			case 'Replay-Data':
+				_editor.setText(messageEvent.data.replayData);
+				_autoStart = true;
+				onChange();
+				break;
+			case 'ReplayHelper-Initiated':
+				messageEvent.source.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
+				messageEvent.source.postMessage({type: 'Arena-Result', arenaResult: JSON.parse(_element_iframe.dataset.arenaResult), wrapped: true}, '*');
+				setTimeout(()=>{
+					if(_element_iframe.classList.contains('hidden')){
+						_element_iframe_failToLoad.classList.remove('hidden');
+					}
+				}, 1000);
+				break;
+		}
+	}
+	_element_btnLock.onclick = mouseEvent=>{
+		_element_btnLock.disabled = true;
+		_editor.setMode('view');
+		IndexedDBOperation.do({operation: 'addReplayToStorage', data: _editor.get()});
+		GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Replay+topic:'+_replayData.body.arena.full_name.replace('/','--')).then(response => response.json()).then(response => {
+			document.getElementById('default-option').value = _replayData.header.defaultReplay;
+			response.items.forEach(repo => {
+				if(repo.has_pages){
+					let cssStar = getComputedStyle(document.documentElement).getPropertyValue('--github-stars').trim();
+					cssStar = cssStar.substring(1,cssStar.length-1);
+					let option = document.createElement('option');
+					option.innerHTML = repo.full_name.replace(/.*\/|-Arena/g, '') + ' ' + cssStar + repo.stars;
+					option.dataset.stars = repo.stars;
+					option.value = 'https://'+repo.owner.login+'.github.io/'+repo.name;
+					_element_viewOptions.appendChild(option);
+				}
+			});
+			let options = [..._element_viewOptions.options];
+			options.sort(function(a, b){
+				if(parseFloat(a.dataset.stars) < parseFloat(b.dataset.stars)){return -1;}
+				if(parseFloat(b.dataset.stars) < parseFloat(a.dataset.stars)){return 1;}
+				return 0;
+			});
+			_element_viewOptions.classList.remove('hidden');
+			// Load replay.
+			for(const element of _element_control.children){
+				if(!element.classList.contains('sticky')){
+					element.classList.add('hidden');
+				}
+			}
+			_element_iframe.dataset.arenaResult = JSON.stringify(_replayData.body);
+			_element_iframe.src = _element_viewOptions.selectedOptions[0].value;
+			document.getElementById('open-replay-in-new-tab').addEventListener('click', ()=>{
+				let win = window.open(_element_viewOptions.selectedOptions[0].value);
+				setTimeout(()=>{
+					win.postMessage({type: 'Arena-Result', arenaResult: JSON.parse(_element_iframe.dataset.arenaResult), wrapped: false}, '*');
+				}, 1000);
+			});
+		});
+	};
 }
