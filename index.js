@@ -204,9 +204,10 @@ function a(){
 	}
 	function openScreen(src=''){
 		window.location.hash = src;
-		let root = window.location.href.substr(0,window.location.href.indexOf('#'));
+		let origin = window.location.href.replace(/(\?.*?(?=#))|(\?.*?(?=$))/gm, '');
+		let root = origin.substr(0, origin.indexOf('#'));
 		if(!root){
-			root = window.location.href;
+			root = origin;
 		}
 		if(root[root.length-1] !== '/'){
 			root += '/';
