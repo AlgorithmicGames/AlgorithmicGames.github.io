@@ -3,17 +3,22 @@ function a(){
 	let jsonEditor;
 	let generalSettings = {
 		seed: '',
-		averageOf: 1,
-		displayOpponents: ['Hide', 'AccountOnly', 'Yes'],
+		bestOf: 1,
+		discloseOpponents: ['Yes', 'AccountOnly', 'No'],
 		timelimit_ms: 1000,
 		_meta: {
-			averageOf: {min: 1, max: null},
-			timelimit_ms: {min: 1, max: null}
+			bestOf: {min: 1, max: null},
+			timelimit_ms: {min: 1, max: null},
+			discloseOpponents: {default: 'No', comment: {message: "Disclose opponents' name for the participants or keep them secret."}}
 		}
 	};
 	let advancedSettings = {
 		allowRemoteExecution: false
 	};
+	let _arenaProperties;
+	if(generalSettings.seed !== ''){
+		console.error('Seed has value. Fine during debugging, but do not commit. `generalSettings.seed` should be empty string (\'\').');
+	}
 	let settings = document.getElementById('settings');
 	let postSize;
 	let lastHeight;
@@ -76,9 +81,9 @@ function a(){
 	function setArena(messageEvent){
 		jsonEditor = null;
 		fetch(messageEvent.data.value + 'properties.json').then(response => response.json()).then(insecureJson => {
-			let arenaProperties = secureJson(insecureJson);
+			_arenaProperties = secureJson(insecureJson);
 			let jsonEditor_element;
-			let customInput = isObject(arenaProperties.header.customInput) && (isObject(arenaProperties.header.customInput.schema) || isObject(arenaProperties.header.customInput.schemaRefs) || (arenaProperties.header.customInput.default !== undefined && arenaProperties.header.customInput.default !== null));
+			let customInput = isObject(_arenaProperties.header.customInput) && (isObject(_arenaProperties.header.customInput.schema) || isObject(_arenaProperties.header.customInput.schemaRefs) || (_arenaProperties.header.customInput.default !== undefined && _arenaProperties.header.customInput.default !== null));
 			function addComment(label, comment){
 				let wrapper = document.createElement('span');
 				wrapper.classList.add('comment');
@@ -89,7 +94,7 @@ function a(){
 				let iframedMessage = document.createElement('iframe');
 				iframedMessage.sandbox = '';
 				iframedMessage.classList.add('message');
-				iframedMessage.srcdoc = '<!DOCTYPE html><html><head><link rel="stylesheet" href="../defaults.css"><script></script></head><body>'+comment.message+'</body></html>';
+				iframedMessage.srcdoc = '<!DOCTYPE html><html><head><link rel="stylesheet" href="../defaults.css"></head><body>'+comment.message+'</body></html>';
 				if(comment.height !== undefined){
 					iframedMessage.height = comment.height;
 				}
@@ -131,6 +136,7 @@ function a(){
 				}
 				let input = document.createElement('input');
 				input.id = label.htmlFor;
+				input.classList.add('arena-setting');
 				input.name = arrayIndex===undefined ? label.htmlFor : fieldset.name+'.'+name;
 				switch(typeof value){
 					default: input.type = 'text'; break;
@@ -141,7 +147,7 @@ function a(){
 				if(typeof value === 'boolean'){
 					input.checked = value;
 				}else if(typeof value === 'object'){
-					if(arrayIndex===0){
+					if(meta.default === undefined && arrayIndex===0 || meta.default === value[arrayIndex]){
 						input.checked = true;
 					}
 					input.value = value[arrayIndex];
@@ -167,10 +173,37 @@ function a(){
 			while(0 < settings.childElementCount){
 				settings.removeChild(settings.firstChild);
 			}
-			arenaProperties.settings.general = JSON.parse(JSON.stringify(generalSettings));
-			Object.keys(arenaProperties.settings).sort(a => 'general' === a ? -1 : 0).forEach(key => {
-				if(arenaProperties.settings.hasOwnProperty(key)){
-					const setting = arenaProperties.settings[key];
+			_arenaProperties.settings.general = JSON.parse(JSON.stringify(generalSettings));
+			if(messageEvent.data.settingsOverride && messageEvent.data.settingsOverride.arena === messageEvent.data.value && messageEvent.data.settingsOverride.settings){
+				for(const groupKey in messageEvent.data.settingsOverride.settings){
+					if(Object.hasOwnProperty.call(messageEvent.data.settingsOverride.settings, groupKey)){
+						const group = messageEvent.data.settingsOverride.settings[groupKey];
+						for(const setting in group){
+							if(Object.hasOwnProperty.call(group, setting)){
+								const value = group[setting];
+								if(setting === '_meta'){
+									for(const meta in value){
+										if(Object.hasOwnProperty.call(value, meta)){
+											const metaGroup = value[meta];
+											for(const metaKey in metaGroup){
+												if(Object.hasOwnProperty.call(metaGroup, metaKey)){
+													const metaValue = metaGroup[metaKey];
+													_arenaProperties.settings[groupKey][setting][meta][metaKey] = metaValue;
+												}
+											}
+										}
+									}
+								}else{
+									_arenaProperties.settings[groupKey][setting] = value;
+								}
+							}
+						}
+					}
+				}
+			}
+			Object.keys(_arenaProperties.settings).sort(a => 'general' === a ? -1 : 0).forEach(key => {
+				if(_arenaProperties.settings.hasOwnProperty(key)){
+					const setting = _arenaProperties.settings[key];
 					let fieldset = document.createElement('fieldset');
 					fieldset.name = key;
 					settings.appendChild(fieldset);
@@ -204,14 +237,14 @@ function a(){
 					}
 				}
 			});
-			jsonEditor = new JSONEditor(jsonEditor_element, {'modes': ['tree', 'code'], 'name': 'customInput', 'onModeChange': postSize}, customInput ? arenaProperties.header.customInput.default : undefined);
-			jsonEditor.setSchema(customInput ? arenaProperties.header.customInput.schema : undefined, customInput ? arenaProperties.header.customInput.schemaRefs : undefined);
-			messageEvent.source.postMessage({type: 'properties', value: {properties: arenaProperties}}, messageEvent.origin);
+			jsonEditor = new JSONEditor(jsonEditor_element, {'modes': ['tree', 'code'], 'name': 'customInput', 'onModeChange': postSize}, customInput ? _arenaProperties.header.customInput.default : undefined);
+			jsonEditor.setSchema(customInput ? _arenaProperties.header.customInput.schema : undefined, customInput ? _arenaProperties.header.customInput.schemaRefs : undefined);
+			messageEvent.source.postMessage({type: 'properties', value: {properties: _arenaProperties}}, messageEvent.origin);
 		});
 	}
 	function postSettings(messageEvent){
 		let json = {};
-		for(const input of settings.getElementsByTagName('input')){
+		for(const input of settings.getElementsByClassName('arena-setting')){
 			let info = input.name.split('.');
 			if(json[info[0]] === undefined){
 				json[info[0]] = {};
@@ -227,6 +260,6 @@ function a(){
 		}
 		json.general.advanced = JSON.parse(JSON.stringify(advancedSettings));
 		json.general.customInput = jsonEditor === null ? {} : jsonEditor.get();
-		messageEvent.source.postMessage({type: 'settings', value: json}, messageEvent.origin);
+		messageEvent.source.postMessage({type: 'settings', value: {header: {replay: _arenaProperties.header.replay}, settings: json}}, messageEvent.origin);
 	}
 }

@@ -3,11 +3,16 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>AI-Tournaments</title>
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-173346924-1"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-173346924-1');</script>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-TJFMG29186"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-TJFMG29186');</script>
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
 		<meta content="yes" name="mobile-web-app-capable">
 		<link rel="stylesheet" href="defaults.css">
 		<style>
+			:root {
+				--window-border: 2px solid;
+				--window-padding: 7px 13px 7px 13px;
+			}
+
 			body {
 				overflow: hidden;
 				background-color: var(--main-background-color);
@@ -22,15 +27,17 @@
 				border: var(--window-border);
 			}
 
+			#content {
+				overflow: auto;
+				background-color: var(--transparency);
+			}
 			#content, #screens {
 				position: absolute;
 				width: 100%;
-				height: 100%;
 			}
 			#screens>* {
 				width: 100%;
-				height: 100%;
-				background-color: var(--transparency);
+				display: grid;
 			}
 
 			iframe {
@@ -62,19 +69,6 @@
 				right: 0;
 				margin-right: 3px;
 			}
-			.source-available>h3, .source-available>p {
-				margin: 0;
-			}
-			.source-available>p {
-				white-space: initial;
-			}
-			.source-available>p:not(:first-child) {
-				margin-top: -.8em;
-			}
-			.source-available ul {
-				margin-top: -1em;
-				margin-bottom: 0;
-			}
 
 			/* Dropdown */
 			.dropdown {
@@ -105,7 +99,7 @@
 			.dropdown:hover .dropdown-content {
 				display: block;
 			}
-			#header-right>.dropdown>.dropdown-content {
+			#header-right>.dropdown:first-child>.dropdown-content {
 				left: unset;
 				right: -2px;
 			}
@@ -121,16 +115,9 @@
 				display: block;
 				text-align: center;
 			}
-			
-			#arena-dropdown>*::after {
-				/*content: ' ' var(--github-stars) attr(data-stars);*/
-			}
 
 			#header-content-row>*>*:not(:last-child) {
 				border-right: var(--window-border);
-			}
-			#header-right>*>*:not(:first-child) {
-				border-left: var(--window-border);
 			}
 
 			#header-content-row, #header-left, #header-right {
@@ -146,7 +133,7 @@
 				background-color: var(--transparency);
 			}
 			.window .border {
-				border: var(--window-border);;
+				border: var(--window-border);
 				margin: 7px 3px 7px 3px;
 			}
 			.window .border .header {
@@ -155,11 +142,11 @@
 				padding: 0px 13px 0px 13px;
 			}
 			.window .border iframe {
-				border-top: var(--window-border);;
+				border-top: var(--window-border);
 			}
 			.window .border .message {
 				padding: var(--window-padding);
-				border-top: var(--window-border);;
+				border-top: var(--window-border);
 				white-space: break-spaces;
 			}
 			.draggable {
@@ -171,7 +158,7 @@
 				right: 11px;
 				cursor: pointer;
 				padding-left: 6px;
-				border-left: var(--window-border);;
+				border-left: var(--window-border);
 				padding-top: 7px;
 				padding-bottom: 7px;
 			}
@@ -204,13 +191,15 @@
 					max-width: 70px;
 				}
 			}
-			#login-button-wrapper {
-				overflow: hidden;
-				max-width: 0px;
+			#login-button-wrapper, #logout-button-wrapper {
 				padding-left: 0px;
 				padding-right: 0px;
 			}
-			#login-button {
+			#login-button-wrapper {
+				overflow: hidden;
+				max-width: 0px;
+			}
+			#login-button, #logout-button {
 				padding-left: 12px;
 				padding-right: 12px;
 			}
@@ -220,15 +209,52 @@
 				animation-timing-function: ease-in-out;
 				max-width: unset;
 			}
+			#logout-button>:first-child {
+				display: block;
+				overflow: hidden;
+				direction: rtl;
+				max-width: 0px;
+				float: left;
+			}
+			#logout-button-wrapper:hover>:first-child>:first-child {
+				animation-name: display-login;
+				animation-duration: 2s;
+				animation-timing-function: ease-in-out;
+				max-width: unset;
+			}
+			#logout-button-wrapper>.dropdown-content {
+				width: calc(100% + 2px);
+			}
+			#logout-button-wrapper label {
+				cursor: pointer;
+			}
+			#logout-button-wrapper {
+				cursor: unset;
+			}
+			#logout-button-wrapper>* :hover {
+				border-color: transparent;
+			}
+
+			#main-profile-image {
+				width: 64px;
+				float: right;
+			}
 
 			.discord-logo {
+				text-decoration: none;
+			}
+			.discord-logo svg {
 				--size: 24px;
-				display: inline-block;
 				height: var(--size);
 				width: var(--size);
-				background-image: url(https://discord.com/assets/f8389ca1a741a115313bede9ac02e2c0.svg);
-				background-repeat: no-repeat;
+				display: inline-block;
 				vertical-align: middle;
+			}
+			.discord-logo svg .st0 {
+				fill: var(--secondary-background-color);
+			}
+			.dropdown-content>*:hover .st0 {
+				fill: var(--main-color);
 			}
 		</style>
 		<script>
@@ -238,6 +264,7 @@
 			localStorage.setItem('PageLoaded', Date.now());
 		</script>
 		<script src="index.js"></script>
+		<script src="Backend.js"></script>
 		<script src="GitHubApi.js"></script>
 	</head>
 	<body onload="a()">
@@ -265,17 +292,29 @@
 								<div class="open-screen" data-url="Tournament/Clientside/">Client-side</div>
 							</div>
 						</div>-->
+						<div class="open-screen" data-url="Replay/">Replays</div>
+						<div class="hidden dropdown">
+							<div data-url="Arena/">🚧Development🚧</div>
+							<div class="dropdown-content" id="development-dropdown"></div>
+						</div>
 					</div>
 					<div id="header-right">
 						<div class="dropdown">
 							<label>Contact</label>
 							<div class="dropdown-content">
-								<a href="https://discord.gg/jhUJNsN" target="_blank">Community <i class="discord-logo"></i><img src="" onerror="console.log('// TODO: Replace color with matching green.')"></img></a>
+								<a class="discord-logo" href="https://discord.gg/jhUJNsN" target="_blank">Community <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245 240"><style>.st0{fill:#7289DA;}</style><path class="st0" d="M104.4 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1.1-6.1-4.5-11.1-10.2-11.1zM140.9 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1z"/><path class="st0" d="M189.5 20h-134C44.2 20 35 29.2 35 40.6v135.2c0 11.4 9.2 20.6 20.5 20.6h113.4l-5.3-18.5 12.8 11.9 12.1 11.2 21.5 19V40.6c0-11.4-9.2-20.6-20.5-20.6zm-38.6 130.6s-3.6-4.3-6.6-8.1c13.1-3.7 18.1-11.9 18.1-11.9-4.1 2.7-8 4.6-11.5 5.9-5 2.1-9.8 3.5-14.5 4.3-9.6 1.8-18.4 1.3-25.9-.1-5.7-1.1-10.6-2.7-14.7-4.3-2.3-.9-4.8-2-7.3-3.4-.3-.2-.6-.3-.9-.5-.2-.1-.3-.2-.4-.3-1.8-1-2.8-1.7-2.8-1.7s4.8 8 17.5 11.8c-3 3.8-6.7 8.3-6.7 8.3-22.1-.7-30.5-15.2-30.5-15.2 0-32.2 14.4-58.3 14.4-58.3 14.4-10.8 28.1-10.5 28.1-10.5l1 1.2c-18 5.2-26.3 13.1-26.3 13.1s2.2-1.2 5.9-2.9c10.7-4.7 19.2-6 22.7-6.3.6-.1 1.1-.2 1.7-.2 6.1-.8 13-1 20.2-.2 9.5 1.1 19.7 3.9 30.1 9.6 0 0-7.9-7.5-24.9-12.7l1.4-1.6s13.7-.3 28.1 10.5c0 0 14.4 26.1 14.4 58.3 0 0-8.5 14.5-30.6 15.2z"/></svg></a>
 								<!--<a href="mailto:overlord@aitournaments.io">E-mail</a>-->
 							</div>
 						</div>
 						<div id="source-available">Source</div>
-						<div id="login-button-wrapper">
+						<div id="logout-button-wrapper" class="hidden dropdown">
+							<label id="logout-button"><div>Logout<span>&nbsp;</span></div><span class="local-username"></span></label>
+							<div class="dropdown-content">
+								<img id="main-profile-image" class="local-profile-image" alt="Current user profile image">
+							</div>
+						</div>
+						<div id="login-button-wrapper" class="hidden">
+							<img src="" onerror="console.log('// TODO: Remove class hidden from `login-button-wrapper`.')"></img>
 							<a id="login-button" href="https://ai-tournaments.github.io/AI-Tournaments/login">Login</a>
 						</div>
 					</div>

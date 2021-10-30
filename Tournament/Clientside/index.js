@@ -178,7 +178,7 @@ function a(){
 					}));
 				}
 			});
-			Promise.all(promises).then(() => {
+			Promise.allSettled(promises).then(() => {
 				sortOptions(participantList);
 			})
 		});
@@ -209,7 +209,8 @@ function a(){
 			_participants.forEach(b => {
 				if(a !== b){
 					let dontAdd = false;
-					if(arenaHeader.symmetric){ // True if the result is the same when participants switch places. False if the result is NOT the same when participants switch places.
+					console.error('Property "symmetric" is deprecated. Move setting to tournament definition.');
+					if(symmetric){ // True if the result is the same when participants switch places. False if the result is NOT the same when participants switch places.
 						brackets.forEach(bracket => {
 							dontAdd |= bracket[0].includes(a) && bracket[0].includes(b);
 						});
@@ -267,8 +268,8 @@ function a(){
 			tableCell.colSpan = 2;
 			tableCell.rowSpan = 2;
 			tableCell.innerHTML = 'Score';
-			if(1 < arenaProperties.settings.general.averageOf){
-				tableCell.innerHTML += ', average out of ' + arenaProperties.settings.general.averageOf + ' games.';
+			if(1 < arenaProperties.settings.general.bestOf){
+				tableCell.innerHTML += ', average out of ' + arenaProperties.settings.general.bestOf + ' games.';
 			}
 			tableRow.appendChild(tableCell);
 			let tableHeaderMajor = document.createElement('th');

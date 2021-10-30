@@ -7,17 +7,31 @@ class ParticipantHelper{
 	static #name = __url;
 	static #messageIndex;
 	static #postMessage_native = ()=>{}
+	static #createMessage = data => {
+		class Message{
+			constructor(data){
+				if(data.message){
+					this.data = data.message;
+				}
+				this.type = data.type;
+				this.messageIndex = data.index;
+				if(this.type === 'Post'){
+					this.respond = (data=null) => {
+						if(ParticipantHelper.#executionWatcher !== undefined){
+							ParticipantHelper.#executionWatcher = clearTimeout(ParticipantHelper.#executionWatcher);
+							ParticipantHelper.#postMessage_native.call(globalThis, {type: 'Response', response: JSON.parse(JSON.stringify(data))});
+						}
+					}
+				}
+			}
+		}
+		return new Message(data);
+	}
 	static init = ()=>{};
 	static onmessage = ()=>{}
 	static onmessageerror = ()=>{}
-	static respond = (data=null) => {
-		if(ParticipantHelper.#executionWatcher !== undefined){
-			ParticipantHelper.#executionWatcher = clearTimeout(ParticipantHelper.#executionWatcher);
-			ParticipantHelper.#postMessage_native.call(globalThis, {type: 'Response', response: data});
-		}
-	}
 	static #messageTimeout = ()=>{
-		ParticipantHelper.onmessage(ParticipantHelper.#messageIndex, 'Message-Timeout');
+		ParticipantHelper.onmessage(ParticipantHelper.#createMessage({index: ParticipantHelper.#messageIndex, type: 'Message-Timeout'}));
 		ParticipantHelper.#postMessage_native.call(globalThis, {type: 'Message-Timeout'});
 	}
 	static #onmessage = messageEvent=>{
@@ -25,7 +39,7 @@ class ParticipantHelper{
 			if(typeof ParticipantHelper.onmessage === 'function'){
 				ParticipantHelper.#messageIndex = messageEvent.data.index;
 				ParticipantHelper.#executionWatcher = setTimeout(ParticipantHelper.#messageTimeout, ParticipantHelper.#executionLimit);
-				ParticipantHelper.onmessage(messageEvent.data.message, messageEvent.data.type);
+				ParticipantHelper.onmessage(ParticipantHelper.#createMessage(messageEvent.data));
 			}else{
 				fatal('ParticipantHelper.onmessage is not a function.');
 			}
@@ -38,6 +52,7 @@ class ParticipantHelper{
 			delete Math.seedrandom;
 			Date = null;
 			performance = null;
+			console.log('// TODO: Decuple (new) Worker.');
 			// Initiate participant.
 			ParticipantHelper.#executionLimit = messageEvent.data.settings.general.executionLimit;
 			class Settings{

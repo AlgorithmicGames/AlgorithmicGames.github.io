@@ -1,7 +1,7 @@
 # AI-Tournaments
 AI Tournaments is still in an early prototype stage. See the section on [`Participate`](#Participate) if you want to join a arena, then analyze how other have solved the arena until better documentation has been written. The name of the repository will be the name used in the arena, except if it starts with `AI-Tournaments-Participant-` then that part is removed.
 
-Click image below to join the Discord community.
+Click image below to join the official Discord community.
 <br>[![Discord banner2](https://discord.com/api/guilds/765291928454823936/widget.png?style=banner2)](https://discord.gg/jhUJNsN)
 
 ## Participate
@@ -12,16 +12,47 @@ If you want to test your participant without publicly uploading it to GitHub you
 If you need more insight and maybe even add some debug logs to the Arena you can download the `arena.js`, add it to a webserver and then spawn a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Spawning_a_dedicated_worker) with the arena file and [post a message](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Sending_messages_to_and_from_a_dedicated_worker) matching [Participants.js](https://github.com/AI-Tournaments/AI-Tournaments/blob/master/Arena/Participants.js)' constructor.
 ## Community arena
 ### Testing
-addArena(`url`, `name`, `replayURL`, (...``participantObjects``)).
-Either `participantObject` is a url string to a script or an array ([`url`, `name`, (`teamNumber`)]).
-``` JavaScript
-/* Example */
-addArena('http://127.0.0.1:8080/Community-Arena/','New-Community-Arena','http://127.0.0.1:8080/Community-Arena-Replay/', 'http://127.0.0.1:8080/Community-Arena-Test-Participants/participant.js', ['http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js', 'Temp-Participant', 1]);
-```
-Alternatively it is possible to put the `addArena` inputs to local storage `Local arena development` as a JSON formatted sting to automatically add the local arena on page reload.
+Set local storage variable `Local development` to a JSON formatted string to automatically load arena on page load.
 | Key | Value |
 | --- |---|
-| `Local arena development` | `["http://127.0.0.1:8080/Community-Arena/","New-Community-Arena","http://127.0.0.1:8080/Community-Arena-Replay/", "http://127.0.0.1:8080/Community-Arena-Test-Participants/participant.js", ["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js", "Temp-Participant", 1]]` |
+| `Local development` | `{"arena":"http://127.0.0.1:8080/Community-Arena/","name":"New-Community-Arena","replay":"http://127.0.0.1:8080/Community-Arena-Replay/","participants":["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-1.js",{"url":"http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js","name":"Temp-Participant","team":1}]}` |
+
+Field `participants` can be either a url string to a script or a JSON object.
+Alternatively it is possible to call the `addArena` function manually in the browser's JavaScript console at [AI-Tournaments/Arena/](https://ai-tournaments.github.io/AI-Tournaments/Arena/).
+``` JavaScript
+/* Example */
+addArena({arena:"http://127.0.0.1:8080/Community-Arena/",name:"New-Community-Arena",replay:"http://127.0.0.1:8080/Community-Arena-Replay/",participants:["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-1.js",{url:"http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js",name:"Temp-Participant",team:1}]});
+```
+## File header
+The file header has to be valid Json otherwise it is omitted. The file header can be placed anywhere in the file, but at the top is preferred.
+``` JavaScript
+/**
+{}
+**/
+```
+``` JavaScript
+/**{}**/
+```
+``` JavaScript
+/**{
+	"example": true
+}**/
+```
+### Dependencies
+To load libraries like jQuery and others, put the files in the repository and add them to the file header. The files had to be referenced locally. They are loaded in assigned order.
+``` JavaScript
+/**
+{
+	"dependencies": [
+		"exampleLib.js",
+		"other/exampleLib.js"
+	]
+}
+**/
+```
+#### Dependencies vs modules
+--- TODO: Rewrite later. ---
+Modules are loaded before dependencies, but other than that there is no real difference for arena.js. The arena can define modules that is always loaded and available to participants.
 ## Special thanks
 - JSON Editor<br>
 AI-Tournaments uses [JSON Editor](https://github.com/josdejong/jsoneditor/) by [Jos de Jong](https://github.com/josdejong), powered by [Ace (Ajax.org Cloud9 Editor)](https://github.com/ajaxorg/ace/) and [Ajv JSON schema validator](https://github.com/ajv-validator/ajv/), for editing, rendering and validating JSON.
@@ -29,7 +60,7 @@ AI-Tournaments uses [JSON Editor](https://github.com/josdejong/jsoneditor/) by [
 AI-Tournaments uses [seedrandom](https://github.com/davidbau/seedrandom) by [David Bau](https://github.com/davidbau) for overriding `Math.random()` to generate repeatable numbers.
 
 ## Why Source Available?
-First of, [AI-Tournaments](https://github.com/AI-Tournaments) is _not_ Open Source by the [Open Source Initiative's definition](https://opensource.org/docs/osd) but rather [Source Available](https://en.wikipedia.org/wiki/Source-available_software), except were a MIT license is in place.
+[AI-Tournaments](https://github.com/AI-Tournaments) is not Open Source by the [Open Source Initiative's definition](https://opensource.org/docs/osd) but rather [Source Available](https://en.wikipedia.org/wiki/Source-available_software), except were a license that says otherwise is in place.
 ### User written JavaScript
 AI-Tournaments executes user written JavaScripts in the web browser, which is usually seen as a security concern ([Cross-site scripting](https://en.wikipedia.org/wiki/Cross-site_scripting)). Therefor the scripts are loaded into a sandbox IFrame and Web Worker to prevent just that. But the concern still remain and that's a fact that should not be hidden, that is why it is instead addressed and displayed publicly.
 

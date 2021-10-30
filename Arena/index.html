@@ -3,15 +3,39 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>Arena</title>
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-173346924-1"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-173346924-1');</script>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-TJFMG29186"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-TJFMG29186');</script>
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
 		<meta content="yes" name="mobile-web-app-capable">
 		<link rel="stylesheet" href="../defaults.css">
 		<link rel="stylesheet" href="log.css">
 		<style>
+			:root {
+				--advance-options-width: 286px;
+			}
+
+			legend.clickable {
+				cursor: pointer;
+				user-select: none;
+			}
+
+			html {
+				width: -webkit-fill-available;
+				height: -webkit-fill-available;
+			}
+			body {
+				margin: 0;
+			}
+			#padding-wrapper {
+				padding: 8px 8px 4px 8px;
+			}
 			iframe {
 				width: 100%;
 				border: 0;
+			}
+			#settings {
+				margin-left: -2px;
+				margin-right: -2px;
+				margin-bottom: 2px;
 			}
 			#participant-groups>div>input, #participant-groups>div>label {
 				vertical-align: top;
@@ -34,19 +58,123 @@
 				border-color: var(--main-color);
 				padding-top: 4px;
 			}
+			#fieldset-arena-readme {
+				display: block !important;
+				border-color: var(--main-color);
+				margin-bottom: 8px;
+			}
+			#fieldset-arena-readme>legend::after {
+				content: ' ' var(--arrow-down);
+			}
+			#fieldset-arena-readme.hidden>legend::after {
+				content: ' ' var(--arrow-up);
+			}
+			#fieldset-arena-readme.hidden>:not(legend) {
+				display: none;
+			}
+
+			@keyframes open-advance-options {
+				from {
+					width: 0;
+				}
+				to {
+					width: var(--advance-options-width);
+				}
+			}
+			@keyframes close-advance-options {
+				from {
+					width: var(--advance-options-width);
+				}
+				to {
+					width: 0;
+				}
+			}
+			#advance-options {
+				position: fixed;
+				background-color: var(--main-background-color);
+				border-right: 0;
+				height: 512px;
+				right: 0;
+				width: 0;
+				top: 49px;
+				padding-bottom: 4px;
+			}
+			#advance-options-wrapper {
+				width: var(--advance-options-width);
+				height: -webkit-fill-available;
+				border: var(--main-color) 1px solid;
+				border-right-width: 0;
+				padding: 4px;
+			}
+			#advance-options.open {
+				animation: 2s open-advance-options ease-in-out;
+				width: var(--advance-options-width);
+			}
+			#advance-options:not(.open):not(.closed) {
+				animation: 2s close-advance-options ease-in-out;
+				width: 0;
+			}
+			#advance-options>legend {
+				position: absolute;
+				transform: rotate(270deg);
+				background-color: var(--main-background-color);
+				border: var(--main-color) 1px solid;
+				top: 38px;
+				left: -53px;
+				border-bottom: 0;
+				padding: 2px 10px 1px 10px;
+			}
+			#advance-options fieldset {
+				border-color: var(--main-color);
+			}
 		</style>
 		<script src="ArenaHelper.js"></script>
 		<script src="index.js"></script>
 		<script src="../GitHubApi.js"></script>
 	</head>
 	<body onload="a()">
-		<iframe id="selectArena" src="iframe.selectArena.html"></iframe>
-		<div id="wrapper" class="hidden">
-			<input type="button" id="add-team" value="Add team" disabled>
-			<div id="participant-groups"></div>
-			<iframe id="settings" style="height: 0;" src="iframe.sandbox.settings.html" sandbox="allow-scripts"></iframe>
-			<input type="button" id="btnStart" value="Start" disabled>
-			<div id="logContainer"></div>
+		<div id="padding-wrapper">
+			<iframe id="selectArena" src="iframe.selectArena.html"></iframe>
+			<div id="advance-options" class="closed">
+				<legend class="clickable">Advance</legend>
+				<div id="advance-options-wrapper">
+					<div>
+						<input type="checkbox" id="include-previews">
+						<label for="include-previews">Fetch latest (unreleased) version of arenas.</label>
+					</div>
+					<div>
+						<input type="button" id="add-interface" value="Add interface">
+					</div>
+					<fieldset id="advanced-testing" class="hidden">
+						<legend>Testing</legend>
+						<input type="checkbox" id="rerun-until-error">
+						<label for="rerun-until-error">Rerun until error.</label>
+						<p>Check JavaScript console for run completion counter.</p>
+					</fieldset>
+				</div>
+			</div>
+			<div id="wrapper" class="hidden">
+				<fieldset id="fieldset-arena-readme" class="hidden">
+					<legend class="clickable">Readme</legend>
+					<iframe id="arena-readme" sandbox="allow-same-origin"></iframe>
+				</fieldset>
+				<input type="button" id="add-team" value="Add team" disabled>
+				<input type="button" id="remove-team" value="Remove team" disabled>
+				<img src="" onerror="console.log('// TODO: Remove `style=&quot;display: none;&quot;`. Prepared for `filter-following` and `filter-followers`, place them right side of the `Available participants` select.')"></img>
+				<img src="" onerror="console.log('// TODO: Add input for addParticipant()? Maybe as a radio select? [Local participant, Interface]')"></img>
+				<div style="display: none;">
+					<input type="checkbox" id="filter-following">
+					<label for="filter-following">filter-following</label>
+				</div>
+				<div style="display: none;">
+					<input type="checkbox" id="filter-followers">
+					<label for="filter-followers">filter-followers</label>
+				</div>
+				<div id="participant-groups"></div>
+				<iframe id="settings" style="height: 0;" src="iframe.sandbox.settings.html" sandbox="allow-scripts"></iframe>
+				<input type="button" id="btnStart" value="Start" disabled>
+				<div id="logContainer"></div>
+			</div>
 		</div>
 	</body>
 </html>

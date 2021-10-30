@@ -1,5 +1,7 @@
 'use strict'
 function a(){
+	let _element_loginButtonWrapper = document.getElementById('login-button-wrapper');
+	let _element_logoutButtonWrapper = document.getElementById('logout-button-wrapper');
 	let _GitHubProblem = false;
 	let createdWindows = 0;
 	let _content = document.getElementById('content');
@@ -16,51 +18,67 @@ function a(){
 	window.onresize = resizeBackground;
 	window.onresize();
 	GitHubApi.login();
+	if(GitHubApi.isLoggedIn()){
+		GitHubApi.fetch('user').then(response => response.json()).then(user => {
+			[...document.getElementsByClassName('local-username')].forEach(element => element.innerHTML = user.login);
+			[...document.getElementsByClassName('local-profile-image')].forEach(img => img.src = user.avatar_url);
+		})
+	}
+	checkGitHubStatus();
 	frameLoop();
 	loadTheNews();
 	loadArenas();
-	if(window.location.hash.startsWith('#Arena/')){
-		openScreen(window.location.hash.substr(1));
-	}
+	window.onhashchange = ()=>{
+		while(1 < window.location.hash.length && window.location.hash[1] === '#'){
+			window.location.hash = window.location.hash.substr(2);
+		}
+		if(1 < window.location.hash.length){
+			openScreen(window.location.hash.substr(1));
+		}
+	};
+	window.onhashchange();
 	document.getElementById('login-button').href += '?origin='+encodeURI(location.protocol+'//'+location.host+location.pathname);
+	document.getElementById('logout-button').addEventListener('click', ()=>{alert('// TODO: Replace alert with `GitHubApi.logout();`.')});
 	// Hidden until a fun "lore" has been established. openWindow('Welcome to the tournament, servant!','You have been sent here by your proud Master to showcasing what you have learned in our arenas. [TODO: How to?]\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px', true);
 	openWindow(
 		'Welcome to the tournament!','Here you can participate in different games (known as Arenas) for a fun challenge to stay atop of the leaderboards. Read the <a href="https://github.com/AI-Tournaments/AI-Tournaments#participate" target="_blank">Participate</a> section in the README to get started.\n'+
 		'If you want to you can join the community discussions over at the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord server</a>.\n'+
 		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
 	true, '582px', true);
-	if(localStorage.getItem('Local arena development') !== null){
-		let header = document.getElementById('header-left');
-		let wrapper = document.createElement('div');
-		wrapper.classList.add('dropdown');
-		let title = document.createElement('div');
-		title.innerHTML = '🚧Local arena development🚧';
-		let contentWrapper = document.createElement('div');
-		contentWrapper.classList.add('dropdown-content');
+	if(localStorage.getItem('Local development')){
+		let dropdown = document.getElementById('development-dropdown');
+		dropdown.parentElement.classList.remove('hidden');
 		let content = document.createElement('div');
-		content.innerHTML = 'Automatic addition of local arena is set.<br><br><button onclick="localStorage.removeItem(\'Local arena development\'); location.reload();">Clear</button>';
-		wrapper.appendChild(title);
-		contentWrapper.appendChild(content);
-		wrapper.appendChild(contentWrapper);
-		header.appendChild(wrapper);
+		let arenaObj = JSON.parse(localStorage.getItem('Local development'));
+		let arena = arenaObj[1] ? '<i>'+arenaObj[1]+'</i>' : 'arena';
+		content.innerHTML = '<b>Local development</b><br>Automatic addition of local '+arena+', participants and settings.<br><br><button onclick="localStorage.removeItem(\'Local development\'); location.reload();">Clear</button>';
+		dropdown.appendChild(content);
 	}
-	fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
-		let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
-		console.log('// TODO: Use GitHub\'s markdown API. https://docs.github.com/en/rest/reference/markdown');
-		fetch('https://gitlab.com/api/v4/markdown',{method: 'POST', body: JSON.stringify({text: why}),
-		headers: {Accept: 'application/vnd.github.v3+json', 'Content-Type':'application/json'} // TODO: https://docs.github.com/en/rest/reference/markdown
-		}).then(response => response.json()).then(response => {
-			document.getElementById('source-available').addEventListener('click', ()=>{
-				openWindow('Why "Source Available"?', '<span class="source-available">'+response.html+'</span>\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '705px');
+	if(Backend.isOverride()){
+		let dropdown = document.getElementById('development-dropdown');
+		dropdown.parentElement.classList.remove('hidden');
+		let content = document.createElement('div');
+		content.innerHTML = '<b>Backend development</b><br>Backend is redirected to <i style="background: var(--secondary-background-color); color: var(--secondary-background-color)" onmouseover="this.style.background=\'var(--main-color)\';this.style.color=\'var(--main-color)\'" onmouseleave="this.style.background=\'var(--secondary-background-color)\';this.style.color=\'var(--secondary-background-color)\'" onclick="this.style.background=\'\';this.style.color=\'\'; this.onmouseover=undefined; this.onmouseleave=undefined;">'+Backend.getBackend()+'</i>.<br><br><button onclick="localStorage.removeItem(\'backend\'); location.reload();">Clear</button>';
+		dropdown.appendChild(content);
+	}
+	document.getElementById('source-available').addEventListener('click', ()=>{
+		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
+			let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
+			GitHubApi.formatMarkdown(why, {
+				async: true,
+				suffix: ''//<br><span style="color:var(--secondary-background-color)">- Overlord servant</span>'
+			}).then(iframe => {
+				openWindow('Why "Source Available"?', iframe, true, '705px');
 			});
 		});
 	});
 	window.onmessage = messageEvent => {
 		switch(messageEvent.data.type){
 			case 'resize':
-				let iframe = document.getElementById(messageEvent.data.value.id);
-				iframe.style.height = messageEvent.data.value.height+'px';
-				iframe.style.width = messageEvent.data.value.width+'px';
+				let iframe = [...document.getElementsByTagName('iframe')].find(iframe => iframe.contentWindow === messageEvent.source);
+				if(iframe){
+					iframe.style.height = messageEvent.data.value.height+'px';
+				}
 				break;
 			case 'arena-changed':
 				window.location.hash = 'Arena/#'+messageEvent.data.value;
@@ -74,9 +92,13 @@ function a(){
 	function frameLoop(){
 		// Check login status.
 		if(GitHubApi.isLoggedIn()){
-			document.getElementById('login-button-wrapper').classList.remove('show');
+			_element_loginButtonWrapper.classList.remove('show');
+			if(_element_logoutButtonWrapper.getElementsByClassName('local-username')[0].innerHTML){
+				_element_logoutButtonWrapper.classList.remove('hidden');
+			}
 		}else{
-			document.getElementById('login-button-wrapper').classList.add('show');
+			_element_loginButtonWrapper.classList.add('show');
+			_element_logoutButtonWrapper.classList.add('hidden');
 		}
 		// Update background.
 		_background.innerHTML = parsToString(getNoise());
@@ -181,6 +203,15 @@ function a(){
 		});
 	}
 	function openScreen(src=''){
+		window.location.hash = src;
+		let root = window.location.href.substr(0,window.location.href.indexOf('#'));
+		if(!root){
+			root = window.location.href;
+		}
+		if(root[root.length-1] !== '/'){
+			root += '/';
+		}
+		src = root+src;
 		let screenFound = false;
 		for(const screen of _screens.children){
 			if(screen.dataset.targetSrc === src){
@@ -195,6 +226,7 @@ function a(){
 			_screens.appendChild(iframe);
 			iframe.src = src;
 			iframe.dataset.targetSrc = src;
+			iframe.style.height = window.getComputedStyle(_content, null).getPropertyValue('height');
 			setTimeout(()=>iframe.contentWindow.postMessage({type: 'SetParent'}, '*'), 1000);
 		}
 	}
@@ -225,7 +257,8 @@ function a(){
 		}
 	}
 	function openWindow(header='', message='', center=false, maxWidth, displayOnce=false){
-		let combinedMessage = 'Window message - '+header+'\n'+message;
+		let isIframe = message.constructor.name === 'HTMLIFrameElement';
+		let combinedMessage = 'Window message - '+header+'\n'+(isIframe ? isIframe.srcdoc : message);
 		let display = localStorage.getItem(combinedMessage) === null;
 		if(display){
 			let windowWrapper = document.createElement('div');
@@ -252,13 +285,31 @@ function a(){
 			headerDiv.classList.add('draggable');
 			makeDraggable(headerDiv, windowWrapper);
 			messageWrapper.appendChild(headerDiv);
-			let messageDiv = document.createElement('pre');
-			messageDiv.classList.add('message');
-			messageDiv.innerHTML = message;
-			messageWrapper.appendChild(messageDiv);
+			if(isIframe){
+				message.style.width = maxWidth
+				messageWrapper.appendChild(message);
+			}else{
+				let messageDiv = document.createElement('pre');
+				messageDiv.classList.add('message');
+				messageDiv.innerHTML = message;
+				messageWrapper.appendChild(messageDiv);
+			}
 			if(center){
-				windowWrapper.style.top = (document.body.offsetHeight - windowWrapper.offsetHeight)/2 + 'px';
-				windowWrapper.style.left = (document.body.offsetWidth - windowWrapper.offsetWidth)/2 + 'px';
+				function setCenter(){
+					windowWrapper.style.top = (_content.offsetHeight - windowWrapper.offsetHeight)/2 + 'px';
+					windowWrapper.style.left = (_content.offsetWidth - windowWrapper.offsetWidth)/2 + 'px';
+				}
+				function awaitHeight(){
+					if(message.style.height){
+						setCenter()
+					}else{
+						window.requestAnimationFrame(awaitHeight);
+					}
+				}
+				setCenter();
+				if(isIframe){
+					awaitHeight();
+				}
 			}else{
 				createdWindows++;
 				windowWrapper.style.top = 10*createdWindows + 'px';
@@ -276,7 +327,7 @@ function a(){
 			charsPerRow++;
 		}
 		charsPerRow++;
-		height = document.documentElement.scrollHeight;
+		height = document.documentElement.clientHeight - 10/* Where does 10 come from? */;
 		let rows = 2;
 		let charsOnFirstRow = _background.innerHTML;
 		while(_background.offsetHeight < height){
@@ -284,8 +335,8 @@ function a(){
 			_background.innerHTML = _background.innerHTML + charsOnFirstRow;
 		}
 		_background.className = '';
+		_content.style.height = height - parseFloat(window.getComputedStyle(document.getElementsByTagName('header')[0], null).getPropertyValue('height')) + 'px';
 		initNoise(rows, charsPerRow);
-		_content.style.height = window.innerHeight - document.getElementsByTagName('header')[0].offsetHeight + 'px';
 	}
 	function initNoise(rows, charsPerRow){
 		_noise = new Array(rows);
@@ -343,14 +394,14 @@ function a(){
 		fetch('https://ai-tournaments.github.io/AI-Tournaments/').then(r=>r.text()).then().catch(error => {
 			postGitHubProblem('GitHub Pages');
 		});
-		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/index.html').then(r=>r.text()).then().catch(error => {
+		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/main/index.html').then(r=>r.text()).then().catch(error => {
 			postGitHubProblem('raw.githubusercontent.com');
 		});
 	}
 	function postGitHubProblem(source){
 		if(!_GitHubProblem){
 			_GitHubProblem = true;
-			openWindow('Problem at GitHub!','There is currently a problem with '+source+', so please come back later and try again. In the meantime see if <a href="https://www.githubstatus.com" target="_blank">GitHub Status</a> can help you.\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px');
+			openWindow('GitHub not reachable!', source+' is currently not reachable, please try again later. In the meantime see if <a href="https://www.githubstatus.com" target="_blank">GitHub Status</a> can help you.', true, '397px');
 		}
 	}
 }

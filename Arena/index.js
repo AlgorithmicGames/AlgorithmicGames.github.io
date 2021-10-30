@@ -8,6 +8,7 @@ function a(){
 	let _json;
 	let _replayContainer;
 	let _parentWindow = null;
+	let _settingsOverride = null;
 	let localArenas = {};
 	let localParticipants = null
 	let arenaProperties;
@@ -16,15 +17,35 @@ function a(){
 	let settingsIframe = document.getElementById('settings');
 	let logContainer = document.getElementById('logContainer');
 	let btnAddTeam = document.getElementById('add-team');
+	let btnRemoveTeam = document.getElementById('remove-team');
 	let participantGroups = document.getElementById('participant-groups');
+	let arenaReadme = document.getElementById('arena-readme');
+	let arenaReadmeFieldset = document.getElementById('fieldset-arena-readme');
+	let advanceOptions = document.getElementById('advance-options');
+	let includePreviews = document.getElementById('include-previews');
+	let rerunUntilError = document.getElementById('rerun-until-error');
+	if(localStorage.getItem('Local development')){
+		document.getElementById('advanced-testing').classList.remove('hidden');
+	}
+	includePreviews.addEventListener('change', ()=>window.onhashchange());
+	arenaReadmeFieldset.getElementsByTagName('legend')[0].addEventListener('click', ()=>{
+		arenaReadmeFieldset.classList.toggle('hidden');
+		arenaReadme.style.height = arenaReadme.contentWindow.window.document.documentElement.scrollHeight + 'px';
+	});
+	advanceOptions.getElementsByTagName('legend')[0].addEventListener('click', ()=>{
+		advanceOptions.classList.toggle('open');
+		advanceOptions.classList.remove('closed');
+	});
 	requestAnimationFrame(()=>{
-		let item = localStorage.getItem('Local arena development');
+		let item = localStorage.getItem('Local development');
 		if(item !== null){
-			addArena(...JSON.parse(item));
+			addArena(JSON.parse(item));
 		}
 	});
+	console.log('// TODO: Change from setTimeout to `Settings-Initiated`, like ReplayHelper.');
 	setTimeout(()=>{settingsIframe.contentWindow.postMessage({type: 'MatchParentStyle', value: styleMode}, '*')}, 1000);
 	btnAddTeam.onclick = createTeam;
+	btnRemoveTeam.onclick = removeTeam;
 	let btnStart = document.getElementById('btnStart');
 	btnStart.onclick = start;
 	let pendingArenaSandboxes = [];
@@ -48,11 +69,24 @@ function a(){
 	availableParticipants_select.multiple = true;
 	availableParticipantsWrapper.appendChild(availableParticipants_select);
 	participantGroups.appendChild(availableParticipantsWrapper);
-	window.onhashchange = ()=>selectArena.contentWindow.postMessage({type: 'get-arenas', value: location.hash.substring(1)});
+	window.onhashchange = ()=>{
+		let hash = location.hash;
+		while(1 < hash.length && hash[1] === '#'){
+			hash = hash.substr(2);
+		}
+		selectArena.contentWindow.postMessage({
+			type: 'get-arenas',
+			value: {
+				preSelectedArena: hash.substring(1),
+				includePreviews: includePreviews.checked
+			}
+		});
+	};
 	window.onhashchange();
 	window.onmessage = messageEvent => {
 		if(messageEvent.data.type === 'Replay-Height'){
 			_replayContainer.style.height = parseFloat(messageEvent.data.value) + 'px';
+			document.documentElement.scrollTop = document.documentElement.scrollHeight;
 		}else if(messageEvent.data.type === 'auto-run'){
 			_json = messageEvent.data.arena;
 			document.title = messageEvent.data.type;
@@ -69,16 +103,26 @@ function a(){
 					element.parentNode.removeChild(element);
 				});
 				document.title = _json.name + ' Arena';
-				settingsIframe.contentWindow.postMessage({type: 'SetArena', value: _json.raw_url}, '*');
+				settingsIframe.contentWindow.postMessage({type: 'SetArena', value: _json.raw_url, settingsOverride: _settingsOverride}, '*');
 				getParticipants(_json.full_name);
+				arenaReadme.srcdoc = '';
+				arenaReadmeFieldset.classList.add('hidden');
+				fetch((_json.default ?? _json.default)+'README.md').then(response => response.ok?response.text():null).then(readme => {
+					if(readme){
+						GitHubApi.formatMarkdown(readme, {async: true, removeBodyMargin: true}).then(iframe => arenaReadme.srcdoc = iframe.srcdoc);
+					}
+				});
 				if(_parentWindow !== null){
 					_parentWindow.postMessage({type: 'arena-changed', value: _json.full_name}, '*');
 				}
 			}
 		}else if(pendingArenaSandboxes.includes(messageEvent.source)){
-			writeArenaLog(messageEvent);
+			openReplay(messageEvent);
 		}else if(messageEvent.data.type === 'SetParent'){
 			_parentWindow = messageEvent.source;
+			window.onresize = ()=>{
+				_parentWindow.postMessage({type: 'resize', value: {height: document.documentElement.clientHeight}}, '*');
+			}
 		}else if(settingsIframe.contentWindow === messageEvent.source){
 			switch(messageEvent.data.type){
 				case 'properties':
@@ -87,10 +131,15 @@ function a(){
 						createTeam();
 					}
 					if(localParticipants !== null){
+						let teams = localParticipants.filter(p => 0 <= p.team);
+						teams = 0 < teams.length ? teams.sort(p => -p.team)[0].team : 0;
+						while(document.getElementsByClassName('participant-team-container').length < teams){
+							createTeam();
+						}
 						localParticipants.reverse().forEach((participant, index) => {
 							if(typeof participant === 'object'){
-								let option = addParticipant(participant[0], participant[1]);
-								let select = document.getElementById('participant-team-' + participant[2]);
+								let option = addParticipant(participant.url, participant.name);
+								let select = document.getElementById('participant-team-' + participant.team);
 								if(select){
 									select.add(option);
 								}
@@ -109,29 +158,28 @@ function a(){
 			console.error('Source element not defined!');
 			console.error(messageEvent.source.frameElement);
 		}
+		if(window.onresize){
+			window.onresize();
+		}
 	}
-	addArena = (url='', name='', replayURL='', ...participants) => {
-		if(url === ''){return;}
-		if(typeof url === 'string'){
-			url = {arena: url, includeScripts: {arena: [], participants: []}};
+	addArena = localArena => {
+		if(!localArena.name){
+			localArena.name = localArena.arena;
 		}
-		if(name === ''){
-			name = url.arena;
-		}
-		localArenas[url.arena] = replayURL;
+		localArenas[localArena.arena] = localArena.replay;
 		let json = {
-			name: name,
-			raw_url: url.arena,
-			html_url: url.arena,
-			full_name: 'local/'+name,
+			name: localArena.name,
+			raw_url: localArena.arena,
+			html_url: localArena.arena,
+			full_name: 'local/'+localArena.name,
 			default_branch: null,
 			stars: -1,
 			commit: null,
-			version: null,
-			includeScripts: url.includeScripts
+			version: null
 		};
+		_settingsOverride = {arena: json.raw_url, settings: localArena.settings};
 		arenaListReadyPromise.then(()=>{
-			localParticipants = participants;
+			localParticipants = localArena.participants;
 			selectArena.contentWindow.postMessage({type: 'add-arena', value: json});
 		});
 	}
@@ -142,6 +190,7 @@ function a(){
 		return option;
 	}
 	function getTournamentLog(messageEvent){
+		console.log('// TODO: Is getTournamentLog() still used? Can it be removed or modified?');
 		if(pendingArenaSandboxes.length === 0){
 			let dataset = [];
 			for(const key in arenaMatches){
@@ -156,7 +205,7 @@ function a(){
 			setTimeout(()=>{getTournamentLog(messageEvent)}, 1000);
 		}
 	}
-	function writeArenaLog(messageEvent){
+	function openReplay(messageEvent){
 		let iframe = document.getElementById(messageEvent.data.iframeID);
 		let arenaMatch = arenaMatches[iframe];
 		if(arenaMatch === undefined){
@@ -165,26 +214,44 @@ function a(){
 		}
 		if(messageEvent.origin === 'null'){
 			iframe.parentElement.removeChild(iframe);
-			let defaultReplay = localArenas[_json.raw_url];
-			let replayData = {
-				header: {
-					defaultReplay: defaultReplay
-				},
-				body: messageEvent.data.value
-			};
-			pendingArenaSandboxes.splice(pendingArenaSandboxes.indexOf(messageEvent.source), 1);
-			Array.from(document.getElementsByClassName('replay-container')).forEach(element => {
-				element.parentNode.removeChild(element);
-			});
-			if(!document.title.startsWith('auto-run')){
-				_replayContainer = document.createElement('iframe');
-				_replayContainer.classList.add('replay-container');
-				_replayContainer.src = '../Replay/';
-				document.body.appendChild(_replayContainer);
-				setTimeout(()=>{
-					_replayContainer.contentWindow.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
-					_replayContainer.contentWindow.postMessage({type: 'Replay-Data', replayData: JSON.stringify(replayData)}, '*');
-				}, 1000);
+			if(rerunUntilError.checked){
+				let count = parseInt(rerunUntilError.dataset.counter);
+				if(!count){
+					count = 0;
+				}
+				count++;
+				console.log('Rerun counter', count);
+				rerunUntilError.dataset.counter = count;
+			}
+			if(rerunUntilError.checked && messageEvent.data.value.matchLogs.filter(matchLog => matchLog.error).length === 0){
+				start();
+			}else{
+				if(rerunUntilError.checked){
+					messageEvent.data.value.matchLogs.filter(matchLog => matchLog.error).forEach(matchLog => matchLog.error+=' (Rerun counter: '+rerunUntilError.dataset.counter+')');
+					console.debug('Rerun testing crash', {'Rerun counter': parseInt(rerunUntilError.dataset.counter), 'Crash settings': messageEvent.data.value.settings});
+					rerunUntilError.dataset.counter = 0;
+				}
+				let replayData = {
+					header: {
+						defaultReplay: localArenas[_json.raw_url] ? localArenas[_json.raw_url] : messageEvent.data.defaultReplay
+					},
+					body: messageEvent.data.value
+				};
+				pendingArenaSandboxes.splice(pendingArenaSandboxes.indexOf(messageEvent.source), 1);
+				Array.from(document.getElementsByClassName('replay-container')).forEach(element => {
+					element.parentNode.removeChild(element);
+				});
+				if(!document.title.startsWith('auto-run')){
+					_replayContainer = document.createElement('iframe');
+					_replayContainer.classList.add('replay-container');
+					_replayContainer.src = '../Replay/';
+					document.body.appendChild(_replayContainer);
+					setTimeout(()=>{
+						console.log('// TODO: Change from setTimeout to `ReplayContainer-Initiated`, like ReplayHelper. If this is not already done?');
+						_replayContainer.contentWindow.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
+						_replayContainer.contentWindow.postMessage({type: 'Replay-Data', replayData: JSON.stringify(replayData)}, '*');
+					}, 1000);
+				}
 			}
 		}
 	}
@@ -209,10 +276,12 @@ function a(){
 	}
 	function validateTeamsMax(){
 		let selectElements = document.getElementsByClassName('participant-team');
+		btnAddTeam.disabled = arenaProperties.header.limits.teams.max <= selectElements.length;
 		return selectElements.length <= arenaProperties.header.limits.teams.max;
 	}
 	function validateTeamsMin(){
 		let selectElements = document.getElementsByClassName('participant-team');
+		btnRemoveTeam.disabled = selectElements.length < arenaProperties.header.limits.teams.min;
 		return arenaProperties.header.limits.teams.min <= selectElements.length;
 	}
 	function validateTeams(){
@@ -272,7 +341,7 @@ function a(){
 						}));
 					}
 				});
-				Promise.all(promises).then(() => {
+				Promise.allSettled(promises).then(() => {
 					sortOptions(availableParticipants_select);
 					arenaListReady();
 				})
@@ -289,7 +358,6 @@ function a(){
 	}
 	function createTeam(){
 		let teamIndex = document.getElementsByClassName('participant-team-container').length + 1;
-		btnAddTeam.disabled = !validateTeamsMax();
 		let teamID = 'participant-team-' + teamIndex;
 		let participantTeam = document.createElement('div');
 		participantTeam.classList.add('participant-team-container');
@@ -310,6 +378,18 @@ function a(){
 		select.classList.add('participant-team');
 		select.multiple = true;
 		participantGroups.appendChild(participantTeam);
+		validateTeams();
+	}
+	function removeTeam(){
+		let teams = document.getElementsByClassName('participant-team-container');
+		let team = teams[teams.length-1];
+		for(let option of [...team.getElementsByClassName('participant-team')[0].options]){
+			availableParticipants_select.add(option);
+			option.selected = false;
+		}
+		team.parentNode.removeChild(team);
+		sortOptions(availableParticipants_select);
+		validateTeams();
 	}
 	function start(){
 		while(0 < logContainer.childElementCount){
@@ -318,19 +398,20 @@ function a(){
 		arenaMatches = {};
 		settingsIframe.contentWindow.postMessage({type: 'GetSettings'}, '*');
 	}
-	function begin(settings, bracket=[]){
+	function begin(data, bracket=[]){
 		let json = {
 			arena: _json,
 			urls: {
 				ArenaHelper: location.origin+location.pathname.replace(/[^\/]*$/,'')+'ArenaHelper.js',
 				ParticipantHelper: location.origin+location.pathname.replace(/[^\/]*$/,'')+'ParticipantHelper.js',
-				randomseed: 'https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js'
+				randomseed: 'https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js',
+				replay: data.header.replay
 			},
 			iframeID: Date()+'_'+Math.random(),
 			participants: bracket,
-			settings: settings
+			settings: data.settings
 		};
-		if(0 === json.participants.length){
+		if(json.participants.length === 0){
 			for(const select of document.getElementsByClassName('participants')){
 				if(select.id !== 'participants-selectable'){
 					let team = [];
@@ -346,6 +427,7 @@ function a(){
 		}
 		let isDebugMode = location.href.includes('?debug');
 		let div = document.createElement('div');
+		console.log('// TODO: Check if logContainer[].div is needed. Maybe it is enough with just a single "iframeWrapper".');
 		logContainer.appendChild(div);
 		let iframe = document.createElement('iframe');
 		iframe.src = 'iframe.sandbox.arena.html'+(isDebugMode?'?debug':'');
@@ -360,6 +442,7 @@ function a(){
 		output.classList.add('log');
 		div.appendChild(output);
 		pendingArenaSandboxes.push(iframe.contentWindow);
+		console.log('// TODO: Change from setTimeout to `Sandbox-Arena-Initiated`, like ReplayHelper.');
 		setTimeout(()=>iframe.contentWindow.postMessage(json, '*'), 1000);
 	}
 }
