@@ -3,12 +3,13 @@ class GitHubApi{
 	static #ARENA_VERSION = 1;
 	static #CLIENT_ID = '19698a5006b153e8a671';
 	static #STARTED = localStorage.getItem('PageLoaded');
+	static #STORAGE_TOKEN_KEY = 'GitHub OAuth-Token';
 	static #waitUntil = timestamp => new Promise(resolve => setTimeout(resolve, timestamp-Date.now()));
 	static getClientId(){
 		return GitHubApi.#CLIENT_ID;
 	}
 	static fetch(path='', init={}){
-		let token = localStorage.getItem('GitHub OAuth-Token');
+		let token = localStorage.getItem(GitHubApi.#STORAGE_TOKEN_KEY);
 		if(token !== null && token !== undefined && token[0] !== '!'){
 			if(init.headers === undefined){
 				init.headers = {};
@@ -169,15 +170,15 @@ class GitHubApi{
 		if(0 < location.href.indexOf('?oAuthCode=')){
 			oAuthCode = location.href.substr(location.href.indexOf('=')+1)
 		}
-		let token = localStorage.getItem('GitHub OAuth-Token');
+		let token = localStorage.getItem(GitHubApi.#STORAGE_TOKEN_KEY);
 		if(token !== null && token[0] === '!'){
 			GitHubApi.logout();
 		}
 		if(oAuthCode !== null){
-			localStorage.setItem('GitHub OAuth-Token', '!'+oAuthCode);
+			localStorage.setItem(GitHubApi.#STORAGE_TOKEN_KEY, '!'+oAuthCode);
 			Backend.call('login', {oAuthCode: oAuthCode, client_id: GitHubApi.#CLIENT_ID}).then(json => {
 				if(json.data !== undefined){
-					localStorage.setItem('GitHub OAuth-Token', json.data);
+					localStorage.setItem(GitHubApi.#STORAGE_TOKEN_KEY, json.data);
 				}
 				location.replace(location.protocol+'//'+location.host+location.pathname);
 			}).catch(error => {
@@ -187,9 +188,9 @@ class GitHubApi{
 		}
 	}
 	static isLoggedIn(){
-		return localStorage.getItem('GitHub OAuth-Token') !== null;
+		return localStorage.getItem(GitHubApi.#STORAGE_TOKEN_KEY) !== null;
 	}
 	static logout(){
-		localStorage.removeItem('GitHub OAuth-Token');
+		localStorage.removeItem(GitHubApi.#STORAGE_TOKEN_KEY);
 	}
 }
