@@ -204,15 +204,16 @@ function a(){
 	}
 	function openScreen(src=''){
 		window.location.hash = src;
-		let origin = window.location.href.replace(/(\?.*?(?=#))|(\?.*?(?=$))/gm, '');
-		let root = origin.substr(0, origin.indexOf('#'));
-		if(!root){
-			root = origin;
+		if(src.startsWith('Arena/')){
+			src = src.replace('Arena/', '/Arena-Manager/');
+		}else{
+			let origin = window.location.href.replace(/(\?.*?(?=#))|(\?.*?(?=$))/gm, '');
+			let root = origin.substr(0, origin.indexOf('#'));
+			if(!root){
+				root = origin;
+			}
+			src = root+src;
 		}
-		if(root[root.length-1] !== '/'){
-			root += '/';
-		}
-		src = root+src;
 		let screenFound = false;
 		for(const screen of _screens.children){
 			if(screen.dataset.targetSrc === src){
