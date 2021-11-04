@@ -1,7 +1,7 @@
 'use strict'
 importScripts('https://unpkg.com/dexie@3.0.3/dist/dexie.min.js');
 
-let _dexieReplays = new Dexie('replays');
+let _dexieReplays = new Dexie('Replays');
 _dexieReplays.version(1).stores({
 	records: '++id,name,defaultName,arena,stored',
 	data: '++id,&record_id,data'
