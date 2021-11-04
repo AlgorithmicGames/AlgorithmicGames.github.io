@@ -39,13 +39,13 @@ class ReplayHelper{
 						}
 					}
 					class Replay{
-						constructor(arenaResult, wrapped){
-							this.arenaResult = arenaResult;
-							this.wrapped = wrapped;
+						constructor(data){
+							this.arenaResult = new ArenaResult(data.arenaResult);
+							this.wrapped = data.wrapped;
 						}
 					}
 					messageEvent.data.arenaResult.matchLogs.filter(matchLog => matchLog.error).forEach((matchLog, index) => console.error('Match '+index, matchLog.error));
-					resolve(new Replay(new ArenaResult(messageEvent.data.arenaResult), messageEvent.data.wrapped));
+					resolve(new Replay(messageEvent.data));
 					break;
 			}
 		});
