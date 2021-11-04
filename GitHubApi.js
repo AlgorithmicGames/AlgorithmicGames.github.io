@@ -2,7 +2,7 @@
 class GitHubApi{
 	static #ARENA_VERSION = 1;
 	static #CLIENT_ID = '19698a5006b153e8a671';
-	static #STARTED = localStorage.getItem('PageLoaded');
+	static #STARTED = sessionStorage.getItem('PageLoaded');
 	static #STORAGE_TOKEN_KEY = 'GitHub OAuth-Token';
 	static #waitUntil = timestamp => new Promise(resolve => setTimeout(resolve, timestamp-Date.now()));
 	static getClientId(){
