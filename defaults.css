@@ -3,6 +3,7 @@
 	--main-background-color: black;
 	--secondary-background-color: darkgreen;
 	--transparency: rgba(0,0,0,.75);
+	--error-color: red;
 
 	--arrow-up:'\25B2';/*▲*/
 	--arrow-down:'\25BC';/*▼*/
