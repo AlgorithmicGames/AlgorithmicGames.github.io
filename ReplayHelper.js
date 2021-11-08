@@ -49,7 +49,10 @@ class ReplayHelper{
 					break;
 			}
 		});
-		window.parent.postMessage({type: 'ReplayHelper-Initiated'}, '*')
+		let parent = window.opener ?? window.parent;
+		if(parent){
+			parent.postMessage({type: 'ReplayHelper-Initiated'}, '*');
+		}
 	}
 }
 ReplayHelper.preInit();
