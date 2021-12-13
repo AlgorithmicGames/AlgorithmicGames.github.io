@@ -68,7 +68,7 @@ If you do find a way to break out of the sandbox and access client data or other
 ### Backend
 A server-side version with official match results is planned, but until then client-side execution is the only way to run the arenas.
 ### Arenas
-The source code for the arenas are available in order to make it easier to examen the "rules" and come up with optimal strategies. Basically you are allowed to do what ever as long as it isn't commercial matches. If you have any doubs, you can [request permission here](https://github.com/AI-Tournaments/AI-Tournaments/issues/new?title=%5Bpermission-request%5D%20_Short_description_&body=Am%20I%20allowed%20to...%20?).
+The source code for the arenas are available in order to make it easier to examen the "rules" and come up with optimal strategies. Basically you are allowed to do what ever as long as it isn't commercial matches. If you have any doubts, you can [request permission here](https://github.com/AI-Tournaments/AI-Tournaments/issues/new?title=%5Bpermission-request%5D%20_Short_description_&body=Am%20I%20allowed%20to...%20?).
 ### Allowed examples
 Download code from AI-Tournaments to ...
 * Develop, troubleshooting or train an AI.
@@ -76,5 +76,5 @@ Download code from AI-Tournaments to ...
 * Have your own uncommercial tournaments.
 * And basically anything that gives something back to the community.
 ### Disallowed examples
-* Removing the links to AI-Tournaments.
+* Removing all links to AI-Tournaments.
 * Setup a commercial competitor to AI-Tournaments.
