@@ -56,6 +56,8 @@ Modules are loaded before dependencies, but other than that there is no real dif
 ## Special thanks
 - JSON Editor<br>
 AI-Tournaments uses [JSON Editor](https://github.com/josdejong/jsoneditor/) by [Jos de Jong](https://github.com/josdejong), powered by [Ace (Ajax.org Cloud9 Editor)](https://github.com/ajaxorg/ace/) and [Ajv JSON schema validator](https://github.com/ajv-validator/ajv/), for editing, rendering and validating JSON.
+- JS-Interpreter<br>
+AI-Tournaments uses [JS-Interpreter](https://github.com/NeilFraser/JS-Interpreter) by [Neil Fraser](https://github.com/NeilFraser) executing participants code step-by-step.
 - seedrandom<br>
 AI-Tournaments uses [seedrandom](https://github.com/davidbau/seedrandom) by [David Bau](https://github.com/davidbau) for overriding `Math.random()` to generate repeatable numbers.
 
