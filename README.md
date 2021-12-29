@@ -51,7 +51,7 @@ To load libraries like jQuery and others, put the files in the repository and ad
 **/
 ```
 #### Dependencies vs modules
---- TODO: Rewrite later. ---
+--- TODO: Rewrite later. ---<br>
 Modules are loaded before dependencies, but other than that there is no real difference for arena.js. The arena can define modules that is always loaded and available to participants.
 ## Special thanks
 - JSON Editor<br>
