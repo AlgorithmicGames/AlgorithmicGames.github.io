@@ -136,7 +136,7 @@ function a(){
 						option.dataset.name = [undefined, ''].includes(storedReplay.name) ? option.dataset.defaultName : storedReplay.name;
 						option.dataset.arena = groupedReplay.name;
 						option.innerHTML = option.dataset.arena+' '+option.dataset.name;
-						option.value = JSON.stringify(storedReplay.data);
+						option.value = JSON.stringify(replayData);
 						if(oldOption){
 							option.selected = oldOption.dataset.databaseId === option.dataset.databaseId;
 						}
