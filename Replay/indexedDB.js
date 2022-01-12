@@ -25,17 +25,20 @@ let callbacks = {
 	addReplayToStorage: async(replay)=>{
 		let replayString = JSON.stringify(replay);
 		let array = await _dexieReplays.data.toArray();
-		if(!array.find(o => JSON.stringify(o.data) === replayString)){
+		let existingReplay = array.find(o => JSON.stringify(o.data) === replayString);
+		if(existingReplay){
+			postMessage(existingReplay.id);
+		}else{
 			let now = Date.now();
 			await _dexieReplays.transaction('rw', _dexieReplays.records, _dexieReplays.data, async()=>{
 				_dexieReplays.records.put({
 					stored: now,
 					defaultName: calculateDefaultName(replay, now),
 					arena: replay.body.arena.full_name
-				}).then(id => _dexieReplays.data.put({
-					record_id: id,
-					data: replay
-				}));
+				}).then(id => {
+					_dexieReplays.data.put({record_id: id, data: replay});
+					postMessage(id);
+				});
 			});
 		}
 	},
