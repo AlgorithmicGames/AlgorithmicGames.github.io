@@ -16,10 +16,10 @@
 		</style>
 		<script>
 			'use strict'
-			const NAME = /*NAME/*/''/*/NAME*/;
+			const NAME = `/*NAME/*//*/NAME*/`;
 			const DATA = /*DATA/*/{}/*/DATA*/;
 			function a(){
-				if(NAME){
+				if(Object.keys(DATA).length){
 					let iframe = document.getElementById('iframe');
 					iframe.src = 'https://ai-tournaments.github.io/AI-Tournaments/Replay/';
 					window.onmessage = messageEvent => {
