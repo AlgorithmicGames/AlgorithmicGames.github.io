@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>AI-Tournaments Replay Export</title>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-TJFMG29186"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-TJFMG29186');</script>
+		<meta content="width=device-width, initial-scale=1.0" name="viewport">
+		<meta content="yes" name="mobile-web-app-capable">
+		<style>
+			#wrapper {
+				margin: 8px;
+			}
+			.hidden {
+				display: none !important;
+			}
+		</style>
+		<script>
+			'use strict'
+			const NAME = /*NAME/*/''/*/NAME*/;
+			const DATA = /*DATA/*/{}/*/DATA*/;
+			function a(){
+				if(NAME){
+					let iframe = document.getElementById('iframe');
+					iframe.src = 'https://ai-tournaments.github.io/AI-Tournaments/Replay/';
+					window.onmessage = messageEvent => {
+						switch(messageEvent.data.type){
+							case 'Replay-Initiated':
+								iframe.contentWindow.postMessage({type: 'Add-External-Replay-Data', name: NAME, value: DATA}, '*');
+								break;
+							case 'Replay-Store-ID':
+								location.href = 'https://ai-tournaments.github.io/AI-Tournaments/#Replay/#'+messageEvent.data.value;
+								break;
+						}
+					};
+				}
+			}
+		</script>
+	</head>
+	<body onload="a()">
+		<iframe id="iframe" class="hidden" sandbox="allow-scripts allow-same-origin"></iframe>
+	</body>
+</html>
