@@ -48,6 +48,7 @@ function a(){
 		IndexedDBOperation.do({operation: 'getStoredReplayData', data: replayID}).then(replayData => {
 			_editor.setMode('view');
 			_editor.setText(JSON.stringify(replayData));
+			_element_editor.classList.remove('hidden');
 			onChange();
 		});
 	}
