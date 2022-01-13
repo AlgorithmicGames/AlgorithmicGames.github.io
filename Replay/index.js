@@ -43,6 +43,14 @@ function a(){
 			return promise;
 		}
 	}
+	let replayID = window.location.hash.substr(1);
+	if(replayID){
+		IndexedDBOperation.do({operation: 'getStoredReplayData', data: replayID}).then(replayData => {
+			_editor.setMode('view');
+			_editor.setText(JSON.stringify(replayData));
+			onChange();
+		});
+	}
 	setTimeout(()=>{
 		if(_editor.getText() === '{}'){
 			_element_editor.classList.remove('hidden');
@@ -229,6 +237,13 @@ function a(){
 				_autoStart = true;
 				onChange();
 				break;
+			case 'Add-External-Replay-Data':
+				IndexedDBOperation.do({operation: 'addReplayToStorage', data: messageEvent.data.value}).then(id => {
+					IndexedDBOperation.do({operation: 'renameStoredReplay', data: {id: id, name: messageEvent.data.name}}).then(()=>{
+						messageEvent.source.postMessage({type: 'Replay-Store-ID', value: id}, '*');
+					});
+				});
+				break;
 			case 'ReplayHelper-Initiated':
 				messageEvent.source.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
 				messageEvent.source.postMessage({type: 'Arena-Result', arenaResult: JSON.parse(_element_iframe.dataset.arenaResult), wrapped: true}, '*');
@@ -280,4 +295,8 @@ function a(){
 			});
 		});
 	};
+	let parent = window.opener ?? window.parent;
+	if(parent){
+		parent.postMessage({type: 'Replay-Initiated'}, '*');
+	}
 }
