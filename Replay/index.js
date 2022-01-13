@@ -43,7 +43,7 @@ function a(){
 			return promise;
 		}
 	}
-	let replayID = window.location.hash.substr(1);
+	let replayID = parseInt(window.location.hash.substr(1));
 	if(replayID){
 		IndexedDBOperation.do({operation: 'getStoredReplayData', data: replayID}).then(replayData => {
 			_editor.setMode('view');
