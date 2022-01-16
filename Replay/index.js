@@ -1,6 +1,7 @@
 'use strict'
 function a(){
 	let _replayData;
+	let _previousOption;
 	let _autoStart = false;
 	let _element_paddingWrapper = document.getElementById('padding-wrapper');
 	let _element_control = document.getElementById('control-container');
@@ -18,7 +19,6 @@ function a(){
 	let _element_previousReplayRenameClose = document.getElementById('previous-replay-rename-cancel');
 	let _element_previousReplayRenameSave = document.getElementById('previous-replay-rename-save');
 	let _element_previousReplaysController = document.getElementById('previous-replays-controller');
-	let _parent = null;
 	let _editor = new JSONEditor(_element_editor, {'modes': ['code', 'view'], 'name': 'Replay', 'onChange': onChange, 'onValidate': onValidate});
 	class IndexedDBOperation {
 		static do = call => {
@@ -121,7 +121,6 @@ function a(){
 		});
 	}
 	function refreshStoredReplays(){
-		let oldOption = _element_previousReplayOptions.selectedOptions[0];
 		while(0 < _element_previousReplayOptions.childElementCount){
 			_element_previousReplayOptions.removeChild(_element_previousReplayOptions.firstChild);
 		}
@@ -146,8 +145,8 @@ function a(){
 						option.dataset.arena = groupedReplay.name;
 						option.innerHTML = option.dataset.arena+' '+option.dataset.name;
 						option.value = JSON.stringify(replayData);
-						if(oldOption){
-							option.selected = oldOption.dataset.databaseId === option.dataset.databaseId;
+						if(_previousOption){
+							option.selected = _previousOption.dataset.databaseId === option.dataset.databaseId;
 						}
 					});
 					optgroup.appendChild(option);
@@ -161,6 +160,18 @@ function a(){
 		_element_previousReplayContainer.classList.add('hidden');
 		_element_control.classList.remove('hidden');
 	}
+	function exportReplay(option){
+		fetch('/AI-Tournaments/Replay/ReplayExportTemplate.html').then(response => response.text()).then(html => {
+			html = html.replace(/\/\*NAME\/\*\/.*\/\*\/NAME\*\//, option.dataset.name.replace(/'/g, '\\\'')).replace(/\/\*DATA\/\*\/.*\/\*\/DATA\*\//, option.value);
+			var element = document.createElement('a');
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,'+encodeURIComponent(html));
+			element.setAttribute('download', option.dataset.name+'.AI-Tournaments-Replay.html');
+			element.style.display = 'none';
+			document.body.appendChild(element);
+			element.click();
+			document.body.removeChild(element);
+		});
+	}
 	document.getElementById('load-previous-replay').addEventListener('click', ()=>{
 		refreshStoredReplays();
 		_element_control.classList.add('hidden');
@@ -169,6 +180,7 @@ function a(){
 	document.getElementById('load-previous-replay-confirm').addEventListener('click', () => {
 		closeReplayController();
 		let option = _element_previousReplayOptions.selectedOptions[0];
+		_previousOption = option;
 		_editor.setMode('view');
 		_editor.setText(option.value);
 		while(0 < _element_previousReplayOptions.childElementCount){
@@ -189,6 +201,9 @@ function a(){
 			Promise.allSettled(promises).then(refreshStoredReplays);
 		}
 	});
+	document.getElementById('load-previous-replay-export').addEventListener('click', ()=>{
+		exportReplay(_element_previousReplayOptions.selectedOptions[0]);
+	});
 	document.getElementById('load-previous-replay-cancel').addEventListener('click', closeReplayController);
 	_element_btnClearStoredReplays.addEventListener('click', () => {
 		if(confirm('Are you sure want to remove ALL '+[..._element_previousReplayOptions.children].map(o => o.childElementCount).reduce((a,b)=>a+b)+' replays?')){
@@ -208,28 +223,28 @@ function a(){
 	window.onmessage = messageEvent => {
 		// NOTE: messageEvent can come from off site scripts.
 		switch(messageEvent.data.type){
-			case 'Init-Fetch-Replay-Height':
-				if(_parent === null){
+			case 'Replay-Height':
+				let scrollToBottom = !document.documentElement.style.paddingLeft;
+				if(scrollToBottom){
 					document.documentElement.style.paddingLeft = 0;
 					document.documentElement.style.paddingRight = 0;
 					document.documentElement.style.paddingBottom = 0;
-					_parent = {
-						origin: messageEvent.origin,
-						source: messageEvent.source
-					}
 				}
-			case 'Replay-Height':
 				if(messageEvent.data.value !== undefined){
 					_element_iframe.style.minHeight = window.parent.window.innerHeight +'px';
 					_element_iframe.style.height = messageEvent.data.value+'px';
 					_element_iframe.classList.remove('hidden');
 					_element_iframe_failToLoad.classList.add('hidden');
-					if(_parent !== null){
-						let height = _element_control.offsetHeight;
-						height += parseFloat(window.getComputedStyle(_element_paddingWrapper, null).getPropertyValue('padding-top'));
-						height += parseFloat(window.getComputedStyle(_element_paddingWrapper, null).getPropertyValue('padding-bottom'));
-						height += messageEvent.data.value;
-						_parent.source.postMessage({type: 'Replay-Height', value: height}, _parent.origin);
+					let height = _element_control.offsetHeight;
+					height += parseFloat(window.getComputedStyle(_element_paddingWrapper, null).getPropertyValue('padding-top'));
+					height += parseFloat(window.getComputedStyle(_element_paddingWrapper, null).getPropertyValue('padding-bottom'));
+					height += messageEvent.data.value;
+					let parent = window.opener ?? window.parent.window;
+					if(parent){
+						parent.postMessage({type: 'resize', value: height}, '*');
+						if(scrollToBottom){
+							document.documentElement.scrollTop = document.documentElement.scrollHeight;
+						}
 					}
 				}
 				break;
@@ -247,7 +262,7 @@ function a(){
 				break;
 			case 'ReplayHelper-Initiated':
 				messageEvent.source.postMessage({type: 'Init-Fetch-Replay-Height'}, '*');
-				messageEvent.source.postMessage({type: 'Arena-Result', arenaResult: JSON.parse(_element_iframe.dataset.arenaResult), wrapped: true}, '*');
+				messageEvent.source.postMessage({type: 'Arena-Result', arenaResult: JSON.parse(_element_iframe.dataset.arenaResult), wrapped: !_element_iframe.dataset.wrapped}, '*');
 				setTimeout(()=>{
 					if(_element_iframe.classList.contains('hidden')){
 						_element_iframe_failToLoad.classList.remove('hidden');
@@ -289,10 +304,8 @@ function a(){
 			_element_iframe.dataset.arenaResult = JSON.stringify(_replayData.body);
 			_element_iframe.src = _element_viewOptions.selectedOptions[0].value;
 			document.getElementById('open-replay-in-new-tab').addEventListener('click', ()=>{
-				let win = window.open(_element_viewOptions.selectedOptions[0].value);
-				setTimeout(()=>{
-					win.postMessage({type: 'Arena-Result', arenaResult: JSON.parse(_element_iframe.dataset.arenaResult), wrapped: false}, '*');
-				}, 1000);
+				window.open(_element_viewOptions.selectedOptions[0].value);
+				_element_iframe.dataset.wrapped = 'false';
 			});
 		});
 	};
