@@ -83,10 +83,6 @@ function a(){
 			case 'arena-changed':
 				window.location.hash = 'Arena/#'+messageEvent.data.value;
 				break;
-			default:
-				console.error('Source element not defined!');
-				console.error(messageEvent.source.frameElement);
-				break;
 		}
 	}
 	function frameLoop(){
