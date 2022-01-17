@@ -54,8 +54,7 @@ function a(){
 					break;
 			}
 		}else{
-			console.error('Source element not defined!');
-			console.error(messageEvent.source.frameElement);
+			console.error('Source element not defined', messageEvent.source.frameElement);
 		}
 	}
 	function updateTable(){
