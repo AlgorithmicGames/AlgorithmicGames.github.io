@@ -162,7 +162,7 @@ function a(){
 	}
 	function exportReplay(option){
 		fetch('/AI-Tournaments/Replay/ReplayExportTemplate.html').then(response => response.text()).then(html => {
-			html = html.replace(/\/\*NAME\/\*\/.*\/\*\/NAME\*\//, option.dataset.name.replace(/'/g, '\\\'')).replace(/\/\*DATA\/\*\/.*\/\*\/DATA\*\//, option.value);
+			html = html.replace(/\/\*DATA\/\*\/.*\/\*\/DATA\*\//, JSON.stringify({name: option.dataset.name, value: JSON.parse(option.value)}));
 			var element = document.createElement('a');
 			element.setAttribute('href', 'data:text/plain;charset=utf-8,'+encodeURIComponent(html));
 			element.setAttribute('download', option.dataset.name+'.AI-Tournaments-Replay.html');
