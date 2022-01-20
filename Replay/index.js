@@ -241,7 +241,7 @@ function a(){
 					height += messageEvent.data.value;
 					let parent = window.opener ?? window.parent.window;
 					if(parent){
-						parent.postMessage({type: 'resize', value: height}, '*');
+						parent.postMessage({type: 'Replay-Height', value: height}, '*');
 						if(scrollToBottom){
 							document.documentElement.scrollTop = document.documentElement.scrollHeight;
 						}
