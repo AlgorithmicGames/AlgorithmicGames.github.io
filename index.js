@@ -51,9 +51,9 @@ function a(){
 		if(JSON.parse(localStorage.getItem('LocalDevelopment.Data')).find(setup => setup.active)){
 			let dropdown = document.getElementById('development-dropdown');
 			dropdown.parentElement.classList.remove('hidden');
-			let content = document.createElement('a');
-			content.href = '/AI-Tournaments/Dev/';
-			content.target = '_blank';
+			let content = document.createElement('div');
+			content.classList.add('clickable');
+			content.addEventListener('click', ()=>openScreen('Dev'));
 			content.innerHTML = '<b>Local development</b><br>Automatic addition of local arena, participants and settings is active.';
 			dropdown.appendChild(content);
 		}
