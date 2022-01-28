@@ -1,0 +1,11 @@
+{
+	"participant": {
+		"type": ["string", "object"],
+		"required": ["url"],
+		"properties": {
+			"name": {"type": "string"},
+			"team": {"type": "number"},
+			"url": {"type": "string"}
+		}
+	}
+}
