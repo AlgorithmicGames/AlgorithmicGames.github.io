@@ -1,7 +1,7 @@
 'use strict'
 function a(){
 	let _editor;
-	(()=>{
+	if(true){
 		let defaultObject = {
 			active: false,
 			arena: null,
@@ -83,7 +83,7 @@ function a(){
 				}
 			]
 		}, JSON.parse(localStorage.getItem('LocalDevelopment.Data')) ?? [defaultObject]);
-	})()
+	}
 	fetch('/AI-Tournaments/schemaDefs.json').then(response => response.json()).then(schemaDefs => {
 		_editor.setSchema({
 			type: 'array',
