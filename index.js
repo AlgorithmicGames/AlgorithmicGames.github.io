@@ -54,7 +54,7 @@ function a(){
 			let content = document.createElement('div');
 			content.classList.add('clickable');
 			content.addEventListener('click', ()=>openScreen('Dev'));
-			content.innerHTML = '<b>Local development</b><br>Automatic addition of local arena, participants and settings is active.';
+			content.innerHTML = '<b>Local development</b><br>Automatic addition of local arena and participants is active.';
 			dropdown.appendChild(content);
 		}
 	}catch(error){}
