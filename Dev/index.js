@@ -4,10 +4,13 @@ function a(){
 	if(true){
 		let defaultObject = {
 			active: false,
-			arena: null,
-			name: '',
-			replay: '',
-			settings: {},
+			comment: '',
+			arena: {
+				url: '',
+				name: '',
+				replay: '',
+				settings: {}
+			},
 			participants: []
 		};
 		_editor = new JSONEditor(document.getElementById('editor'), {
@@ -45,11 +48,19 @@ function a(){
 								message: 'Only one object can be "active" at once.'
 							});
 						}
-						if(json.arena && !isUrl(json.replay)){
-							errors.push({
-								path: [index_0, 'replay'],
-								message: 'Property "replay" is not a URL.'
-							});
+						if(json.arena){
+							if(!isUrl(json.arena.url)){
+								errors.push({
+									path: [index_0, 'arena', 'url'],
+									message: 'Property "url" is not a URL.'
+								});
+							}
+							if(!isUrl(json.arena.replay)){
+								errors.push({
+									path: [index_0, 'arena', 'replay'],
+									message: 'Property "replay" is not a URL.'
+								});
+							}
 						}
 						if(Array.isArray(json.participants)){
 							json.participants.forEach((participant, index_1) => {
@@ -89,17 +100,22 @@ function a(){
 			type: 'array',
 			items: {
 				type: 'object',
-				required: ['active'],
+				required: ['active', 'arena', 'participants'],
 				properties: {
 					active: {type: 'boolean'},
-					name: {type: 'string'},
-					replay: {type: 'string'},
-					arena: {type: ['string', 'null']},
+					arena: {
+						type: ['object', 'null'],
+						properties: {
+							url: {type: ['string']},
+							name: {type: 'string'},
+							replay: {type: 'string'},
+							settings: {type: 'object'},
+						}
+					},
 					participants: {
 						type: 'array',
 						items: {$ref: 'participant'}
-					},
-					settings: {type: 'object'}
+					}
 				}
 			}
 		}, schemaDefs);
