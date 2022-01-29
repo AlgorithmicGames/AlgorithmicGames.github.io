@@ -20,6 +20,115 @@ function a(){
 	let _element_previousReplayRenameSave = document.getElementById('previous-replay-rename-save');
 	let _element_previousReplaysController = document.getElementById('previous-replays-controller');
 	let _editor = new JSONEditor(_element_editor, {'modes': ['code', 'view'], 'name': 'Replay', 'onChange': onChange, 'onValidate': onValidate});
+	fetch('/AI-Tournaments/schemaDefs.json').then(response => response.json()).then(schemaDefs => {
+		_editor.setSchema({
+			type: 'object',
+			required: ['header', 'body'],
+			properties: {
+				header: {
+					type: 'object',
+					required: ['defaultReplay'],
+					properties: {defaultReplay: {type: 'string'}}
+				},
+				body: {
+					type: 'object',
+					required: ['arena', 'settings', 'matchLogs', 'result', 'teams'],
+					properties: {
+						arena: {type: 'object'},
+						settings: {
+							type: 'object',
+							required: ['general'],
+							properties: {general: {type: 'object'}}
+						},
+						matchLogs: {
+							type: 'array',
+							items: {
+								type: 'object',
+								required: ['log', 'scores', 'status', 'seed'],
+								properties: {
+									log: {
+										type: 'array',
+										items: {
+											type: 'object',
+											required: ['type', 'value'],
+											properties: {
+												type: {type: 'string'}
+											}
+										}
+									},
+									scores: {
+										type: 'array',
+										items: {
+											type: 'object',
+											required: ['score', 'members', 'team'],
+											properties: {
+												score: {type: 'number'},
+												members: {
+													type: 'array',
+													items: {
+														type: 'object',
+														required: ['name', 'bonus'],
+														properties: {
+															name: {type: 'string'},
+															bonus: {type: 'number'}
+														}
+													}
+												},
+												team: {type: 'number'}
+											}
+										}
+									},
+									status: {type: 'string'},
+									seed: {type: 'string'}
+								}
+							}
+						},
+						result: {
+							type: 'object',
+							required: ['team', 'partialResult'],
+							properties: {
+								team: {
+									type: 'array',
+									items: {
+										type: 'object',
+										required: ['average', 'total'],
+										properties: {
+											average: {$ref: 'resultScore'},
+											total: {$ref: 'resultScore'}
+										}
+									}
+								},
+								partialResult: {type: 'boolean'}
+							}
+						},
+						teams: {
+							type: 'array',
+							items: {
+								type: 'object',
+								required: ['color', 'members'],
+								properties: {
+									color: {
+										type: 'object',
+										required: ['R', 'G', 'B', 'RGB'],
+										properties: {
+											R: {type: 'number'},
+											G: {type: 'number'},
+											B: {type: 'number'},
+											RGB: {type: 'string'}
+										}
+									},
+									members: {
+										type: 'array',
+										items: {type: 'string'}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}, schemaDefs);
+	});
 	class IndexedDBOperation {
 		static do = call => {
 			let worker = new Worker('indexedDB.js');
@@ -94,7 +203,7 @@ function a(){
 				message: 'Property "defaultReplay" is not a URL.'
 			});
 		}
-		if(json.body === undefined || typeof json.body.matchLogs !== 'object'){
+		if(json.body !== undefined && typeof json.body.matchLogs !== 'object'){
 			errors.push({
 				path: ['body'],
 				message: 'Property "matchLogs" is missing or not a array.'
