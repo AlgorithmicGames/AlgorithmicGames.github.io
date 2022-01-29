@@ -7,5 +7,24 @@
 			"team": {"type": "number"},
 			"url": {"type": "string"}
 		}
+	},
+	"resultScore": {
+		"type": "object",
+		"required": ["score", "bonusPoints"],
+		"properties": {
+			"score": {"type": "number"},
+			"bonusPoints": {
+				"type": "array",
+				"items": {
+					"type": "object",
+					"required": ["participant", "team", "bonus"],
+					"properties": {
+						"participant": {"type": "string"},
+						"team": {"type": "number"},
+						"bonus": {"type": "number"}
+					}
+				}
+			}
+		}
 	}
 }
