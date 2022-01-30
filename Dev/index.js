@@ -2,7 +2,7 @@
 function a(){
 	let _editor;
 	if(true){
-		let defaultObject = {
+		let defaultSetup = {
 			active: false,
 			comment: '',
 			arena: {
@@ -15,11 +15,11 @@ function a(){
 		};
 		_editor = new JSONEditor(document.getElementById('editor'), {
 			'modes': ['tree', 'code'],
-			'name': 'Local development',
+			'name': 'Setups',
 			'onChange': ()=>{
 				_editor.validate().then(errors => {
 					if(!errors.length){
-						localStorage.setItem('LocalDevelopment.Data', _editor.getText())
+						localStorage.setItem('LocalDevelopment.Setups', _editor.getText())
 					}
 				});
 			},
@@ -88,12 +88,12 @@ function a(){
 			templates: [
 				{
 					text: 'Test setup',
-					title: 'Insert a test setup',
+					title: 'Insert new setup',
 					field: 'TestSetupTemplate',
-					value: defaultObject
+					value: defaultSetup
 				}
 			]
-		}, JSON.parse(localStorage.getItem('LocalDevelopment.Data')) ?? [defaultObject]);
+		}, JSON.parse(localStorage.getItem('LocalDevelopment.Setups')) ?? [defaultSetup]);
 	}
 	fetch('/AI-Tournaments/schemaDefs.json').then(response => response.json()).then(schemaDefs => {
 		_editor.setSchema({

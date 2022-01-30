@@ -48,7 +48,7 @@ function a(){
 		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
 	true, '582px', true);
 	try{
-		if(JSON.parse(localStorage.getItem('LocalDevelopment.Data')).find(setup => setup.active)){
+		if(JSON.parse(localStorage.getItem('LocalDevelopment.Setups')).find(setup => setup.active)){
 			let dropdown = document.getElementById('development-dropdown');
 			dropdown.parentElement.classList.remove('hidden');
 			let content = document.createElement('div');
