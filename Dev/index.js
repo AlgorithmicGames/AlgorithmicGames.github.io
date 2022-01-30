@@ -40,30 +40,30 @@ function a(){
 				}
 				let errors = [];
 				if(Array.isArray(array)){
-					let actives = array.filter(json => json.active).length;
-					array.forEach((json, index_0) => {
-						if(1 < actives && json.active){
+					let activeSetups = array.filter(setup => setup.active).length;
+					array.forEach((setup, index_0) => {
+						if(1 < activeSetups && setup.active){
 							errors.push({
 								path: [index_0],
-								message: 'Only one object can be "active" at once.'
+								message: 'Only one setup can be active at once.'
 							});
 						}
-						if(json.arena){
-							if(!isUrl(json.arena.url)){
+						if(setup.arena){
+							if(!isUrl(setup.arena.url)){
 								errors.push({
 									path: [index_0, 'arena', 'url'],
 									message: 'Property "url" is not a URL.'
 								});
 							}
-							if(!isUrl(json.arena.replay)){
+							if(!isUrl(setup.arena.replay)){
 								errors.push({
 									path: [index_0, 'arena', 'replay'],
 									message: 'Property "replay" is not a URL.'
 								});
 							}
 						}
-						if(Array.isArray(json.participants)){
-							json.participants.forEach((participant, index_1) => {
+						if(Array.isArray(setup.participants)){
+							setup.participants.forEach((participant, index_1) => {
 								if(typeof participant === 'object'){
 									if(!isUrl(participant.url)){
 										errors.push({
