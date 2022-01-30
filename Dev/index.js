@@ -11,7 +11,8 @@ function a(){
 				replay: '',
 				settings: {}
 			},
-			participants: []
+			participants: [],
+			autoStart: false
 		};
 		_editor = new JSONEditor(document.getElementById('editor'), {
 			'modes': ['tree', 'code'],
@@ -100,7 +101,7 @@ function a(){
 			type: 'array',
 			items: {
 				type: 'object',
-				required: ['active', 'arena', 'participants'],
+				required: ['active', 'arena', 'participants', 'autoStart'],
 				properties: {
 					active: {type: 'boolean'},
 					arena: {
@@ -115,7 +116,8 @@ function a(){
 					participants: {
 						type: 'array',
 						items: {$ref: 'participant'}
-					}
+					},
+					autoStart: {type: 'boolean'}
 				}
 			}
 		}, schemaDefs);
