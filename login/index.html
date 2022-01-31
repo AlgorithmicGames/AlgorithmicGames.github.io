@@ -4,7 +4,9 @@
 	'use strict'
 	localStorage.setItem('origin', new URLSearchParams(window.location.search).get('origin'));
 	//window.location.replace('https://github.com/login/oauth/authorize?scope=user:email&client_id='+GitHubApi.getClientId());
-	const { user, session, error } = await supabase.auth.signIn({
-		provider: 'github',
-	})
+	supabase.auth.signIn({provider: 'github'}).then((user, session, error)=>{
+		console.log('user', user);
+		console.log('session', session);
+		console.log('error', error);
+	});
 </script>
