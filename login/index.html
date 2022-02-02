@@ -4,9 +4,11 @@
 	'use strict'
 	localStorage.setItem('origin', new URLSearchParams(window.location.search).get('origin'));
 	//window.location.replace('https://github.com/login/oauth/authorize?scope=user:email&client_id='+GitHubApi.getClientId());
-	await supabase.createClient('https://nfegdyrzrdhwvqpujxhj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzY2MTc3MCwiZXhwIjoxOTU5MjM3NzcwfQ.x_SvsnLkgYNEgpxa7h74Z__aBgGbGIYVmljhwYDJ1Bc').auth.signIn({provider: 'github'}).then((user, session, error)=>{
-		console.log('user', user);
-		console.log('session', session);
-		console.log('error', error);
-	});
+	(async ()=>{
+		await supabase.createClient('https://nfegdyrzrdhwvqpujxhj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzY2MTc3MCwiZXhwIjoxOTU5MjM3NzcwfQ.x_SvsnLkgYNEgpxa7h74Z__aBgGbGIYVmljhwYDJ1Bc').auth.signIn({provider: 'github'}).then((user, session, error)=>{
+			console.log('user', user);
+			console.log('session', session);
+			console.log('error', error);
+		});
+	})();
 </script>
