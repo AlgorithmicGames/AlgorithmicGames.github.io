@@ -4,7 +4,7 @@
 	let oAuthCode = 0 < index ? location.href.substr(index+1) : '';
 	let origin = localStorage.getItem('origin');
 	localStorage.removeItem('origin');
-	if(origin === null){
+	if(!origin || origin === 'null'){
 		origin = location.href.substr(0, location.href.indexOf('/login'));
 	}
 	window.location.replace(origin+'?oAuthCode='+oAuthCode);
