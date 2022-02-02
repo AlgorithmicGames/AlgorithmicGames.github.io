@@ -1,14 +1,6 @@
-<!--<script src="../GitHubApi.js"></script>-->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
 	'use strict'
 	localStorage.setItem('origin', new URLSearchParams(window.location.search).get('origin'));
-	//window.location.replace('https://github.com/login/oauth/authorize?scope=user:email&client_id='+GitHubApi.getClientId());
-	let supabaseClient = supabase.createClient('https://nfegdyrzrdhwvqpujxhj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzY2MTc3MCwiZXhwIjoxOTU5MjM3NzcwfQ.x_SvsnLkgYNEgpxa7h74Z__aBgGbGIYVmljhwYDJ1Bc');
-	debugger
-	supabaseClient.auth.signIn({provider: 'github'},{redirectTo: 'https://ai-tournaments.github.io/AI-Tournaments/login/authenticated.html'}).then((user, session, error)=>{
-		console.log('user', user);
-		console.log('session', session);
-		console.log('error', error);
-	});
+	supabase.createClient('https://nfegdyrzrdhwvqpujxhj.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzY2MTc3MCwiZXhwIjoxOTU5MjM3NzcwfQ.x_SvsnLkgYNEgpxa7h74Z__aBgGbGIYVmljhwYDJ1Bc').auth.signIn({provider: 'github'},{redirectTo: 'https://ai-tournaments.github.io/AI-Tournaments/login/authenticated.html'});
 </script>
