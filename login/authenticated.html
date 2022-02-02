@@ -1,7 +1,6 @@
 <script>
 	'use strict'
-	let index = location.href.indexOf('=');
-	let oAuthCode = 0 < index ? location.href.substr(index+1) : '';
+	let oAuthCode = new URLSearchParams(window.location.search).get('access_token');
 	let origin = localStorage.getItem('origin');
 	localStorage.removeItem('origin');
 	if(!origin || origin === 'null'){
