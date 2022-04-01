@@ -192,7 +192,8 @@ class GitHubApi{
 		}
 	}
 	static isLoggedIn(){
-		return localStorage.getItem(GitHubApi.#STORAGE_TOKEN_KEY) !== null;
+		let token = localStorage.getItem(GitHubApi.#STORAGE_TOKEN_KEY);
+		return token !== null && token[0] !== '!';
 	}
 	static logout(){
 		localStorage.removeItem(GitHubApi.#STORAGE_TOKEN_KEY);
