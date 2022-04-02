@@ -1,7 +1,13 @@
 'use strict'
 class Backend{
 	static call(module='', data){
-		return fetch(new Request(Backend.getBackend()+'/'+module), {method:'POST',body:JSON.stringify(data)}).then(response => response.json());
+		return fetch(new Request(Backend.getBackend()+'/'+module), {
+			method: 'POST',
+			headers: {
+				Authentication: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzY2MTc3MCwiZXhwIjoxOTU5MjM3NzcwfQ.x_SvsnLkgYNEgpxa7h74Z__aBgGbGIYVmljhwYDJ1Bc'
+			},
+			body: JSON.stringify(data)
+		}).then(response => response.json());
 	}
 	static getBackend(){
 		return localStorage.getItem('backend') ?? 'https://nfegdyrzrdhwvqpujxhj.functions.supabase.co';
