@@ -6,7 +6,7 @@ class Backend{
 			method: 'POST',
 			headers: new Headers(backend.headers),
 			body: JSON.stringify(data)
-		}).then(response => response.json());
+		});
 	}
 	static getBackend(){
 		try{
