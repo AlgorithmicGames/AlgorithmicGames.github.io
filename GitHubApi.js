@@ -180,10 +180,8 @@ class GitHubApi{
 		}
 		if(oAuthCode !== null){
 			localStorage.setItem(GitHubApi.#STORAGE_TOKEN_KEY, '!'+oAuthCode);
-			Backend.call('login', {oAuthCode: oAuthCode, client_id: GitHubApi.#CLIENT_ID}).then(json => {
-				if(json.data !== undefined){
-					localStorage.setItem(GitHubApi.#STORAGE_TOKEN_KEY, json.data);
-				}
+			Backend.call('login', {oAuthCode: oAuthCode, client_id: GitHubApi.#CLIENT_ID}).then(accessToken => {
+				localStorage.setItem(GitHubApi.#STORAGE_TOKEN_KEY, accessToken);
 				location.replace(location.protocol+'//'+location.host+location.pathname);
 			}).catch(error => {
 				console.error(error);
