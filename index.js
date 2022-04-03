@@ -58,7 +58,7 @@ function a(){
 		let dropdown = document.getElementById('development-dropdown');
 		dropdown.parentElement.classList.remove('hidden');
 		let content = document.createElement('div');
-		content.innerHTML = '<b>Backend development</b><br>Backend is redirected to <i style="background: var(--secondary-background-color); color: var(--secondary-background-color)" onmouseover="this.style.background=\'var(--main-color)\';this.style.color=\'var(--main-color)\'" onmouseleave="this.style.background=\'var(--secondary-background-color)\';this.style.color=\'var(--secondary-background-color)\'" onclick="this.style.background=\'\';this.style.color=\'\'; this.onmouseover=undefined; this.onmouseleave=undefined;">'+Backend.getBackend()+'</i>.<br><br><button onclick="localStorage.removeItem(\'backend\'); location.reload();">Clear</button>';
+		content.innerHTML = '<b>Backend development</b><br>Backend is redirected to <i style="background: var(--secondary-background-color); color: var(--secondary-background-color)" onmouseover="this.style.background=\'var(--main-color)\';this.style.color=\'var(--main-color)\'" onmouseleave="this.style.background=\'var(--secondary-background-color)\';this.style.color=\'var(--secondary-background-color)\'" onclick="this.style.background=\'\';this.style.color=\'\'; this.onmouseover=undefined; this.onmouseleave=undefined;">'+Backend.getBackend().path+'</i>.<br><br><button onclick="localStorage.removeItem(\'backend\'); location.reload();">Clear</button>';
 		dropdown.appendChild(content);
 	}
 	document.getElementById('source-available').addEventListener('click', ()=>{
