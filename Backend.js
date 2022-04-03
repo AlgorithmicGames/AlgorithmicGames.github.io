@@ -9,13 +9,22 @@ class Backend{
 		}).then(response => response.json());
 	}
 	static getBackend(){
-		return localStorage.getItem('backend') ?? {
-			path: 'https://nfegdyrzrdhwvqpujxhj.functions.supabase.co',
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzY2MTc3MCwiZXhwIjoxOTU5MjM3NzcwfQ.x_SvsnLkgYNEgpxa7h74Z__aBgGbGIYVmljhwYDJ1Bc'
+		try{
+			let backend = localStorage.getItem('backend');
+			if(backend){
+				return JSON.parse(backend);
 			}
-		};
+		}catch(e){
+			console.error('Invalid backend');
+		}finally{
+			return {
+				path: 'https://nfegdyrzrdhwvqpujxhj.functions.supabase.co',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzY2MTc3MCwiZXhwIjoxOTU5MjM3NzcwfQ.x_SvsnLkgYNEgpxa7h74Z__aBgGbGIYVmljhwYDJ1Bc'
+				}
+			};
+		}
 	}
 	static isOverride(){
 		return localStorage.getItem('backend') !== null;
