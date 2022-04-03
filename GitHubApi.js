@@ -180,10 +180,8 @@ class GitHubApi{
 		}
 		if(oAuthCode !== null){
 			localStorage.setItem(GitHubApi.#STORAGE_TOKEN_KEY, '!'+oAuthCode);
-			Backend.call('login', {oAuthCode: oAuthCode, client_id: GitHubApi.#CLIENT_ID}).then(json => {
-				if(json.data !== undefined){
-					localStorage.setItem(GitHubApi.#STORAGE_TOKEN_KEY, json.data);
-				}
+			Backend.call('login', {oAuthCode: oAuthCode, client_id: GitHubApi.#CLIENT_ID}).then(response => response.text()).then(accessToken => {
+				localStorage.setItem(GitHubApi.#STORAGE_TOKEN_KEY, accessToken);
 				location.replace(location.protocol+'//'+location.host+location.pathname);
 			}).catch(error => {
 				console.error(error);
@@ -192,7 +190,8 @@ class GitHubApi{
 		}
 	}
 	static isLoggedIn(){
-		return localStorage.getItem(GitHubApi.#STORAGE_TOKEN_KEY) !== null;
+		let token = localStorage.getItem(GitHubApi.#STORAGE_TOKEN_KEY);
+		return token !== null && token[0] !== '!';
 	}
 	static logout(){
 		localStorage.removeItem(GitHubApi.#STORAGE_TOKEN_KEY);
