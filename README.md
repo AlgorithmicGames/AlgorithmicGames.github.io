@@ -65,7 +65,7 @@ AI-Tournaments uses [JS-Interpreter](https://github.com/NeilFraser/JS-Interprete
 - seedrandom<br>
 AI-Tournaments uses [seedrandom](https://github.com/davidbau/seedrandom) by [David Bau](https://github.com/davidbau) for overriding `Math.random()` to generate repeatable numbers.
 - Supabase<br>
-AI-Tournaments uses Edge Functions by [Supabase](https://github.com/supabase/supabase) for serverless backend.
+AI-Tournaments uses Edge Functions by [Supabase](https://github.com/supabase/supabase) for serverless [backend](https://github.com/AI-Tournaments/Backend).
 
 ## Why Source Available?
 [AI-Tournaments](https://github.com/AI-Tournaments) is not Open Source by the [Open Source Initiative's definition](https://opensource.org/docs/osd) but rather [Source Available](https://en.wikipedia.org/wiki/Source-available_software), except were a license that says otherwise is in place.
