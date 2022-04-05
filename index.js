@@ -32,10 +32,10 @@ function a(){
 	loadArenas();
 	window.onhashchange = ()=>{
 		while(1 < window.location.hash.length && window.location.hash[1] === '#'){
-			window.location.hash = window.location.hash.substr(2);
+			window.location.hash = window.location.hash.substring(2);
 		}
 		if(1 < window.location.hash.length){
-			openScreen(window.location.hash.substr(1));
+			openScreen(window.location.hash.substring(1));
 		}
 	};
 	window.onhashchange();
