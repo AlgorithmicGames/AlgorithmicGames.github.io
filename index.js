@@ -207,16 +207,12 @@ function a(){
 	}
 	function openScreen(src=''){
 		window.location.hash = src;
-		if(src.startsWith('Arena/')){
-			src = src.replace('Arena/', '/Arena-Manager/');
-		}else{
-			let origin = window.location.href.replace(/(\?.*?(?=#))|(\?.*?(?=$))/gm, '');
-			let root = origin.substr(0, origin.indexOf('#'));
-			if(!root){
-				root = origin;
-			}
-			src = root+src;
+		let origin = window.location.href.replace(/(\?.*?(?=#))|(\?.*?(?=$))/gm, '');
+		let root = origin.substr(0, origin.indexOf('#'));
+		if(!root){
+			root = origin;
 		}
+		src = root+src;
 		let screenFound = false;
 		for(const screen of _screens.children){
 			if(screen.dataset.targetSrc === src){
@@ -396,10 +392,10 @@ function a(){
 		return output;
 	}
 	function checkGitHubStatus(){
-		fetch('https://ai-tournaments.github.io/AI-Tournaments/').then(r=>r.text()).then().catch(error => {
+		fetch('https://ai-tournaments.github.io/').then(r=>r.text()).then().catch(error => {
 			postGitHubProblem('GitHub Pages');
 		});
-		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/main/index.html').then(r=>r.text()).then().catch(error => {
+		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments.github.io/main/index.html').then(r=>r.text()).then().catch(error => {
 			postGitHubProblem('raw.githubusercontent.com');
 		});
 	}
