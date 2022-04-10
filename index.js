@@ -43,7 +43,7 @@ function a(){
 	document.getElementById('logout-button').addEventListener('click', GitHubApi.logout);
 	// Hidden until a fun "lore" has been established. openWindow('Welcome to the tournament, servant!','You have been sent here by your proud Master to showcasing what you have learned in our arenas. [TODO: How to?]\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px', true);
 	openWindow(
-		'Welcome to the tournament!','Here you can participate in different games (known as Arenas) for a fun challenge to stay atop of the leaderboards. Read the <a href="https://github.com/AI-Tournaments/AI-Tournaments#participate" target="_blank">Participate</a> section in the README to get started.\n'+
+		'Welcome to the tournament!','Here you can participate in different games (known as Arenas) for a fun challenge to stay atop of the leaderboards. Read the <a href="https://github.com/AI-Tournaments/AI-Tournaments.github.io#participate" target="_blank">Participate</a> section in the README to get started.\n'+
 		'If you want to you can join the community discussions over at the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord server</a>.\n'+
 		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
 	true, '582px', true);
@@ -68,7 +68,7 @@ function a(){
 	let sourceAvailable = document.getElementById('source-available');
 	sourceAvailable.classList.add('clickable');
 	sourceAvailable.addEventListener('click', ()=>{
-		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
+		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments.github.io/master/README.md').then(response => response.text()).then(readme => {
 			let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
 			GitHubApi.formatMarkdown(why, {
 				async: true,
@@ -157,7 +157,7 @@ function a(){
 	}
 	function loadTheNews(amount=5){
 		let newsContainer = document.getElementById('news-dropdown');
-		GitHubApi.fetch('repos/AI-Tournaments/AI-Tournaments/releases').then(response => response.json()).then(releases => {
+		GitHubApi.fetch('repos/AI-Tournaments/AI-Tournaments.github.io/releases').then(response => response.json()).then(releases => {
 			releases.slice(0,amount).forEach(release => {
 				let item = document.createElement('a');
 				item.href = release.html_url;

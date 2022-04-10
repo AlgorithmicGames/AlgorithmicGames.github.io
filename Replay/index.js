@@ -20,7 +20,7 @@ function a(){
 	let _element_previousReplayRenameSave = document.getElementById('previous-replay-rename-save');
 	let _element_previousReplaysController = document.getElementById('previous-replays-controller');
 	let _editor = new JSONEditor(_element_editor, {'modes': ['code', 'view'], 'name': 'Replay', 'onChange': onChange, 'onValidate': onValidate});
-	fetch('/AI-Tournaments/schemaDefs.json').then(response => response.json()).then(schemaDefs => {
+	fetch('/schemaDefs.json').then(response => response.json()).then(schemaDefs => {
 		_editor.setSchema({
 			type: 'object',
 			required: ['header', 'body'],
@@ -270,7 +270,7 @@ function a(){
 		_element_control.classList.remove('hidden');
 	}
 	function exportReplay(option){
-		fetch('/AI-Tournaments/Replay/ReplayExportTemplate.html').then(response => response.text()).then(html => {
+		fetch('/Replay/ReplayExportTemplate.html').then(response => response.text()).then(html => {
 			html = html.replace(/\/\*DATA\/\*\/.*\/\*\/DATA\*\//, JSON.stringify({name: option.dataset.name, value: JSON.parse(option.value)}));
 			var element = document.createElement('a');
 			element.setAttribute('href', 'data:text/plain;charset=utf-8,'+encodeURIComponent(html));

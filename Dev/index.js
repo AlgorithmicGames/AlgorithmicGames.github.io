@@ -96,7 +96,7 @@ function a(){
 			]
 		}, JSON.parse(localStorage.getItem('LocalDevelopment.Setups')) ?? [defaultSetup]);
 	})();
-	fetch('/AI-Tournaments/schemaDefs.json').then(response => response.json()).then(schemaDefs => {
+	fetch('/schemaDefs.json').then(response => response.json()).then(schemaDefs => {
 		_editor.setSchema({
 			type: 'array',
 			items: {
