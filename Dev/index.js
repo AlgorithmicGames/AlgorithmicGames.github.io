@@ -62,6 +62,11 @@ function a(){
 									message: 'Property "replay" is not a URL.'
 								});
 							}
+						}else if(setup.settings){
+							errors.push({
+								path: [index_0, 'settings'],
+								message: 'Property "settings" requires "arena".'
+							});
 						}
 						if(Array.isArray(setup.participants)){
 							setup.participants.forEach((participant, index_1) => {
@@ -106,8 +111,9 @@ function a(){
 					active: {type: 'boolean'},
 					arena: {
 						type: ['object', 'null'],
+						required: ["url", "replay"],
 						properties: {
-							url: {type: ['string']},
+							url: {type: 'string'},
 							name: {type: 'string'},
 							replay: {type: 'string'},
 							settings: {type: 'object'},
