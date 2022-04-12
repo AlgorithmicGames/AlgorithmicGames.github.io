@@ -260,8 +260,9 @@
 			}
 		</style>
 		<script>
-			if(false && (location.href.endsWith('?soon=aitournaments.io') || location.href.endsWith('?soon=ai-tournaments.io'))){
-				window.location.replace('https://ai-tournaments.io');
+			if(location.href.endsWith('?soon=aitournaments.io') || location.href.endsWith('?soon=ai-tournaments.io')){
+				//window.location.replace('https://aitournaments.io'); Pending...
+				window.location.replace('/');
 			}
 			sessionStorage.setItem('PageLoaded', Date.now());
 		</script>
