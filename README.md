@@ -56,9 +56,9 @@ To load libraries like jQuery and others, put the files in the repository and ad
 	]
 }**/
 ```
+<!-- TODO: Rewrite/uncomment when modules are a thing.
 #### Dependencies vs modules
---- TODO: Rewrite later. ---<br>
-Modules are loaded before dependencies, but other than that there is no real difference for arena.js. The arena can define modules that is always loaded and available to participants.
+Modules are loaded before dependencies, but other than that there is no difference for arena.js. The arena can define modules that is always loaded and available to participants. -->
 ## Special thanks
 - JSON Editor<br>
 AI-Tournaments uses [JSON Editor](https://github.com/josdejong/jsoneditor/) by [Jos de Jong](https://github.com/josdejong), powered by [Ace (Ajax.org Cloud9 Editor)](https://github.com/ajaxorg/ace/) and [Ajv JSON schema validator](https://github.com/ajv-validator/ajv/), for editing, rendering and validating JSON.
