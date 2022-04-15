@@ -11,26 +11,20 @@ Join the official [GitHub](https://github.com/AI-Tournaments/AI-Tournaments.gith
 <!-- Keep in sync [END] -->
 
 ## Participate
-To participate in a Arena you need to [create a GitHub repository](https://github.com/AI-Tournaments/Participant-Template) and apply three topics: `AI-Tournaments`, `AI-Tournaments-Participant` and the full repository name of the arena (`ArenaAuthor--ExampleArena`). The repository also has to have a file in root called `participant.js`, this is the file that will be called to the arena. The repository's name will represent the participants name, except if it starts with `AI-Tournaments-Participant-` then that part is omitted.
-#### Advanced
-If you need more insight and maybe even add some debug logs to the Arena you can download the `arena.js`, add it to a webserver and then spawn a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Spawning_a_dedicated_worker) with the arena file and [post a message](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Sending_messages_to_and_from_a_dedicated_worker) matching [Participants.js](https://github.com/AI-Tournaments/AI-Tournaments/blob/master/Arena/Participants.js)' constructor.
-## Community arena
-### Testing
-Configure testing environment at [AI-Tournaments/Dev/](https://ai-tournaments.github.io/Dev/).
+To participate in a Arena you need to [create a GitHub repository](https://github.com/AI-Tournaments/Participant-Template) and apply three topics: `AI-Tournaments`, `AI-Tournaments-Participant` and the full repository name of the arena (`ExampleAuthor--ExampleArena`). The repository also has to have a file in root called `participant.js`, this is the file that will be called to the arena. The repository's name will represent the participants name, except if it starts with `AI-Tournaments-Participant-` then that part is omitted.
+### Develop environment
+<i>For both developing arenas and participants.</i><br>
+In [Local development setups](https://ai-tournaments.github.io/Dev/) you can add the URLs to arena (`arena.js` along with the arenas replay page) and participants to test with before publishing them in GitHub.
+
+<b>Explanation</b>
 | Key | Description | Example |
 | --- | --- | --- |
-| arena.url | URL to a arena. | `"http://127.0.0.1:8080/Community-Arena/"` |
-| arena.name | Replaces URL as displayed name. | `"New-Community-Arena"` |
+| arena.url | URL to a arena.<br>⚠️ Do not include `arena.js`. | `"http://127.0.0.1:8080/Community-Arena/"` or `"https://raw.githubusercontent.com/AI-Tournaments/Worm-Arena/main/"` |
+| arena.name<br><i>Optional</i> | Displayed name.<br>Name defaults to URL if left empty. | `"New-Community-Arena"` |
 | arena.replay | URL to replay view. | `"http://127.0.0.1:8080/Community-Arena-Replay/"` |
-| arena.settings | Prefigured settings. | `{"general":{"seed":"example"}}` |
-| participants | Adds extra participants. | `["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-1.js",{"url":"http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js","name":"Temp-Participant","team":1}]` |
+| arena.settings<br><i>Optional</i> | Prefigured settings. | `{"general":{"seed":"example"}}` |
+| participants | Adds participants.<br>Array with either a url string to script or a JSON object per participant. | `["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-1.js",{"url":"http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js","name":"Temp-Participant","team":1}]` |
 
-Field `participants` can be either a url string to a script or a JSON object.
-Alternatively it is possible to call the `addArena` function manually in the browser's JavaScript console at [AI-Tournaments/Arena/](https://ai-tournaments.github.io/Arena/).
-``` JavaScript
-/* Example */
-addArena({arena:"http://127.0.0.1:8080/Community-Arena/",name:"New-Community-Arena",replay:"http://127.0.0.1:8080/Community-Arena-Replay/",participants:["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-1.js",{url:"http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js",name:"Temp-Participant",team:1}]});
-```
 ## File header
 The `participant.js` file header has to be valid Json otherwise it is omitted. The header can be placed anywhere in the file, but at the top is recommended as a standardization.
 ``` JavaScript
