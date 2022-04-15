@@ -4,6 +4,7 @@ function a(){
 	(()=>{
 		let defaultSetup = {
 			active: false,
+			autoStart: false,
 			comment: '',
 			arena: {
 				url: '',
@@ -11,8 +12,7 @@ function a(){
 				replay: '',
 				settings: {}
 			},
-			participants: [],
-			autoStart: false
+			participants: []
 		};
 		_editor = new JSONEditor(document.getElementById('editor'), {
 			'modes': ['tree', 'code'],
