@@ -4,8 +4,9 @@ function a(){
 	(()=>{
 		let defaultSetup = {
 			active: false,
-			autoStart: false,
 			comment: '',
+			autoStart: false,
+			rerunUntilError: false,
 			arena: {
 				url: '',
 				name: '',
@@ -109,6 +110,8 @@ function a(){
 				required: ['active', 'arena', 'participants', 'autoStart'],
 				properties: {
 					active: {type: 'boolean'},
+					autoStart: {type: 'boolean'},
+					rerunUntilError: {type: 'boolean'},
 					arena: {
 						type: ['object', 'null'],
 						required: ["url", "replay"],
@@ -122,8 +125,7 @@ function a(){
 					participants: {
 						type: 'array',
 						items: {$ref: 'participant'}
-					},
-					autoStart: {type: 'boolean'}
+					}
 				}
 			}
 		}, schemaDefs);
