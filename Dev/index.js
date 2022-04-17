@@ -71,18 +71,26 @@ function a(){
 						}
 						if(Array.isArray(setup.participants)){
 							setup.participants.forEach((participant, index_1) => {
-								if(typeof participant === 'object'){
-									if(!isUrl(participant.url)){
-										errors.push({
-											path: [index_0, 'participants', index_1, 'url'],
-											message: 'Property "url" is not a URL.'
-										});
+								if(typeof participant === 'string'){
+									let url = '';
+									if(participant.length){
+										url = participant.substring(participant[0] === '!' ? 1 : 0);
 									}
-								}else{
-									if(!isUrl(participant)){
+									if(!isUrl(url)){
 										errors.push({
 											path: [index_0, 'participants', index_1],
 											message: 'String is not a URL.'
+										});
+									}
+								}else{
+									let url = participant.url;
+									if(typeof url === 'string' && url.length){
+										url = url.substring(url[0] === '!' ? 1 : 0);
+									}
+									if(!isUrl(url)){
+										errors.push({
+											path: [index_0, 'participants', index_1, 'url'],
+											message: 'Property "url" is not a URL.'
 										});
 									}
 								}
