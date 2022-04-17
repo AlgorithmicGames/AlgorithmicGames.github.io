@@ -127,7 +127,7 @@ class GitHubApi{
 		}).catch(reject);
 		return options.async ? promise : iframe;
 	}
-	static fetchArenas(latest){
+	static fetchArenas(){
 		return GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Arena-v'+GitHubApi.#ARENA_VERSION).then(response => response.json()).then(json => {
 			let arenas = [];
 			let promises = [];
@@ -144,26 +144,22 @@ class GitHubApi{
 					version: null
 				};
 				arenas.push(data);
-				if(latest){
-					data.raw_url = data.default;
-				}else{
-					let tagPromise = GitHubApi.fetch(repo.tags_url.replace('https://api.github.com/','')).then(response => response.json());
-					promises.push(GitHubApi.fetch(repo.releases_url.replace(/https:\/\/api.github.com\/|{\/id}/g,'')).then(response => response.json()).then(releases => {
-						if(0 < releases.length){
-							data.version = releases.sort((a,b)=>new Date(b.published_at) - new Date(a.published_at))[0].tag_name;
-							data.raw_url = 'https://raw.githubusercontent.com/'+repo.full_name+'/'+data.version+'/';
-							promises.push(tagPromise.then(tags => {
-								let index = 0;
-								while(data.commit === null){
-									let tag = tags[index++];
-									if(tag.name === data.version){
-										data.commit = tag.commit.sha;
-									}
+				let tagPromise = GitHubApi.fetch(repo.tags_url.replace('https://api.github.com/','')).then(response => response.json());
+				promises.push(GitHubApi.fetch(repo.releases_url.replace(/https:\/\/api.github.com\/|{\/id}/g,'')).then(response => response.json()).then(releases => {
+					if(0 < releases.length){
+						data.version = releases.sort((a,b)=>new Date(b.published_at) - new Date(a.published_at))[0].tag_name;
+						data.raw_url = 'https://raw.githubusercontent.com/'+repo.full_name+'/'+data.version+'/';
+						promises.push(tagPromise.then(tags => {
+							let index = 0;
+							while(data.commit === null){
+								let tag = tags[index++];
+								if(tag.name === data.version){
+									data.commit = tag.commit.sha;
 								}
-							}));
-						}
-					}));
-				}
+							}
+						}));
+					}
+				}));
 			});
 			return Promise.allSettled(promises).then(()=>arenas);
 		});
