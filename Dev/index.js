@@ -85,7 +85,7 @@ function a(){
 								}else{
 									let url = participant.url;
 									if(typeof url === 'string' && url.length){
-										url = url.substring(url[0] === '!' ? 1 : 0);
+										url = url.substring('!?'.includes(url[0]) ? 1 : 0);
 									}
 									if(!isUrl(url)){
 										errors.push({
