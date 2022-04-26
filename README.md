@@ -4,7 +4,7 @@
 # AI-Tournaments
 AI-Tournaments is about match making between algorithms. Users can make their own participates to any of the existing arenas, or make their own custom arena and challenge other users to join.
 
-AI-Tournaments in an early prototype stage. See the section [`Participate`](#Participate) if you want to join a arena, then analyze how other have solved the arena until better documentation has been written.
+AI-Tournaments in an early prototype stage. See the section [Participate](#Participate) if you want to join a arena, then analyze how other have solved the arena until better documentation has been written.
 ## Community
 Join the official [GitHub](https://github.com/AI-Tournaments/AI-Tournaments.github.io/discussions/) or [Discord](https://discord.gg/jhUJNsN) community. Please read and follow the [community guide lines](https://ai-tournaments.github.io/Community/Guidelines/).
 <br>[![Discord banner2](https://discord.com/api/guilds/765291928454823936/widget.png?style=banner2)](https://discord.gg/jhUJNsN)
@@ -24,6 +24,11 @@ In [Local development setups](https://ai-tournaments.github.io/Dev/) you can add
 | arena.replay | URL to replay view. | `"http://127.0.0.1:8080/Community-Arena-Replay/"` |
 | arena.settings<br><i>Optional</i> | Prefigured settings. | `{"general":{"seed":"example"}}` |
 | participants | Adds participants.<br>Array with either a url string to script or a JSON object per participant. | `["http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-1.js",{"url":"http://127.0.0.1:8080/Community-Arena-Test-Participants/participant-2.js","name":"Temp-Participant","team":1}]` |
+
+The development environment also includes some extra dials and features to help with quality assurance.
+
+#### Participant
+Participant's URLs can be written in different forms. An _ordinary_ URL is interpreted in the default sealed sandbox, but URLs that starts with a question mark (`?`) is executed as plain javascript and can be debugged by the javascript [`debugger`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger) command.
 
 ## File header
 The `participant.js` file header has to be valid Json otherwise it is omitted. The header can be placed anywhere in the file, but at the top is recommended as a standardization.
