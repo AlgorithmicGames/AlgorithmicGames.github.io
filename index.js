@@ -9,7 +9,9 @@ function a(){
 	let _background = document.getElementById('background');
 	let _noise;
 	document.getElementById('header-title-real').innerHTML = document.title;
-	document.getElementById('header-title-fake').addEventListener('click', ()=>{
+	let fakeHeader = document.getElementById('header-title-fake');
+	fakeHeader.classList.add('clickable');
+	fakeHeader.addEventListener('click', ()=>{
 		window.open('https://github.com/AI-Tournaments', '_blank').focus();
 	});
 	Array.from(document.getElementsByClassName('open-screen')).forEach(element => {
@@ -30,10 +32,10 @@ function a(){
 	loadArenas();
 	window.onhashchange = ()=>{
 		while(1 < window.location.hash.length && window.location.hash[1] === '#'){
-			window.location.hash = window.location.hash.substr(2);
+			window.location.hash = window.location.hash.substring(2);
 		}
 		if(1 < window.location.hash.length){
-			openScreen(window.location.hash.substr(1));
+			openScreen(window.location.hash.substring(1));
 		}
 	};
 	window.onhashchange();
@@ -41,28 +43,32 @@ function a(){
 	document.getElementById('logout-button').addEventListener('click', GitHubApi.logout);
 	// Hidden until a fun "lore" has been established. openWindow('Welcome to the tournament, servant!','You have been sent here by your proud Master to showcasing what you have learned in our arenas. [TODO: How to?]\n<span style="color:var(--secondary-background-color)">- Overlord servant</span>', true, '397px', true);
 	openWindow(
-		'Welcome to the tournament!','Here you can participate in different games (known as Arenas) for a fun challenge to stay atop of the leaderboards. Read the <a href="https://github.com/AI-Tournaments/AI-Tournaments#participate" target="_blank">Participate</a> section in the README to get started.\n'+
+		'Welcome to the tournament!','Here you can participate in different games (known as Arenas) for a fun challenge to stay atop of the leaderboards. Read the <a href="https://github.com/AI-Tournaments/AI-Tournaments.github.io#participate" target="_blank">Participate</a> section in the README to get started.\n'+
 		'If you want to you can join the community discussions over at the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord server</a>.\n'+
 		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
 	true, '582px', true);
-	if(localStorage.getItem('Local development')){
-		let dropdown = document.getElementById('development-dropdown');
-		dropdown.parentElement.classList.remove('hidden');
-		let content = document.createElement('div');
-		let arenaObj = JSON.parse(localStorage.getItem('Local development'));
-		let arena = arenaObj[1] ? '<i>'+arenaObj[1]+'</i>' : 'arena';
-		content.innerHTML = '<b>Local development</b><br>Automatic addition of local '+arena+', participants and settings.<br><br><button onclick="localStorage.removeItem(\'Local development\'); location.reload();">Clear</button>';
-		dropdown.appendChild(content);
-	}
+	try{
+		if(JSON.parse(localStorage.getItem('LocalDevelopment.Setups')).find(setup => setup.active)){
+			let dropdown = document.getElementById('development-dropdown');
+			dropdown.parentElement.classList.remove('hidden');
+			let content = document.createElement('div');
+			content.classList.add('clickable');
+			content.addEventListener('click', ()=>openScreen('Dev'));
+			content.innerHTML = '<b>Local development</b><br>Automatic addition of local arena and participants is active.';
+			dropdown.appendChild(content);
+		}
+	}catch(error){}
 	if(Backend.isOverride()){
 		let dropdown = document.getElementById('development-dropdown');
 		dropdown.parentElement.classList.remove('hidden');
 		let content = document.createElement('div');
-		content.innerHTML = '<b>Backend development</b><br>Backend is redirected to <i style="background: var(--secondary-background-color); color: var(--secondary-background-color)" onmouseover="this.style.background=\'var(--main-color)\';this.style.color=\'var(--main-color)\'" onmouseleave="this.style.background=\'var(--secondary-background-color)\';this.style.color=\'var(--secondary-background-color)\'" onclick="this.style.background=\'\';this.style.color=\'\'; this.onmouseover=undefined; this.onmouseleave=undefined;">'+Backend.getBackend().path+'</i>.<br><br><button onclick="localStorage.removeItem(\'backend\'); location.reload();">Clear</button>';
+		content.innerHTML = '<b>Backend development</b><br>Backend is redirected to <i class="clickable" style="background: var(--secondary-background-color); color: var(--secondary-background-color)" onmouseover="this.style.background=\'var(--main-color)\';this.style.color=\'var(--main-color)\'" onmouseleave="this.style.background=\'var(--secondary-background-color)\';this.style.color=\'var(--secondary-background-color)\'" onclick="this.style.background=\'\';this.style.color=\'\'; this.onmouseover=undefined; this.onmouseleave=undefined;">'+Backend.getBackend().path+'</i>.<br><br><button class="clickable" onclick="localStorage.removeItem(\'backend\'); location.reload();">Clear</button>';
 		dropdown.appendChild(content);
 	}
-	document.getElementById('source-available').addEventListener('click', ()=>{
-		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/master/README.md').then(response => response.text()).then(readme => {
+	let sourceAvailable = document.getElementById('source-available');
+	sourceAvailable.classList.add('clickable');
+	sourceAvailable.addEventListener('click', ()=>{
+		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments.github.io/master/README.md').then(response => response.text()).then(readme => {
 			let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
 			GitHubApi.formatMarkdown(why, {
 				async: true,
@@ -151,7 +157,7 @@ function a(){
 	}
 	function loadTheNews(amount=5){
 		let newsContainer = document.getElementById('news-dropdown');
-		GitHubApi.fetch('repos/AI-Tournaments/AI-Tournaments/releases').then(response => response.json()).then(releases => {
+		GitHubApi.fetch('repos/AI-Tournaments/AI-Tournaments.github.io/releases').then(response => response.json()).then(releases => {
 			releases.slice(0,amount).forEach(release => {
 				let item = document.createElement('a');
 				item.href = release.html_url;
@@ -191,6 +197,7 @@ function a(){
 				item.innerHTML = repo.name.replace('-Arena','')
 				item.dataset.stars = repo.stars;
 				item.dataset.full_name = repo.full_name;
+				item.classList.add('clickable');
 				item.addEventListener('click', ()=>{
 					openScreen('Arena/#'+repo.full_name);
 				});
@@ -200,16 +207,12 @@ function a(){
 	}
 	function openScreen(src=''){
 		window.location.hash = src;
-		if(src.startsWith('Arena/')){
-			src = src.replace('Arena/', '/Arena-Manager/');
-		}else{
-			let origin = window.location.href.replace(/(\?.*?(?=#))|(\?.*?(?=$))/gm, '');
-			let root = origin.substr(0, origin.indexOf('#'));
-			if(!root){
-				root = origin;
-			}
-			src = root+src;
+		let origin = window.location.href.replace(/(\?.*?(?=#))|(\?.*?(?=$))/gm, '');
+		let root = origin.substr(0, origin.indexOf('#'));
+		if(!root){
+			root = origin;
 		}
+		src = root+src;
 		let screenFound = false;
 		for(const screen of _screens.children){
 			if(screen.dataset.targetSrc === src){
@@ -389,10 +392,10 @@ function a(){
 		return output;
 	}
 	function checkGitHubStatus(){
-		fetch('https://ai-tournaments.github.io/AI-Tournaments/').then(r=>r.text()).then().catch(error => {
+		fetch('https://ai-tournaments.github.io/').then(r=>r.text()).then().catch(error => {
 			postGitHubProblem('GitHub Pages');
 		});
-		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments/main/index.html').then(r=>r.text()).then().catch(error => {
+		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments.github.io/main/index.html').then(r=>r.text()).then().catch(error => {
 			postGitHubProblem('raw.githubusercontent.com');
 		});
 	}

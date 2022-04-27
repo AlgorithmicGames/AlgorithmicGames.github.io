@@ -44,7 +44,6 @@ class ReplayHelper{
 							this.wrapped = data.wrapped;
 						}
 					}
-					messageEvent.data.arenaResult.matchLogs.filter(matchLog => matchLog.error).forEach((matchLog, index) => console.error('Match '+index, matchLog.error));
 					resolve(new Replay(messageEvent.data));
 					break;
 			}

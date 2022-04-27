@@ -1,0 +1,3 @@
+[submodule "Arena"]
+	path = Arena
+	url = https://github.com/AI-Tournaments/Arena-Manager.git

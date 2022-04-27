@@ -52,8 +52,7 @@ class GitHubApi{
 				if(this.isLoggedIn()){
 					localStorage.setItem('PopupMessage-'+this.#STARTED+timestamp, 'GitHub API rate limit reached\n424px\nWait until the <a href="https://docs.github.com/en/free-pro-team@latest/rest/reference/rate-limit" target="_blank">API rate limit</a> timer resets: <time class="countdown" datetime="'+new Date(timestamp)+'"></time>');
 				}else{
-					console.log('// TODO: Re-enable popup when login is available.');
-				//	localStorage.setItem('PopupMessage-'+this.#STARTED+timestamp, 'GitHub API rate limit reached\n371px\nGitHub has a lower <a href="https://docs.github.com/en/free-pro-team@latest/rest/reference/rate-limit" target="_blank">API rate limit</a> for unsigned requests. <a href="https://ai-tournaments.github.io/AI-Tournaments/login">Login</a> to be able to continue to create matches or wait until the timer resets: <time class="countdown" datetime="'+new Date(timestamp)+'"></time>');
+					localStorage.setItem('PopupMessage-'+this.#STARTED+timestamp, 'GitHub API rate limit reached\n371px\nGitHub has a lower <a href="https://docs.github.com/en/free-pro-team@latest/rest/reference/rate-limit" target="_blank">API rate limit</a> for unsigned requests. <a href="https://ai-tournaments.github.io/login">Login</a> to be able to continue to create matches or wait until the timer resets: <time class="countdown" datetime="'+new Date(timestamp)+'"></time>');
 				}
 				return this.#waitUntil(timestamp).then(()=>GitHubApi.fetch(path, init));
 			}
@@ -97,7 +96,7 @@ class GitHubApi{
 `<!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" href="https://ai-tournaments.github.io/AI-Tournaments/defaults.css">
+		<link rel="stylesheet" href="https://ai-tournaments.github.io/defaults.css">
 		<style>
 			${options.removeBodyMargin?`html, body {
 				margin: 0;
@@ -128,7 +127,7 @@ class GitHubApi{
 		}).catch(reject);
 		return options.async ? promise : iframe;
 	}
-	static fetchArenas(latest){
+	static fetchArenas(){
 		return GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Arena-v'+GitHubApi.#ARENA_VERSION).then(response => response.json()).then(json => {
 			let arenas = [];
 			let promises = [];
@@ -145,26 +144,22 @@ class GitHubApi{
 					version: null
 				};
 				arenas.push(data);
-				if(latest){
-					data.raw_url = data.default;
-				}else{
-					let tagPromise = GitHubApi.fetch(repo.tags_url.replace('https://api.github.com/','')).then(response => response.json());
-					promises.push(GitHubApi.fetch(repo.releases_url.replace(/https:\/\/api.github.com\/|{\/id}/g,'')).then(response => response.json()).then(releases => {
-						if(0 < releases.length){
-							data.version = releases.sort((a,b)=>new Date(b.published_at) - new Date(a.published_at))[0].tag_name;
-							data.raw_url = 'https://raw.githubusercontent.com/'+repo.full_name+'/'+data.version+'/';
-							promises.push(tagPromise.then(tags => {
-								let index = 0;
-								while(data.commit === null){
-									let tag = tags[index++];
-									if(tag.name === data.version){
-										data.commit = tag.commit.sha;
-									}
+				let tagPromise = GitHubApi.fetch(repo.tags_url.replace('https://api.github.com/','')).then(response => response.json());
+				promises.push(GitHubApi.fetch(repo.releases_url.replace(/https:\/\/api.github.com\/|{\/id}/g,'')).then(response => response.json()).then(releases => {
+					if(0 < releases.length){
+						data.version = releases.sort((a,b)=>new Date(b.published_at) - new Date(a.published_at))[0].tag_name;
+						data.raw_url = 'https://raw.githubusercontent.com/'+repo.full_name+'/'+data.version+'/';
+						promises.push(tagPromise.then(tags => {
+							let index = 0;
+							while(data.commit === null){
+								let tag = tags[index++];
+								if(tag.name === data.version){
+									data.commit = tag.commit.sha;
 								}
-							}));
-						}
-					}));
-				}
+							}
+						}));
+					}
+				}));
 			});
 			return Promise.allSettled(promises).then(()=>arenas);
 		});
