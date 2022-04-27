@@ -29,9 +29,11 @@ The development environment also includes some extra dials and features to help 
 
 #### Participant
 Participant's URLs can be written in different forms. An _ordinary_ URL is interpreted in the default sealed sandbox, but URLs that starts with a question mark (`?`) is executed as plain javascript and can be debugged by the javascript [`debugger`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger) command.
+#### Interface
+If you need more freedom for debugging or training a neural network you can use an Interface, which's URLs starts with a exclamation mark (`!`). The main difference between an [Interface](https://github.com/AI-Tournaments/Interface-Template) and a [Participant](https://github.com/AI-Tournaments/Participant-Template) is that interfaces opens up as a web page and sidestep all participant restrictions. The main use case for interfaces is to debug or train participants and to get a better insight during a running match. But interfaces can also be used to allow Human vs Participant and even Human vs Human matches.
 
 ## File header
-The `participant.js` file header has to be valid Json otherwise it is omitted. The header can be placed anywhere in the file, but at the top is recommended as a standardization.
+The `arena.js` and `participant.js` optional file header has to be valid Json otherwise it is omitted. The header can be placed anywhere in the file, but at the top is recommended as a standardization.
 ``` JavaScript
 /**
 {}
@@ -79,6 +81,7 @@ AI-Tournaments executes user written JavaScripts in the web browser, which is us
 But if you do find a way to break out of the sandbox and access client data or other participant scripts, please do [report it](https://github.com/AI-Tournaments/AI-Tournaments.github.io/issues/new?title=%5Bsecurity-hole%5D%20_Short_description_&body=How%20to%20reproduce:%0A1.%20First...%0A2.%20Then...)! Reporters of confirmed security holes will get a [honorable mention](https://ai-tournaments.github.io/Community/HonorableMentions/) once the hole is fixed.
 ### Scheduled server hosted events
 A server-side events with official match results is planned, but until then client-side execution is the only way to run the arenas.
+Note that [interfaces](#Interfaces) will not be able or allowed to compete.
 ### Arenas
 The source code for AI-Tournament's [arena executor](https://github.com/AI-Tournaments/Arena-Manager) and the official arenas are available in order to make it easier to examen the "rules" and come up with optimal strategies. You are basically allowed to do what ever as long as it isn't commercial matches.
 ### Allowed examples
