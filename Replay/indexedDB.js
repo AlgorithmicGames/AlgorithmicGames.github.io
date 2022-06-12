@@ -2,9 +2,10 @@
 importScripts('https://unpkg.com/dexie@3.0.3/dist/dexie.min.js');
 
 let _dexieReplays = new Dexie('Replays');
-_dexieReplays.version(1).stores({
+_dexieReplays.version(2).stores({
 	records: '++id,name,defaultName,arena,stored',
-	data: '++id,&record_id,data'
+	data: '++id,&record_id,data',
+	settings: '++id,&name,value'
 });
 _dexieReplays.open();
 function calculateDefaultName(replayData, stored){
@@ -21,14 +22,23 @@ function calculateDefaultName(replayData, stored){
 	}
 	return defaultName;
 }
+function getSetting(name){
+	return _dexieReplays.settings.get({name: name}).then(s => s ? s.value : null);
+}
+function setSetting(name, value){
+	return _dexieReplays.settings.get({name: name}).then(s => s ? _dexieReplays.settings.update(s.id, value) : _dexieReplays.settings.put({name: name, value: value}));
+}
+function answer(data){
+	postMessage({result: data})
+}
+let _pendingQuery;
+function query(type, message){
+	postMessage({query: {type: type, message: message}});
+	return new Promise(resolve => _pendingQuery = resolve);
+}
 let callbacks = {
 	addReplayToStorage: async(replay)=>{
-		let replayString = JSON.stringify(replay);
-		let array = await _dexieReplays.data.toArray();
-		let existingReplay = array.find(o => JSON.stringify(o.data) === replayString);
-		if(existingReplay){
-			postMessage(existingReplay.id);
-		}else{
+		async function store(){
 			let now = Date.now();
 			await _dexieReplays.transaction('rw', _dexieReplays.records, _dexieReplays.data, async()=>{
 				_dexieReplays.records.put({
@@ -37,25 +47,98 @@ let callbacks = {
 					arena: replay.body.arena.full_name
 				}).then(id => {
 					_dexieReplays.data.put({record_id: id, data: replay});
-					postMessage(id);
+					answer(id);
 				});
 			});
 		}
+		let replayString = JSON.stringify(replay);
+		let compareStringWithoutID;
+		let compareStringWithoutMeta;
+		(()=>{
+			let clone = JSON.parse(replayString);
+			if(clone.header && clone.header.id){
+				delete clone.header.id;
+			}
+			compareStringWithoutID = JSON.stringify(clone);
+			if(clone.header && clone.header.meta){
+				delete clone.header.meta;
+			}
+			compareStringWithoutMeta = JSON.stringify(clone);
+		})();
+		let array = await _dexieReplays.data.toArray();
+		let existingReplays = array.filter(d => {
+			let dataClone = JSON.parse(JSON.stringify(d.data));
+			if(dataClone.header && dataClone.header.meta){
+				delete dataClone.header.meta;
+			}
+			if(dataClone.header && dataClone.header.id){
+				delete dataClone.header.id;
+			}
+			return JSON.stringify(dataClone) === compareStringWithoutMeta;
+		});
+		let exactReplay = existingReplays.find(o => {
+			let clone = JSON.parse(JSON.stringify(o.data));
+			if(clone.header && clone.header.id){
+				delete clone.header.id;
+			}
+			return JSON.stringify(clone) === compareStringWithoutID;
+		});
+		if(exactReplay){
+			answer(exactReplay.id);
+		}else{
+			if(existingReplays.length){
+				let settingKey = 'addReplayToStorage() add replay with new meta';
+				let otherMeta = existingReplays.filter(o => JSON.stringify(o.data) !== replayString);
+				let doStore = !otherMeta.length;
+				let newMeta = !doStore;
+				let choice = await getSetting(settingKey);
+				if(newMeta){
+					if(choice !== null){
+						doStore = choice;
+					}else{
+						let promises = [];
+						otherMeta.forEach(d => promises.push(_dexieReplays.records.get({id: d.id}).then(r => r.name ?? r.defaultName)));
+						let names = (await Promise.allSettled(promises)).map(r => r.value);
+						doStore = await query('confirm', 'Another replay(s) with the same outcome but with different metadata is already stored (see below). Do you want to store this replay as well?\n'+names.sort().join('\n'));
+						if(await query('confirm', 'Remember choice? '+(doStore ? '(Do store)' : '(Do not store)'))){
+							await setSetting(settingKey, doStore);
+						}
+					}
+				}
+				if(doStore){
+					await store();
+				}
+			}else{
+				await store();
+			}
+		}
 	},
 	getStoredReplays: async()=>{
-		postMessage(await _dexieReplays.records.toArray());
+		answer(await _dexieReplays.records.toArray());
 	},
 	getStoredReplayData: async(id)=>{
+		id = parseInt(id);
+		if(isNaN(id)){
+			throw new Error('Parameter `id` is not a number');
+		}
 		await _dexieReplays.transaction('rw', _dexieReplays.records, _dexieReplays.data, async()=>{
 			let replayData = await _dexieReplays.data.get({record_id: id});
 			_dexieReplays.records.get({id: id}).then(record => _dexieReplays.records.update(id, {defaultName: calculateDefaultName(replayData.data, record.stored)}));
-			postMessage(replayData.data);
+			answer(replayData.data);
 		});
 	},
 	renameStoredReplay: async(data)=>{
+		data.id = parseInt(data.id);
+		if(isNaN(id)){
+			throw new Error('Parameter `id` is not a number');
+		}
 		await _dexieReplays.records.update(data.id, {name: data.name});
 	},
 	deleteStoredReplay: async(id)=>{
+		id = parseInt(id);
+		if(isNaN(id)){
+			throw new Error('Parameter `id` is not a number');
+		}
 		await _dexieReplays.transaction('rw', _dexieReplays.records, _dexieReplays.data, async()=>{
 			await _dexieReplays.data.get({record_id: id}).then(data => {
 				_dexieReplays.records.delete(id);
@@ -76,4 +159,11 @@ for(const key in callbacks){
 		}
 	}
 }
-onmessage = m => callbacks[m.data.operation](m.data.data).catch(err => console.error(err)).finally(()=>{postMessage(null);close();});
+onmessage = m => {
+	if(_pendingQuery){
+		_pendingQuery(m.data);
+		_pendingQuery = null;
+	}else{
+		callbacks[m.data.operation](m.data.data).catch(err => console.error(err)).finally(()=>{postMessage(null);close();})
+	}
+};

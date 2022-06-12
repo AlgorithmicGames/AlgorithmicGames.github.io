@@ -138,8 +138,12 @@ function a(){
 			let awaitingResponse = true;
 			worker.onmessage = m => {
 				if(awaitingResponse){
-					awaitingResponse = false;
-					resolve(m.data);
+					if(m.data.result){
+						awaitingResponse = false;
+						resolve(m.data.result);
+					}else if(m.data.query){
+						worker.postMessage(window[m.data.query.type](m.data.query.message));
+					}
 				}
 			}
 			worker.onerror = e => {
@@ -153,7 +157,7 @@ function a(){
 		}
 	}
 	let replayID = parseInt(window.location.hash.substring(1));
-	if(replayID){
+	if(!isNaN(replayID)){
 		IndexedDBOperation.do({operation: 'getStoredReplayData', data: replayID}).then(replayData => {
 			_editor.setMode('view');
 			_editor.setText(JSON.stringify(replayData));
@@ -253,7 +257,6 @@ function a(){
 						option.dataset.name = [undefined, ''].includes(storedReplay.name) ? option.dataset.defaultName : storedReplay.name;
 						option.dataset.arena = groupedReplay.name;
 						option.innerHTML = option.dataset.arena+' '+option.dataset.name;
-						option.value = JSON.stringify(replayData);
 						if(_previousOption){
 							option.selected = _previousOption.dataset.databaseId === option.dataset.databaseId;
 						}
@@ -270,8 +273,19 @@ function a(){
 		_element_control.classList.remove('hidden');
 	}
 	function exportReplay(option){
-		fetch('/Replay/ReplayExportTemplate.html').then(response => response.text()).then(html => {
-			html = html.replace(/\/\*DATA\/\*\/.*\/\*\/DATA\*\//, JSON.stringify({name: option.dataset.name, value: JSON.parse(option.value)}));
+		let html;
+		let replayData;
+
+		let promiseData = IndexedDBOperation.do({operation: 'getStoredReplayData', data: option.dataset.databaseId}).then(data => {
+			replayData = JSON.parse(JSON.stringify(data));
+			if(!replayData.header.meta.exported){
+				replayData.header.meta.exported = [];
+			}
+			replayData.header.meta.exported.push(Date.now());
+		});
+		let promiseExportTemplate = fetch('/Replay/ReplayExportTemplate.html').then(response => response.text()).then(text => html = text);
+		Promise.allSettled([promiseData, promiseExportTemplate]).then(()=>{
+			html = html.replace(/\/\*DATA\/\*\/.*\/\*\/DATA\*\//, JSON.stringify({name: option.dataset.name, value: replayData}));
 			var element = document.createElement('a');
 			element.setAttribute('href', 'data:text/plain;charset=utf-8,'+encodeURIComponent(html));
 			element.setAttribute('download', option.dataset.name+'.AI-Tournaments-Replay.html');
@@ -279,7 +293,7 @@ function a(){
 			document.body.appendChild(element);
 			element.click();
 			document.body.removeChild(element);
-		});
+		})
 	}
 	document.getElementById('load-previous-replay').addEventListener('click', ()=>{
 		refreshStoredReplays();
@@ -290,12 +304,14 @@ function a(){
 		closeReplayController();
 		let option = _element_previousReplayOptions.selectedOptions[0];
 		_previousOption = option;
-		_editor.setMode('view');
-		_editor.setText(option.value);
-		while(0 < _element_previousReplayOptions.childElementCount){
-			_element_previousReplayOptions.removeChild(_element_previousReplayOptions.firstChild);
-		}
-		onChange();
+		IndexedDBOperation.do({operation: 'getStoredReplayData', data: option.dataset.databaseId}).then(replayData => {
+			_editor.setMode('view');
+			_editor.setText(replayData);
+			while(0 < _element_previousReplayOptions.childElementCount){
+				_element_previousReplayOptions.removeChild(_element_previousReplayOptions.firstChild);
+			}
+			onChange();
+		});
 	});
 	document.getElementById('load-previous-replay-delete').addEventListener('click', ()=>{
 		let count = [..._element_previousReplayOptions.selectedOptions].length;
@@ -304,7 +320,7 @@ function a(){
 			if(confirm('Are you sure want to remove '+question)){
 				let promises = [];
 				for(let option of [..._element_previousReplayOptions.selectedOptions]){
-					promises.push(IndexedDBOperation.do({operation: 'deleteStoredReplay', data: parseInt(option.dataset.databaseId)}));
+					promises.push(IndexedDBOperation.do({operation: 'deleteStoredReplay', data: option.dataset.databaseId}));
 				}
 			}
 			Promise.allSettled(promises).then(refreshStoredReplays);
@@ -324,7 +340,7 @@ function a(){
 	});
 	_element_previousReplayRenameSave.addEventListener('click', ()=>{
 		let option = _element_previousReplayOptions.selectedOptions[0];
-		IndexedDBOperation.do({operation: 'renameStoredReplay', data: {id: parseInt(option.dataset.databaseId), name: _element_previousReplayRenameInput.value}}).then(()=>{
+		IndexedDBOperation.do({operation: 'renameStoredReplay', data: {id: option.dataset.databaseId, name: _element_previousReplayRenameInput.value}}).then(()=>{
 			refreshStoredReplays();
 			_element_previousReplayRenameClose.click();
 		});
