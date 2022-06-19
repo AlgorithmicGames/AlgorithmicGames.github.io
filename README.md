@@ -6,7 +6,7 @@
 
 AI-Tournaments in an early prototype stage. See the section [Participate](#Participate) if you want to join a arena, then analyze how other have solved the arena until better documentation has been written.
 ## Community
-Join the official [GitHub](https://github.com/AI-Tournaments/AI-Tournaments.github.io/discussions/) or [Discord](https://discord.gg/jhUJNsN) community. Please read and follow the [community guide lines](https://ai-tournaments.github.io/Community/Guidelines/).
+Join the official [GitHub](https://github.com/AI-Tournaments/discussions/) or [Discord](https://discord.gg/jhUJNsN) community. Please read and follow the [community guide lines](https://ai-tournaments.github.io/Community/Guidelines/).
 <br>[![Discord banner2](https://discord.com/api/guilds/765291928454823936/widget.png?style=banner2)](https://discord.gg/jhUJNsN)
 <!-- Keep in sync [END] -->
 
