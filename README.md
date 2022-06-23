@@ -89,6 +89,8 @@ Download code from AI-Tournaments to ...
 - Develop, troubleshooting or train an AI.
 - Writing and recording dev-diary or tutorial.
 - Have your own internal uncommercial tournaments.
+- Scientific research.
+  - Please do tell if something is published! 😃
 - Basically anything that gives something back to the community.
 ### Disallowed examples
 - Removing all links and references to AI-Tournaments.
