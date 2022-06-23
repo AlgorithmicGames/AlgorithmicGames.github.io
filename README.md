@@ -86,13 +86,13 @@ Note that [interfaces](#Interfaces) will not be able or allowed to compete.
 The source code for AI-Tournament's [arena executor](https://github.com/AI-Tournaments/Arena-Manager) and the official arenas are available in order to make it easier to examen the "rules" and come up with optimal strategies. You are basically allowed to do what ever as long as it isn't commercial matches.
 ### Allowed examples
 Download code from AI-Tournaments to ...
-* Develop, troubleshooting or train an AI.
-* Writing and recording dev-diary or tutorial.
-* Have your own internal uncommercial tournaments.
-* Basically anything that gives something back to the community.
+- Develop, troubleshooting or train an AI.
+- Writing and recording dev-diary or tutorial.
+- Have your own internal uncommercial tournaments.
+- Basically anything that gives something back to the community.
 ### Disallowed examples
-* Removing all links and references to AI-Tournaments.
-* Setup a commercial competitor to AI-Tournaments.
+- Removing all links and references to AI-Tournaments.
+- Setup a commercial competitor to AI-Tournaments.
 
 If you have any doubts, you can [request permission here](https://github.com/AI-Tournaments/AI-Tournaments.github.io/issues/new?title=%5Bpermission-request%5D%20_Short_description_&body=Am%20I%20allowed%20to...%20?).
 <!-- Keep in sync [END] -->
