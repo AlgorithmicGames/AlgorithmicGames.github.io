@@ -2,7 +2,7 @@
 <!-- https://github.com/AI-Tournaments/.github/blob/main/profile/README.md -->
 <!-- https://github.com/AI-Tournaments/AI-Tournaments.github.io/blob/main/README.md -->
 # AI-Tournaments
-[AI-Tournaments](https://ai-tournaments.github.io/) is about match making between algorithms. Users can make their own participates to compete in any of the existing arenas, or make their own custom arena and challenge other users to join. <!-- Keep in sync with social platforms: LinkedIn -->
+[AI-Tournaments](https://ai-tournaments.github.io/) is a platform for match making between algorithms. Users can make their own participates to compete in any of the existing arenas, or make their own custom arena and challenge other users to join. <!-- Keep in sync with social platforms: LinkedIn -->
 
 AI-Tournaments in an early prototype stage. See the section [Participate](#Participate) if you want to join a arena, then analyze how other have solved the arena until better documentation has been written.
 ## Community
