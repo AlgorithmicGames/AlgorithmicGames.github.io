@@ -286,7 +286,7 @@ function a(){
 		let promiseExportTemplate = fetch('/Replay/ReplayExportTemplate.html').then(response => response.text()).then(text => html = text);
 		Promise.allSettled([promiseData, promiseExportTemplate]).then(()=>{
 			html = html.replace(/\/\*DATA\/\*\/.*\/\*\/DATA\*\//, JSON.stringify({name: option.dataset.name, value: replayData}));
-			var element = document.createElement('a');
+			let element = document.createElement('a');
 			element.setAttribute('href', 'data:text/plain;charset=utf-8,'+encodeURIComponent(html));
 			element.setAttribute('download', option.dataset.name+'.AI-Tournaments-Replay.html');
 			element.style.display = 'none';
