@@ -2,5 +2,5 @@
 <script>
 	'use strict'
 	localStorage.setItem('origin', new URLSearchParams(window.location.search).get('origin'));
-	window.location.replace('https://github.com/login/oauth/authorize?scope=user:email&client_id='+GitHubApi.getClientId());
+	window.location.replace('https://github.com/login/oauth/authorize?client_id='+GitHubApi.getClientId());
 </script>
