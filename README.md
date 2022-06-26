@@ -12,6 +12,12 @@ Join the official [GitHub](https://github.com/orgs/AI-Tournaments/discussions/) 
 
 ## Participate
 To participate in a Arena you need to [create a public GitHub repository](https://github.com/AI-Tournaments/Participant-Template) and apply three topics: `AI-Tournaments`, `AI-Tournaments-Participant` and the full repository name of the arena (`ExampleAuthor--ExampleArena`). The repository also has to have a file in root called `participant.js`, this is the file that will be called to the arena. The repository's name will represent the participants name, except if it starts with `AI-Tournaments-Participant-` then that part is omitted.
+### Private repositories
+Currently not supported.
+<!--
+Participating in with private repositories is only available to monthly [sponsors](https://github.com/sponsors/ChrisAcrobat) and selected members only due to the extra backend cost. Give [AI-Tournaments-Servant](https://github.com/AI-Tournaments-Servant) read access to your repository to unlock the feature.<br>
+Note that you can always use any participant source in the [Develop environment](#develop-environment) without sponsorship.
+-->
 ### Develop environment
 <i>For both developing arenas and participants.</i><br>
 In [Local development setups](https://ai-tournaments.github.io/Dev/) you can add the URLs to arena (`arena.js` along with the arenas replay page) and participants to test with before publishing them in GitHub.
