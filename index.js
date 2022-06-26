@@ -28,7 +28,7 @@ function a(){
 	}
 	checkGitHubStatus();
 	frameLoop();
-	loadTheNews();
+	loadAnnouncements();
 	loadArenas();
 	window.onhashchange = ()=>{
 		while(1 < window.location.hash.length && window.location.hash[1] === '#'){
@@ -154,8 +154,8 @@ function a(){
 		// Schedule next update.
 		window.requestAnimationFrame(frameLoop);
 	}
-	function loadTheNews(amount=5){
-		let newsContainer = document.getElementById('news-dropdown');
+	function loadAnnouncements(amount=5){
+		let announcementsContainer = document.getElementById('announcements-dropdown');
 		GitHubApi.fetch('repos/AI-Tournaments/AI-Tournaments.github.io/releases').then(response => response.json()).then(releases => {
 			releases.slice(0,amount).forEach(release => {
 				let item = document.createElement('a');
@@ -168,13 +168,13 @@ function a(){
 				time.datetime = release.published_at;
 				time.innerHTML = release.published_at.substring(0,10);
 				item.appendChild(time);
-				newsContainer.appendChild(item);
+				announcementsContainer.appendChild(item);
 			});
 			let item = document.createElement('a');
-			item.href = newsContainer.parentElement.getElementsByTagName('a')[0].href;
+			item.href = announcementsContainer.parentElement.getElementsByTagName('a')[0].href;
 			item.target = '_blank';
 			item.innerHTML = '. . .';
-			newsContainer.appendChild(item);
+			announcementsContainer.appendChild(item);
 		});
 	}
 	function loadArenas(amount=undefined){
