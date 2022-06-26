@@ -97,7 +97,8 @@ Download code from AI-Tournaments to ...
 - Have your own internal uncommercial tournaments.
 - Scientific research.
   - Please do tell if something is published! 😃
-- Basically anything that gives something back to the community.
+
+Basically anything that gives something back to the community.
 ### Disallowed examples
 - Removing all links and references to AI-Tournaments.
 - Setup a commercial competitor to AI-Tournaments.
