@@ -258,9 +258,12 @@ function a(){
 	}
 	function openWindow(header='', message='', center=false, maxWidth, displayOnce=false){
 		let isIframe = message.constructor.name === 'HTMLIFrameElement';
-		let combinedMessage = 'Window message - '+header+'\n'+(isIframe ? isIframe.srcdoc : message);
-		let display = localStorage.getItem(combinedMessage) === null;
-		if(display){
+		let combinedMessage = header+'\n'+(isIframe ? isIframe.srcdoc : message);
+		let sessionStorage = GitHubApi.getSessionStorage();
+		if(!sessionStorage.windowMessages){
+			sessionStorage.windowMessages = {};
+		}
+		if(!sessionStorage.windowMessages[combinedMessage]){
 			let windowWrapper = document.createElement('div');
 			_content.appendChild(windowWrapper);
 			if(maxWidth !== undefined){
@@ -272,9 +275,14 @@ function a(){
 			windowWrapper.appendChild(messageWrapper);
 			let cross = document.createElement('pre');
 			cross.classList.add('cross-close');
-			cross.onclick = () => {
+			cross.onclick = ()=>{
 				if(displayOnce){
-					localStorage.setItem(combinedMessage, new Date().toISOString());
+					let sessionStorage = GitHubApi.getSessionStorage();
+					if(!sessionStorage.windowMessages){
+						sessionStorage.windowMessages = {};
+					}
+					sessionStorage.windowMessages[combinedMessage] = new Date().toISOString();
+					GitHubApi.setSessionStorage(sessionStorage);
 				}
 				windowWrapper.parentNode.removeChild(windowWrapper);
 			};
