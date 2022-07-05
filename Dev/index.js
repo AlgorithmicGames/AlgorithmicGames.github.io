@@ -2,6 +2,10 @@
 function a(){
 	let _editor;
 	(()=>{
+		let acceptedDev;
+		if(GitHubApi.getSessionStorage().acceptedDev){
+			acceptedDev = true;
+		}
 		let defaultSetup = {
 			active: false,
 			comment: '',
@@ -84,8 +88,25 @@ function a(){
 									}
 								}else{
 									let url = participant.url;
-									if(typeof url === 'string' && url.length){
-										url = url.substring('!?'.includes(url[0]) ? 1 : 0);
+									if(typeof url === 'string'){
+										if(url && (url[0] === '?' || url[0] === '!')){
+											if(acceptedDev === undefined){
+												let session = GitHubApi.getSessionStorage();
+												acceptedDev = 'i accept' === (prompt('By having exclamation (!) and question (?) marks first in the URL you side steps all security features and you do so at your own risk. Only do this to URLs for code that you trust.\n\nWrite "I accept" to allow unsandboxed sources.')??'').toLowerCase();
+												session.acceptedDev = acceptedDev;
+												GitHubApi.setSessionStorage(session);
+											}
+											if(!acceptedDev){
+												errors.push({
+													path: [index_0, 'participants', index_1, 'url'],
+													message: 'You have not allowed unsandboxed sources. Remove preceding special characters from the URL. All sources are sandboxed by default for security reasons.'
+												});
+											}
+											url = url.substring(1);
+										}
+										if(url && url[0] === '?'){
+											url = url.substring(1);
+										}
 									}
 									if(!isUrl(url)){
 										errors.push({
