@@ -160,7 +160,7 @@ function a(){
 	if(!isNaN(replayID)){
 		IndexedDBOperation.do({operation: 'getStoredReplayData', data: replayID}).then(replayData => {
 			_editor.setMode('view');
-			_editor.setText(JSON.stringify(replayData));
+			_editor.set(replayData);
 			_autoStart = true;
 			onChange();
 		});
@@ -181,10 +181,12 @@ function a(){
 	_element_previousReplayOptions.addEventListener('click', ()=>document.activeElement.blur());
 	_element_loadPreviousReplayRename.addEventListener('click', ()=>{
 		let option = _element_previousReplayOptions.selectedOptions[0];
+		if(option){
 		_element_previousReplayRenameInput.value = option.dataset.name === option.dataset.defaultName ? '' : option.dataset.name;
 		_element_previousReplayRenameInput.placeholder = option.dataset.defaultName;
 		_element_previousReplaysController.classList.add('hidden');
 		_element_previousReplayRename.classList.remove('hidden');
+		}
 	});
 	_element_previousReplayRenameClose.addEventListener('click', ()=>{
 		_element_previousReplayRename.classList.add('hidden');
@@ -250,8 +252,6 @@ function a(){
 				optgroup.label = groupedReplay.name;
 				groupedReplay.list.forEach(storedReplay => {
 					let option = document.createElement('option');
-					IndexedDBOperation.do({operation: 'getStoredReplayData', data: storedReplay.id}).then(replayData => {
-						option.dataset.header = JSON.stringify(replayData.header);
 						option.dataset.databaseId = storedReplay.id;
 						option.dataset.defaultName = storedReplay.defaultName;
 						option.dataset.name = [undefined, ''].includes(storedReplay.name) ? option.dataset.defaultName : storedReplay.name;
@@ -260,7 +260,6 @@ function a(){
 						if(_previousOption){
 							option.selected = _previousOption.dataset.databaseId === option.dataset.databaseId;
 						}
-					});
 					optgroup.appendChild(option);
 				});
 				_element_previousReplayOptions.appendChild(optgroup);
@@ -273,9 +272,11 @@ function a(){
 		_element_control.classList.remove('hidden');
 	}
 	function exportReplay(option){
+		if(!option){
+			return;
+		}
 		let html;
 		let replayData;
-
 		let promiseData = IndexedDBOperation.do({operation: 'getStoredReplayData', data: option.dataset.databaseId}).then(data => {
 			replayData = JSON.parse(JSON.stringify(data));
 			if(!replayData.header.meta.exported){
@@ -293,7 +294,7 @@ function a(){
 			document.body.appendChild(element);
 			element.click();
 			document.body.removeChild(element);
-		})
+		});
 	}
 	document.getElementById('load-previous-replay').addEventListener('click', ()=>{
 		refreshStoredReplays();
@@ -301,17 +302,19 @@ function a(){
 		_element_previousReplayContainer.classList.remove('hidden');
 	});
 	document.getElementById('load-previous-replay-confirm').addEventListener('click', () => {
-		closeReplayController();
 		let option = _element_previousReplayOptions.selectedOptions[0];
+		if(option){
+			closeReplayController();
 		_previousOption = option;
 		IndexedDBOperation.do({operation: 'getStoredReplayData', data: option.dataset.databaseId}).then(replayData => {
 			_editor.setMode('view');
-			_editor.setText(replayData);
+				_editor.set(replayData);
 			while(0 < _element_previousReplayOptions.childElementCount){
 				_element_previousReplayOptions.removeChild(_element_previousReplayOptions.firstChild);
 			}
 			onChange();
 		});
+		}
 	});
 	document.getElementById('load-previous-replay-delete').addEventListener('click', ()=>{
 		let count = [..._element_previousReplayOptions.selectedOptions].length;
@@ -340,10 +343,12 @@ function a(){
 	});
 	_element_previousReplayRenameSave.addEventListener('click', ()=>{
 		let option = _element_previousReplayOptions.selectedOptions[0];
+		if(option){
 		IndexedDBOperation.do({operation: 'renameStoredReplay', data: {id: option.dataset.databaseId, name: _element_previousReplayRenameInput.value}}).then(()=>{
 			refreshStoredReplays();
 			_element_previousReplayRenameClose.click();
 		});
+		}
 	});
 	window.onmessage = messageEvent => {
 		// NOTE: messageEvent can come from off site scripts.
