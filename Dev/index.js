@@ -92,7 +92,7 @@ function a(){
 										if(url && (url[0] === '?' || url[0] === '!')){
 											if(acceptedDev === undefined){
 												let session = GitHubApi.getSessionStorage();
-												acceptedDev = 'i accept' === (prompt('By having exclamation (!) and question (?) marks first in the URL you side steps all security features and you do so at your own risk. Only do this to URLs for code that you trust.\n\nWrite "I accept" to allow unsandboxed sources.')??'').toLowerCase();
+												acceptedDev = 'i accept unsandboxed sources' === (prompt('By having exclamation (!) and question (?) marks first in the URL you side steps all security features and you do so at your own risk. Only do this to URLs for code that you trust.\n\nWrite "I accept unsandboxed sources" to allow unsandboxed sources.')??'').toLowerCase();
 												session.acceptedDev = acceptedDev;
 												GitHubApi.setSessionStorage(session);
 											}
