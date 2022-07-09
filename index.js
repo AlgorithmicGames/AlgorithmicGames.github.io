@@ -386,18 +386,6 @@ function a(){
 		}
 		return chars;
 	}
-	function strip(html=''){
-		let output;
-		let tempString;
-		do{
-			tempString = output;
-			let element = document.createElement('div');
-			element.innerHTML = html;
-			output = element.textContent || element.innerText || '';
-		}
-		while(tempString !== output && output !== '');
-		return output;
-	}
 	function checkGitHubStatus(){
 		fetch('https://ai-tournaments.github.io/').then(r=>r.text()).then().catch(error => {
 			postGitHubProblem('GitHub Pages');
