@@ -128,8 +128,7 @@ let callbacks = {
 		});
 	},
 	renameStoredReplay: async(data)=>{
-		data.id = parseInt(data.id);
-		if(isNaN(id)){
+		if(isNaN(data.id)){
 			throw new Error('Parameter `id` is not a number');
 		}
 		await _dexieReplays.records.update(data.id, {name: data.name});
