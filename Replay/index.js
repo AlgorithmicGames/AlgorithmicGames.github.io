@@ -449,7 +449,7 @@ function a(){
 					let url = option.value;
 					let session = GitHubApi.getSessionStorage();
 					if(!url.startsWith('https://ai-tournaments.github.io/') && !session.externalReplaysAccepted){
-						session.externalReplaysAccepted = 'i accept external replay viwers' === (prompt('External replays are by default blocked for security reasons. do so at your own risk. Only do this to URLs for code that you trust.\n\nWrite "I accept external replays" to allow external replay viwers.')??'').toLowerCase();
+						session.externalReplaysAccepted = 'i accept external replay viewers' === (prompt('External replays are by default blocked for security reasons. do so at your own risk. Only do this to URLs for code that you trust.\n\nWrite "I accept external replays" to allow external replay viewers.')??'').toLowerCase();
 						GitHubApi.setSessionStorage(session);
 					}
 					if(url.startsWith('https://ai-tournaments.github.io/') || session.externalReplaysAccepted){
