@@ -160,7 +160,7 @@ function a(){
 	if(!isNaN(replayID)){
 		IndexedDBOperation.do({operation: 'getStoredReplayData', data: replayID}).then(replayData => {
 			_editor.setMode('view');
-			_editor.setText(JSON.stringify(replayData));
+			_editor.set(replayData);
 			_autoStart = true;
 			onChange();
 		});
@@ -181,10 +181,12 @@ function a(){
 	_element_previousReplayOptions.addEventListener('click', ()=>document.activeElement.blur());
 	_element_loadPreviousReplayRename.addEventListener('click', ()=>{
 		let option = _element_previousReplayOptions.selectedOptions[0];
-		_element_previousReplayRenameInput.value = option.dataset.name === option.dataset.defaultName ? '' : option.dataset.name;
-		_element_previousReplayRenameInput.placeholder = option.dataset.defaultName;
-		_element_previousReplaysController.classList.add('hidden');
-		_element_previousReplayRename.classList.remove('hidden');
+		if(option){
+			_element_previousReplayRenameInput.value = option.dataset.name === option.dataset.defaultName ? '' : option.dataset.name;
+			_element_previousReplayRenameInput.placeholder = option.dataset.defaultName;
+			_element_previousReplaysController.classList.add('hidden');
+			_element_previousReplayRename.classList.remove('hidden');
+		}
 	});
 	_element_previousReplayRenameClose.addEventListener('click', ()=>{
 		_element_previousReplayRename.classList.add('hidden');
@@ -250,17 +252,14 @@ function a(){
 				optgroup.label = groupedReplay.name;
 				groupedReplay.list.forEach(storedReplay => {
 					let option = document.createElement('option');
-					IndexedDBOperation.do({operation: 'getStoredReplayData', data: storedReplay.id}).then(replayData => {
-						option.dataset.header = JSON.stringify(replayData.header);
-						option.dataset.databaseId = storedReplay.id;
-						option.dataset.defaultName = storedReplay.defaultName;
-						option.dataset.name = [undefined, ''].includes(storedReplay.name) ? option.dataset.defaultName : storedReplay.name;
-						option.dataset.arena = groupedReplay.name;
-						option.innerHTML = option.dataset.arena+' '+option.dataset.name;
-						if(_previousOption){
-							option.selected = _previousOption.dataset.databaseId === option.dataset.databaseId;
-						}
-					});
+					option.dataset.databaseId = storedReplay.id;
+					option.dataset.defaultName = storedReplay.defaultName;
+					option.dataset.name = [undefined, ''].includes(storedReplay.name) ? option.dataset.defaultName : storedReplay.name;
+					option.dataset.arena = groupedReplay.name;
+					option.innerHTML = option.dataset.arena+' '+option.dataset.name;
+					if(_previousOption){
+						option.selected = _previousOption.dataset.databaseId === option.dataset.databaseId;
+					}
 					optgroup.appendChild(option);
 				});
 				_element_previousReplayOptions.appendChild(optgroup);
@@ -273,9 +272,11 @@ function a(){
 		_element_control.classList.remove('hidden');
 	}
 	function exportReplay(option){
+		if(!option){
+			return;
+		}
 		let html;
 		let replayData;
-
 		let promiseData = IndexedDBOperation.do({operation: 'getStoredReplayData', data: option.dataset.databaseId}).then(data => {
 			replayData = JSON.parse(JSON.stringify(data));
 			if(!replayData.header.meta.exported){
@@ -293,7 +294,7 @@ function a(){
 			document.body.appendChild(element);
 			element.click();
 			document.body.removeChild(element);
-		})
+		});
 	}
 	document.getElementById('load-previous-replay').addEventListener('click', ()=>{
 		refreshStoredReplays();
@@ -301,17 +302,19 @@ function a(){
 		_element_previousReplayContainer.classList.remove('hidden');
 	});
 	document.getElementById('load-previous-replay-confirm').addEventListener('click', () => {
-		closeReplayController();
 		let option = _element_previousReplayOptions.selectedOptions[0];
-		_previousOption = option;
-		IndexedDBOperation.do({operation: 'getStoredReplayData', data: option.dataset.databaseId}).then(replayData => {
-			_editor.setMode('view');
-			_editor.setText(replayData);
-			while(0 < _element_previousReplayOptions.childElementCount){
-				_element_previousReplayOptions.removeChild(_element_previousReplayOptions.firstChild);
-			}
-			onChange();
-		});
+		if(option){
+			closeReplayController();
+			_previousOption = option;
+			IndexedDBOperation.do({operation: 'getStoredReplayData', data: option.dataset.databaseId}).then(replayData => {
+				_editor.setMode('view');
+				_editor.set(replayData);
+				while(0 < _element_previousReplayOptions.childElementCount){
+					_element_previousReplayOptions.removeChild(_element_previousReplayOptions.firstChild);
+				}
+				onChange();
+			});
+		}
 	});
 	document.getElementById('load-previous-replay-delete').addEventListener('click', ()=>{
 		let count = [..._element_previousReplayOptions.selectedOptions].length;
@@ -340,10 +343,12 @@ function a(){
 	});
 	_element_previousReplayRenameSave.addEventListener('click', ()=>{
 		let option = _element_previousReplayOptions.selectedOptions[0];
-		IndexedDBOperation.do({operation: 'renameStoredReplay', data: {id: option.dataset.databaseId, name: _element_previousReplayRenameInput.value}}).then(()=>{
-			refreshStoredReplays();
-			_element_previousReplayRenameClose.click();
-		});
+		if(option){
+			IndexedDBOperation.do({operation: 'renameStoredReplay', data: {id: option.dataset.databaseId, name: _element_previousReplayRenameInput.value}}).then(()=>{
+				refreshStoredReplays();
+				_element_previousReplayRenameClose.click();
+			});
+		}
 	});
 	window.onmessage = messageEvent => {
 		// NOTE: messageEvent can come from off site scripts.
@@ -410,28 +415,57 @@ function a(){
 					option.innerHTML = repo.full_name.replace(/.*\/|-Arena/g, '') + ' ' + cssStar + repo.stars;
 					option.dataset.stars = repo.stars;
 					option.value = 'https://'+repo.owner.login+'.github.io/'+repo.name;
-					_element_viewOptions.appendChild(option);
+					if(option.value !== _replayData.header.defaultReplay){
+						_element_viewOptions.appendChild(option);
+					}
 				}
 			});
+
 			let options = [..._element_viewOptions.options];
 			options.sort(function(a, b){
+				if(b.id === 'default-option'){return 1;}
+
+				let aOfficial = a.value.startsWith('https://ai-tournaments.github.io/');
+				let bOfficial = a.value.startsWith('https://ai-tournaments.github.io/');
+				if(aOfficial ? !bOfficial : bOfficial){return 1;}
+
 				if(parseFloat(a.dataset.stars) < parseFloat(b.dataset.stars)){return -1;}
 				if(parseFloat(b.dataset.stars) < parseFloat(a.dataset.stars)){return 1;}
-				return 0;
+
+				return a.innerHTML.toLowerCase().localeCompare(b.innerHTML.toLowerCase());
 			});
-			_element_viewOptions.classList.remove('hidden');
-			// Load replay.
-			for(const element of _element_control.children){
-				if(!element.classList.contains('sticky')){
-					element.classList.add('hidden');
+			for(let option of options){
+				_element_viewOptions.add(option);
+			}
+			_element_viewOptions.onchange = event => {
+				let option = event.target;
+				if(option){
+					// Load replay.
+					for(const element of _element_control.children){
+						if(!element.classList.contains('sticky')){
+							element.classList.add('hidden');
+						}
+					}
+					let url = option.value;
+					let session = GitHubApi.getSessionStorage();
+					if(!url.startsWith('https://ai-tournaments.github.io/') && !session.externalReplaysAccepted){
+						session.externalReplaysAccepted = 'i accept external replay viewers' === (prompt('External replays are by default blocked for security reasons. do so at your own risk. Only do this to URLs for code that you trust.\n\nWrite "I accept external replays" to allow external replay viewers.')??'').toLowerCase();
+						GitHubApi.setSessionStorage(session);
+					}
+					if(url.startsWith('https://ai-tournaments.github.io/') || session.externalReplaysAccepted){
+						_element_iframe.dataset.arenaResult = JSON.stringify(_replayData.body);
+						_element_iframe.src = url;
+						document.getElementById('open-replay-in-new-tab').addEventListener('click', ()=>{
+							_element_iframe.dataset.wrapped = 'false';
+							window.open(url);
+						});
+					}
 				}
 			}
-			_element_iframe.dataset.arenaResult = JSON.stringify(_replayData.body);
-			_element_iframe.src = _element_viewOptions.selectedOptions[0].value;
-			document.getElementById('open-replay-in-new-tab').addEventListener('click', ()=>{
-				window.open(_element_viewOptions.selectedOptions[0].value);
-				_element_iframe.dataset.wrapped = 'false';
-			});
+			if(1 < options.length){
+				_element_viewOptions.classList.remove('hidden');
+			}
+			_element_viewOptions.onchange({target: options[0]});
 		});
 	};
 	let parent = window.opener ?? window.parent;

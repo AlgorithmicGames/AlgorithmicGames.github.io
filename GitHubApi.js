@@ -3,19 +3,34 @@ class GitHubApi{
 	static #ARENA_VERSION = 1;
 	static #CLIENT_ID = '19698a5006b153e8a671';
 	static #STARTED = sessionStorage.getItem('PageLoaded');
-	static #STORAGE_TOKEN_KEY = 'GitHub OAuth-Token';
+	static #SESSION_KEY = 'GitHub session';
 	static #waitUntil = timestamp => new Promise(resolve => setTimeout(resolve, timestamp-Date.now()));
 	static getClientId(){
 		return GitHubApi.#CLIENT_ID;
 	}
+	static getSession(){
+		let session = localStorage.getItem(GitHubApi.#SESSION_KEY);
+		try{
+			return JSON.parse(session ?? '{}')
+		}catch(error){}
+		return session;
+	}
+	static getSessionStorage(){
+		return GitHubApi.getSession().storage ?? {};
+	}
+	static setSessionStorage(storage){
+		let session = GitHubApi.getSession();
+		session.storage = storage;
+		localStorage.setItem(GitHubApi.#SESSION_KEY, JSON.stringify(session));
+	}
 	static fetch(path='', init={}){
-		let token = localStorage.getItem(GitHubApi.#STORAGE_TOKEN_KEY);
-		if(token !== null && token !== undefined && token[0] !== '!'){
+		let accessToken = GitHubApi.getSession().accessToken;
+		if(accessToken){
 			if(init.headers === undefined){
 				init.headers = {};
 			}
 			if(init.headers.Authorization === undefined){
-				init.headers.Authorization = 'token '+token;
+				init.headers.Authorization = 'token '+accessToken;
 			}
 		}
 		return fetch(new Request('https://api.github.com/'+path, init)).then(response => {
@@ -169,14 +184,13 @@ class GitHubApi{
 		if(0 < location.href.indexOf('?oAuthCode=')){
 			oAuthCode = location.href.substr(location.href.indexOf('=')+1)
 		}
-		let token = localStorage.getItem(GitHubApi.#STORAGE_TOKEN_KEY);
-		if(token !== null && token[0] === '!'){
+		if(!GitHubApi.getSession().accessToken){
 			GitHubApi.logout();
 		}
 		if(oAuthCode !== null){
-			localStorage.setItem(GitHubApi.#STORAGE_TOKEN_KEY, '!'+oAuthCode);
+			localStorage.setItem(GitHubApi.#SESSION_KEY, '!'+oAuthCode);
 			Backend.call('login', {oAuthCode: oAuthCode, client_id: GitHubApi.#CLIENT_ID}).then(response => response.text()).then(accessToken => {
-				localStorage.setItem(GitHubApi.#STORAGE_TOKEN_KEY, accessToken);
+				localStorage.setItem(GitHubApi.#SESSION_KEY, JSON.stringify({accessToken}));
 				location.replace(location.protocol+'//'+location.host+location.pathname);
 			}).catch(error => {
 				console.error(error);
@@ -185,10 +199,9 @@ class GitHubApi{
 		}
 	}
 	static isLoggedIn(){
-		let token = localStorage.getItem(GitHubApi.#STORAGE_TOKEN_KEY);
-		return token !== null && token[0] !== '!';
+		return !!GitHubApi.getSession().accessToken;
 	}
 	static logout(){
-		localStorage.removeItem(GitHubApi.#STORAGE_TOKEN_KEY);
+		localStorage.removeItem(GitHubApi.#SESSION_KEY);
 	}
 }
