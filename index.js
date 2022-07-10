@@ -207,7 +207,7 @@ function a(){
 	function openScreen(src=''){
 		window.location.hash = src;
 		let origin = window.location.href.replace(/(\?.*?(?=#))|(\?.*?(?=$))/gm, '');
-		let root = origin.substr(0, origin.indexOf('#'));
+		let root = origin.substring(0, origin.indexOf('#'));
 		if(!root){
 			root = origin;
 		}
