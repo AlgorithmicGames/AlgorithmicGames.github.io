@@ -37,6 +37,8 @@ The development environment also includes some extra dials and features to help 
 Participant's URLs can be written in different forms. An _ordinary_ URL is interpreted in the default sealed sandbox, but URLs that starts with a question mark (`?`) is executed as plain javascript and can be debugged by the javascript [`debugger`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger) command.
 #### Interface
 If you need more freedom for debugging or would like to train a neural network you should investigate using an interface, which's URLs starts with a exclamation mark (`!`). The main difference between an [Interface](https://github.com/AI-Tournaments/Interface-Template) and a [Participant](https://github.com/AI-Tournaments/Participant-Template) is that interfaces opens up a separate web page and sidestep all participant's restrictions. The main use case for interfaces is to get better insight during a running match, for example by allowing Human vs Participant and even Human vs Human matches.
+#### Break before first message
+By appending a question mark (`?`) after the first special character (`??` or `!?`) the arena will insert a break point just before the first message is posted to the participant or interface so that JavaScript debuggers can be used to step inside along with the first message.
 
 ## File header
 The `arena.js` and `participant.js` optional file header has to be valid Json otherwise it is omitted. The header can be placed anywhere in the file, but at the top is recommended as a standardization.
