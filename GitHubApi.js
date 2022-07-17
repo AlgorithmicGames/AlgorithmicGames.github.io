@@ -23,7 +23,7 @@ class GitHubApi{
 		session.storage = storage;
 		localStorage.setItem(GitHubApi.#SESSION_KEY, JSON.stringify(session));
 	}
-	static fetch(path='', init={}){
+	static async fetch(path='', init={}){
 		let accessToken = GitHubApi.getSession().accessToken;
 		if(accessToken){
 			if(init.headers === undefined){
@@ -33,7 +33,7 @@ class GitHubApi{
 				init.headers.Authorization = 'token '+accessToken;
 			}
 		}
-		return fetch(new Request('https://api.github.com/'+path, init)).then(response => {
+		return await fetch(new Request('https://api.github.com/'+path, init)).then(response => {
 			if(localStorage.getItem('GitHub API debug') !== null){
 				let a = path.split('/')[0];
 				let reset = localStorage.getItem('_GitHub '+a+' x-ratelimit-reset');
