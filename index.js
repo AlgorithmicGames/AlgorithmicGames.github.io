@@ -21,10 +21,24 @@ function a(){
 	window.onresize();
 	GitHubApi.login();
 	if(GitHubApi.isLoggedIn()){
-		GitHubApi.fetch('user').then(response => response.json()).then(user => {
-			[...document.getElementsByClassName('local-username')].forEach(element => element.innerHTML = user.login);
-			[...document.getElementsByClassName('local-profile-image')].forEach(img => img.src = user.avatar_url);
-		})
+		updateUserDisplay();
+		GitHubApi.fetch('user').then(response => response.json()).then(async user => {
+			let sessionStorage = GitHubApi.getSessionStorage();
+			sessionStorage.username = user.login;
+			sessionStorage.avatar_url = user.avatar_url;
+			GitHubApi.setSessionStorage(sessionStorage);
+			updateUserDisplay();
+		});
+		GitHubApi.fetch('user/following').then(response => response.json()).then(following => {
+			let sessionStorage = GitHubApi.getSessionStorage();
+			sessionStorage.following = following.map(user => user.login);
+			GitHubApi.setSessionStorage(sessionStorage);
+		});
+		GitHubApi.fetch('user/followers').then(response => response.json()).then(followers => {
+			let sessionStorage = GitHubApi.getSessionStorage();
+			sessionStorage.followers = followers.map(user => user.login);
+			GitHubApi.setSessionStorage(sessionStorage);
+		});
 	}
 	checkGitHubStatus();
 	frameLoop();
@@ -88,6 +102,15 @@ function a(){
 			case 'arena-changed':
 				window.location.hash = 'Arena/#'+messageEvent.data.value;
 				break;
+		}
+	}
+	function updateUserDisplay(){
+		let sessionStorage = GitHubApi.getSessionStorage();
+		if(sessionStorage.username){
+			[...document.getElementsByClassName('local-username')].forEach(element => element.innerHTML = sessionStorage.username);
+		}
+		if(sessionStorage.avatar_url){
+			[...document.getElementsByClassName('local-profile-image')].forEach(img => img.src = sessionStorage.avatar_url);
 		}
 	}
 	function frameLoop(){
