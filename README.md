@@ -96,7 +96,7 @@ The source code for AI-Tournament's [arena executor](https://github.com/AI-Tourn
 Download code from AI-Tournaments to ...
 - Develop, troubleshooting or train an AI.
 - Writing and recording dev-diary or tutorial.
-- Have your own internal uncommercial tournaments.
+- Have your own internal non-profit tournaments.
 - Scientific research.
   - Please do tell if something is published! 😃
 
@@ -104,6 +104,7 @@ Basically anything that gives something back to the community.
 ### Disallowed examples
 - Removing all links and references to AI-Tournaments.
 - Setup a commercial competitor to AI-Tournaments.
+- Private tournaments for benchmarking user performance.<!-- Contact [E-MAIL ADDRESS PENDING] for solution offering. -->
 
-If you have any doubts, you can [request permission here](https://github.com/AI-Tournaments/AI-Tournaments.github.io/issues/new?title=%5Bpermission-request%5D%20_Short_description_&body=Am%20I%20allowed%20to...%20?).
+If you have any doubts, you can [request permission here](https://github.com/AI-Tournaments/AI-Tournaments.github.io/issues/new?title=%5Bpermission-request%5D%20_Short_description_&body=Am%20I%20allowed%20to...%20?)<!-- or contact [E-MAIL ADDRESS PENDING]. -->.
 <!-- Keep in sync [END] -->
