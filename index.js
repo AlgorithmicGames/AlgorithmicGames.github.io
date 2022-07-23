@@ -179,22 +179,36 @@ function a(){
 	}
 	function loadAnnouncements(amount=5){
 		let announcementsContainer = document.getElementById('announcements-dropdown');
-		GitHubApi.fetch('repos/AI-Tournaments/AI-Tournaments.github.io/releases').then(response => response.json()).then(releases => {
-			releases.slice(0,amount).forEach(release => {
+		GitHubApi.fetch('graphql', {method: 'POST', body: {query: `{
+			repository(name: "Community", owner: "AI-Tournaments") {
+				discussions(
+					categoryId: "DIC_kwDOF2FhEs4CQX_F"
+					orderBy: {field: CREATED_AT, direction: DESC}
+					last: ${amount}
+				){
+					nodes {
+						title
+						url
+						createdAt
+					}
+				}
+			}
+		}`}}).then(response => response.json()).then(response => {
+			response.data.repository.discussions.nodes.forEach(discussion => {
 				let item = document.createElement('a');
-				item.href = release.html_url;
+				item.href = discussion.url;
 				item.target = '_blank';
 				let name = document.createElement('div');
-				name.innerHTML = release.name;
+				name.innerHTML = discussion.title;
 				item.appendChild(name);
 				let time = document.createElement('time');
-				time.datetime = release.published_at;
-				time.innerHTML = release.published_at.substring(0,10);
+				time.datetime = discussion.createdAt;
+				time.innerHTML = discussion.createdAt.substring(0,10);
 				item.appendChild(time);
 				announcementsContainer.appendChild(item);
 			});
 			let item = document.createElement('a');
-			item.href = announcementsContainer.parentElement.getElementsByTagName('a')[0].href;
+			item.href = 'https://github.com/AI-Tournaments/Community/discussions/categories/1-announcements';
 			item.target = '_blank';
 			item.innerHTML = '. . .';
 			announcementsContainer.appendChild(item);
