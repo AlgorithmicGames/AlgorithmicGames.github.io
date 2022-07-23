@@ -33,6 +33,9 @@ class GitHubApi{
 				init.headers.Authorization = 'token '+accessToken;
 			}
 		}
+		if(typeof init.body === 'object'){
+			init.body = JSON.stringify(init.body);
+		}
 		return await fetch(new Request('https://api.github.com/'+path, init)).then(response => {
 			if(localStorage.getItem('GitHub API debug') !== null){
 				let a = path.split('/')[0];
