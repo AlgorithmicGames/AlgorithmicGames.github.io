@@ -208,7 +208,7 @@ function a(){
 				announcementsContainer.appendChild(item);
 			});
 			let item = document.createElement('a');
-			item.href = 'https://github.com/AI-Tournaments/Community/discussions/categories/1-announcements';
+			item.href = 'https://github.com/orgs/AI-Tournaments/discussions/categories/1-announcements';
 			item.target = '_blank';
 			item.innerHTML = '. . .';
 			announcementsContainer.appendChild(item);
