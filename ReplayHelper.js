@@ -42,7 +42,7 @@ class ReplayHelper{
 					class Replay{
 						constructor(data){
 							ReplayHelper.#replay = this;
-							ReplayHelper.#replay.arenaResult.teams.forEach(team => {
+							data.arenaResult.teams.forEach(team => {
 								team.color = ReplayHelper.#getTeamColor(team);
 								team.members.forEach(member => member.color = ReplayHelper.#getMemberColor(member));
 							});
