@@ -105,18 +105,8 @@ function a(){
 							type: 'array',
 							items: {
 								type: 'object',
-								required: ['color', 'members'],
+								required: ['members'],
 								properties: {
-									color: {
-										type: 'object',
-										required: ['R', 'G', 'B', 'RGB'],
-										properties: {
-											R: {type: 'number'},
-											G: {type: 'number'},
-											B: {type: 'number'},
-											RGB: {type: 'string'}
-										}
-									},
 									members: {
 										type: 'array',
 										items: {type: 'string'}
