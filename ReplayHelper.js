@@ -42,12 +42,12 @@ class ReplayHelper{
 					class Replay{
 						constructor(data){
 							ReplayHelper.#replay = this;
-							data.arenaResult.teams.forEach(team => {
+							this.arenaResult = new ArenaResult(data.arenaResult);
+							this.wrapped = data.wrapped;
+							this.arenaResult.teams.forEach(team => {
 								team.color = ReplayHelper.#getTeamColor(team);
 								team.members.forEach(member => member.color = ReplayHelper.#getMemberColor(member));
 							});
-							this.arenaResult = new ArenaResult(data.arenaResult);
-							this.wrapped = data.wrapped;
 						}
 					}
 					resolve(new Replay(messageEvent.data));
