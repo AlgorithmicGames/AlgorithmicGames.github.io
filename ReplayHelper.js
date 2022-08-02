@@ -42,6 +42,10 @@ class ReplayHelper{
 					class Replay{
 						constructor(data){
 							ReplayHelper.#replay = this;
+							ReplayHelper.#replay.arenaResult.teams.forEach(team => {
+								team.color = ReplayHelper.#getTeamColor(team);
+								team.members.forEach(member => member.color = ReplayHelper.#getMemberColor(member));
+							});
 							this.arenaResult = new ArenaResult(data.arenaResult);
 							this.wrapped = data.wrapped;
 						}
@@ -90,11 +94,11 @@ class ReplayHelper{
 		returnObject.RGB = '#'+red+green+blue
 		return returnObject;
 	}
-	static getTeamColor(team){
+	static #getTeamColor(team){
 		let teamIndex = ReplayHelper.#replay.arenaResult.teams.findIndex(t=>t===team);
 		return ReplayHelper.#getColor(teamIndex, ReplayHelper.#replay.arenaResult.teams.length);
 	}
-	static getMemberColor(member){
+	static #getMemberColor(member){
 		let teamIndex = ReplayHelper.#replay.arenaResult.teams.findIndex(t => t.members.includes(member));
 		let team = ReplayHelper.#replay.arenaResult.teams[teamIndex].members.sort((a,b)=>a.name.localeCompare(b.name));
 		let teamColorWidth = 1/ReplayHelper.#replay.arenaResult.teams.length;
