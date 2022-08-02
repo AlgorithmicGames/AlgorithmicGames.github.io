@@ -109,7 +109,13 @@ function a(){
 								properties: {
 									members: {
 										type: 'array',
-										items: {type: 'string'}
+										items: {
+											type: 'object',
+											required: ['name'],
+											properties: {
+												name: {type: 'string'}
+											}
+										}
 									}
 								}
 							}
