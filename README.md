@@ -15,7 +15,7 @@ To participate in a Arena you need to [create a public GitHub repository](https:
 ### Private repositories
 Currently not supported.
 <!--
-Participating in with private repositories is only available to monthly [sponsors](https://github.com/sponsors/ChrisAcrobat) and selected members only due to the extra backend cost. Give [AI-Tournaments-Servant](https://github.com/AI-Tournaments-Servant) read access to your repository to unlock the feature.<br>
+Participating in with private repositories is only available to monthly [sponsors](https://github.com/sponsors/ChrisAcrobat) and selected members only due to the extra backend cost. Install [AI-Tournaments participant](https://github.com/apps/ai-tournaments-participant) to your repository to unlock the feature.<br>
 Note that you can always use any participant source in the [Develop environment](#develop-environment) without sponsorship.
 -->
 ### Develop environment
