@@ -18,7 +18,7 @@ Currently not supported.
 <!-- https://github.com/AI-Tournaments/.github/blob/main/profile/README.md -->
 <!-- https://github.com/organizations/AI-Tournaments/settings/apps/ai-tournament-participant -->
 <!--
-Participating in with private repositories is only available to monthly [sponsors](https://github.com/sponsors/ChrisAcrobat) and selected members only due to the extra backend cost. Install [AI-Tournaments participant](https://github.com/apps/ai-tournaments-participant) to your repository to unlock the feature.<br>
+Participating in with private repositories is only available to monthly [sponsors](https://github.com/sponsors/ChrisAcrobat) and selected members only due to the extra backend cost. Install [AI-Tournaments participant](https://github.com/apps/ai-tournament-participant) to your repository to unlock the feature.<br>
 Note that you can always use any participant source in the [Develop environment](#develop-environment) without sponsorship.
 -->
 <!-- Keep in sync [END] -->
