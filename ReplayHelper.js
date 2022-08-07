@@ -79,15 +79,15 @@ class ReplayHelper{
 			G: hue2rgb(_p, _q, hue),
 			B: hue2rgb(_p, _q, hue - 1/3.0)
 		}
-		let red = Math.round(256*returnObject.R).toString(16);
+		let red = Math.round(255*returnObject.R).toString(16);
 		if(red.length === 1){
 			red = '0'+red;
 		}
-		let green = Math.round(256*returnObject.G).toString(16);
+		let green = Math.round(255*returnObject.G).toString(16);
 		if(green.length === 1){
 			green = '0'+green;
 		}
-		let blue = Math.round(256*returnObject.B).toString(16);
+		let blue = Math.round(255*returnObject.B).toString(16);
 		if(blue.length === 1){
 			blue = '0'+blue;
 		}
