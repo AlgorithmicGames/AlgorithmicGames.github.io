@@ -113,7 +113,7 @@ class ReplayHelper{
 	}
 	static #getMemberColor(member){
 		let teamIndex = ReplayHelper.#replay.arenaResult.teams.findIndex(t => t.members.includes(member));
-		let team = ReplayHelper.#replay.arenaResult.teams[teamIndex].members.sort((a,b)=>a.name.localeCompare(b.name));
+		let team = ReplayHelper.#replay.arenaResult.teams[teamIndex].members;
 		let teamColorWidth = 1/ReplayHelper.#replay.arenaResult.teams.length;
 		let teamColorSpace = teamColorWidth * teamIndex;
 		let memberColorWidth;
