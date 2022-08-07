@@ -59,13 +59,10 @@ class ReplayHelper{
 			parent.postMessage({type: 'ReplayHelper-Initiated'}, '*');
 		}
 	}
-	static #getColor(index, total){
-		let hue = ((total ? index/total : index)+.5)%1;
-		let saturation = 0.5;
-		let lightness = 0.5;
+	static #hslToRgb(hue, saturation, lightness){
 		let _q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
 		let _p = 2 * lightness - _q;
-		function hue2rgb(_p, _q, _t){
+		function hueToRGB(_p, _q, _t){
 			if(_t < 0){_t += 1;}
 			if(_t > 1){_t -= 1;}
 			if(_t < 1/6.0){return _p + (_q - _p) * 6 * _t;}
@@ -73,11 +70,22 @@ class ReplayHelper{
 			if(_t < 2/3.0){return _p + (_q - _p) * (2/3.0 - _t) * 6;}
 			return _p;
 		}
+		return {
+			R: hueToRGB(_p, _q, hue + 1/3.0),
+			G: hueToRGB(_p, _q, hue),
+			B: hueToRGB(_p, _q, hue - 1/3.0)
+		};
+	}
+	static #getColor(index, total){
+		let offset = total%1 ? 0.5 : 2/3;
+		let hue = ((total ? index/total : index)+offset)%1;
+		let saturation = 1;
+		let lightness = 0.5;
 		let returnObject = {
-			hue, saturation, lightness,
-			R: hue2rgb(_p, _q, hue + 1/3.0),
-			G: hue2rgb(_p, _q, hue),
-			B: hue2rgb(_p, _q, hue - 1/3.0)
+			hue,
+			saturation,
+			lightness,
+			...ReplayHelper.#hslToRgb(hue, saturation, lightness)
 		}
 		let red = Math.round(255*returnObject.R).toString(16);
 		if(red.length === 1){
