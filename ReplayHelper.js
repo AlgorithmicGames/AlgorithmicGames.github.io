@@ -104,7 +104,12 @@ class ReplayHelper{
 	}
 	static #getTeamColor(team){
 		let teamIndex = ReplayHelper.#replay.arenaResult.teams.findIndex(t=>t===team);
-		return ReplayHelper.#getColor(teamIndex, ReplayHelper.#replay.arenaResult.teams.length);
+		let teams = ReplayHelper.#replay.arenaResult.teams.length;
+		if(teamIndex === 1 && teams === 2){ // Red vs Blue
+			teamIndex = 1;
+			teams = 3;
+		}
+		return ReplayHelper.#getColor(teamIndex, teams);
 	}
 	static #getMemberColor(member){
 		let teamIndex = ReplayHelper.#replay.arenaResult.teams.findIndex(t => t.members.includes(member));
@@ -121,6 +126,9 @@ class ReplayHelper{
 			memberColorWidth = teamColorWidth/(team.length + 1);
 			memberColor = team.findIndex(m => m === member) + 1;
 			offset = -teamColorWidth/2;
+		}
+		if(ReplayHelper.#replay.arenaResult.teams.length === 2 && teamIndex === 1){ // Red vs Blue
+			offset = 3.5/6;
 		}
 		return ReplayHelper.#getColor(teamColorSpace + memberColorWidth*memberColor + offset);
 	}
