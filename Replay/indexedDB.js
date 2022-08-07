@@ -39,7 +39,7 @@ function query(type, message){
 let callbacks = {
 	addReplayToStorage: async(replay)=>{
 		async function store(){
-			let now = Date.now();
+			let now = JSON.parse(JSON.stringify(new Date()));
 			await _dexieReplays.transaction('rw', _dexieReplays.records, _dexieReplays.data, async()=>{
 				_dexieReplays.records.put({
 					stored: now,

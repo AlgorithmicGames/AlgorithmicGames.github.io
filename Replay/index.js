@@ -278,7 +278,7 @@ function a(){
 			if(!replayData.header.meta.exported){
 				replayData.header.meta.exported = [];
 			}
-			replayData.header.meta.exported.push(Date.now());
+			replayData.header.meta.exported.push(JSON.parse(JSON.stringify(new Date())));
 		});
 		let promiseExportTemplate = fetch('/Replay/ReplayExportTemplate.html').then(response => response.text()).then(text => html = text);
 		Promise.allSettled([promiseData, promiseExportTemplate]).then(()=>{
