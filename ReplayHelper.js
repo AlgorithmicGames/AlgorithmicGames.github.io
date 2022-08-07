@@ -59,13 +59,10 @@ class ReplayHelper{
 			parent.postMessage({type: 'ReplayHelper-Initiated'}, '*');
 		}
 	}
-	static #getColor(index, total){
-		let hue = ((total ? index/total : index)+.5)%1;
-		let saturation = 0.5;
-		let lightness = 0.5;
+	static #hslToRgb(hue, saturation, lightness){
 		let _q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
 		let _p = 2 * lightness - _q;
-		function hue2rgb(_p, _q, _t){
+		function hueToRGB(_p, _q, _t){
 			if(_t < 0){_t += 1;}
 			if(_t > 1){_t -= 1;}
 			if(_t < 1/6.0){return _p + (_q - _p) * 6 * _t;}
@@ -73,21 +70,32 @@ class ReplayHelper{
 			if(_t < 2/3.0){return _p + (_q - _p) * (2/3.0 - _t) * 6;}
 			return _p;
 		}
+		return {
+			R: hueToRGB(_p, _q, hue + 1/3.0),
+			G: hueToRGB(_p, _q, hue),
+			B: hueToRGB(_p, _q, hue - 1/3.0)
+		};
+	}
+	static #getColor(index, total){
+		let offset = total%1 ? 0.5 : 2/3;
+		let hue = ((total ? index/total : index)+offset)%1;
+		let saturation = 1;
+		let lightness = 0.5;
 		let returnObject = {
-			hue, saturation, lightness,
-			R: hue2rgb(_p, _q, hue + 1/3.0),
-			G: hue2rgb(_p, _q, hue),
-			B: hue2rgb(_p, _q, hue - 1/3.0)
+			hue,
+			saturation,
+			lightness,
+			...ReplayHelper.#hslToRgb(hue, saturation, lightness)
 		}
-		let red = Math.round(256*returnObject.R).toString(16);
+		let red = Math.round(255*returnObject.R).toString(16);
 		if(red.length === 1){
 			red = '0'+red;
 		}
-		let green = Math.round(256*returnObject.G).toString(16);
+		let green = Math.round(255*returnObject.G).toString(16);
 		if(green.length === 1){
 			green = '0'+green;
 		}
-		let blue = Math.round(256*returnObject.B).toString(16);
+		let blue = Math.round(255*returnObject.B).toString(16);
 		if(blue.length === 1){
 			blue = '0'+blue;
 		}
@@ -96,7 +104,12 @@ class ReplayHelper{
 	}
 	static #getTeamColor(team){
 		let teamIndex = ReplayHelper.#replay.arenaResult.teams.findIndex(t=>t===team);
-		return ReplayHelper.#getColor(teamIndex, ReplayHelper.#replay.arenaResult.teams.length);
+		let teams = ReplayHelper.#replay.arenaResult.teams.length;
+		if(teamIndex === 1 && teams === 2){ // Red vs Blue
+			teamIndex = 1;
+			teams = 3;
+		}
+		return ReplayHelper.#getColor(teamIndex, teams);
 	}
 	static #getMemberColor(member){
 		let teamIndex = ReplayHelper.#replay.arenaResult.teams.findIndex(t => t.members.includes(member));
@@ -113,6 +126,9 @@ class ReplayHelper{
 			memberColorWidth = teamColorWidth/(team.length + 1);
 			memberColor = team.findIndex(m => m === member) + 1;
 			offset = -teamColorWidth/2;
+		}
+		if(ReplayHelper.#replay.arenaResult.teams.length === 2 && teamIndex === 1){ // Red vs Blue
+			offset = 3.5/6;
 		}
 		return ReplayHelper.#getColor(teamColorSpace + memberColorWidth*memberColor + offset);
 	}
