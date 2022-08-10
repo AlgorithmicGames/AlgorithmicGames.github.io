@@ -133,7 +133,7 @@ class ReplayHelper{
 		let isSecondOfTwoTeamsWithOneMemberEach = teamIndex === 1 && ReplayHelper.#replay.arenaResult.teams.length === 2 && onlySingleTeams;
 		let isSecondMemberOfTeamWithTwoMembers = memberIndex === 1 && ReplayHelper.#replay.arenaResult.teams.length === 1 && ReplayHelper.#replay.arenaResult.teams[0].members.length === 2;
 		if(isSecondOfTwoTeamsWithOneMemberEach || isSecondMemberOfTeamWithTwoMembers){ // Red vs Blue
-			offset = 3.5/6;
+			offset = isSecondOfTwoTeamsWithOneMemberEach ? 3.5/6 : 5/6;
 		}
 		return ReplayHelper.#getColor(teamColorSpace + memberColorWidth*memberIndex + offset);
 	}
