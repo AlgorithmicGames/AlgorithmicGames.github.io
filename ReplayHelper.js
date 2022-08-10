@@ -120,20 +120,22 @@ class ReplayHelper{
 		let teamColorWidth = 1/teams;
 		let teamColorSpace = teamColorWidth * teamIndex;
 		let memberColorWidth;
-		let memberColor;
+		let memberIndex;
 		let offset = 0;
 		if(teamColorWidth === 1){
 			memberColorWidth = teamColorWidth/(team.length);
-			memberColor = team.findIndex(m => m === member);
+			memberIndex = team.findIndex(m => m === member);
 		}else{
 			memberColorWidth = teamColorWidth/(team.length + 1);
-			memberColor = team.findIndex(m => m === member) + 1;
+			memberIndex = team.findIndex(m => m === member) + 1;
 			offset = -teamColorWidth/2;
 		}
-		if(ReplayHelper.#replay.arenaResult.teams.length === 2 && teamIndex === 1 && onlySingleTeams){ // Red vs Blue
+		let isSecondOfTwoTeamsWithOneMemberEach = teamIndex === 1 && ReplayHelper.#replay.arenaResult.teams.length === 2 && onlySingleTeams;
+		let isSecondMemberOfTeamWithTwoMembers = memberIndex === 1 && ReplayHelper.#replay.arenaResult.teams.length === 1 && ReplayHelper.#replay.arenaResult.teams[0].members.length === 2;
+		if(isSecondOfTwoTeamsWithOneMemberEach || isSecondMemberOfTeamWithTwoMembers){ // Red vs Blue
 			offset = 3.5/6;
 		}
-		return ReplayHelper.#getColor(teamColorSpace + memberColorWidth*memberColor + offset);
+		return ReplayHelper.#getColor(teamColorSpace + memberColorWidth*memberIndex + offset);
 	}
 }
 ReplayHelper.preInit();
