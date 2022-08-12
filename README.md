@@ -70,9 +70,9 @@ To load libraries like jQuery and others, put the files in the repository and ad
 	]
 }**/
 ```
-<!-- TODO: Rewrite/uncomment when modules are a thing.
-#### Dependencies vs modules
-Modules are loaded before dependencies, but other than that there is no difference for arena.js. The arena can define modules that is always loaded and available to participants. -->
+<!-- TODO: Rewrite/uncomment when mutator are a thing.
+### Mutators
+Mutator are participant functions provided by the arena that does not affect participants execution time. -->
 ## Special thanks
 - engine262<br>
 AI-Tournaments uses [engine262](https://github.com/engine262/engine262) spearheaded by [snek](https://github.com/devsnek) for executing participants deterministically.
