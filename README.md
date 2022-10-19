@@ -87,7 +87,7 @@ AI-Tournaments uses Edge Functions by [Supabase](https://github.com/supabase/sup
 <!-- https://github.com/AI-Tournaments/.github/blob/main/profile/README.md -->
 <!-- https://github.com/AI-Tournaments/AI-Tournaments.github.io/blob/main/README.md -->
 ## Why Source Available?
-[AI-Tournaments](https://github.com/AI-Tournaments) is not Open Source by the [Open Source Initiative's definition](https://opensource.org/docs/osd) but rather [Source Available](https://en.wikipedia.org/wiki/Source-available_software), except were a license that says otherwise is in place.
+[AI-Tournaments](https://github.com/AI-Tournaments) is not Open Source by the [Open Source Initiative's definition](https://opensource.org/docs/osd) but rather [Source Available](https://en.wikipedia.org/wiki/Source-available_software), except were a license that says otherwise is in place. This might change when AI-Tournaments leaves the prototype stage, the decision has not yet been made.
 ### User written JavaScript
 AI-Tournaments executes user written JavaScripts in the web browser, which is usually seen as a security concern ([Cross-site scripting](https://en.wikipedia.org/wiki/Cross-site_scripting)). But the scripts are loaded into a sandbox IFrame and Web Worker to prevent just that. But the concern still remain and that's a fact that should not be hidden, that is why it is instead addressed and displayed publicly here.
 
