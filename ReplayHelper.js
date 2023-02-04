@@ -41,7 +41,7 @@ class ReplayHelper{
 								if(f(log)){
 									return log;
 								}
-							}).filter(log => log);
+							}).filter(log => log !== undefined);
 						}
 					}
 					class ArenaResult{
