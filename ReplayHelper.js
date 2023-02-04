@@ -30,10 +30,27 @@ class ReplayHelper{
 					ReplayHelper.#postHeight();
 					break;
 				case 'Arena-Result':
+					class Log{
+						#log;
+						constructor(log){
+							this.#log = log;
+						}
+						filter(f=callback=>{}){
+							return this.#log.map(l => {
+								const log = JSON.parse(l);
+								if(f(log)){
+									return log;
+								}
+							}).filter(log => log);
+						}
+					}
 					class ArenaResult{
 						constructor(settings={}){
 							for(const key in settings){
 								if(Object.hasOwnProperty.call(settings, key)){
+									if(key === 'matchLogs'){
+										settings[key].forEach(matchLog => matchLog.log = new Log(matchLog.log));
+									}
 									this[key] = settings[key];
 								}
 							}
