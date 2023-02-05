@@ -35,10 +35,10 @@ class ReplayHelper{
 						constructor(log){
 							this.#log = log;
 						}
-						filter(f=callback=>{}){
+						filter(condition=log=>true){
 							return this.#log.map(l => {
 								const log = JSON.parse(l);
-								if(f(log)){
+								if(condition(log)){
 									return log;
 								}
 							}).filter(log => log !== undefined);
