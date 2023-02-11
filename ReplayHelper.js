@@ -37,7 +37,7 @@ class ReplayHelper{
 						}
 						filter(condition=log=>true){
 							return this.#log.map(l => {
-								const log = JSON.parse(l);
+								const log = typeof l == 'string' ? JSON.parse(l) : l;
 								if(condition(log)){
 									return log;
 								}
