@@ -66,16 +66,25 @@ let callbacks = {
 			compareStringWithoutMeta = JSON.stringify(clone);
 		})();
 		let array = await _dexieReplays.data.toArray();
-		let existingReplays = array.filter(d => {
-			let dataClone = JSON.parse(JSON.stringify(d.data));
+		const existingReplays = [];
+		const registry = new FinalizationRegistry(resolve => {resolve()});
+		for(let i = 0; i < array.length; i++){
+			const d = array[i];
+			const dataClone = JSON.parse(JSON.stringify(d.data));
 			if(dataClone.header && dataClone.header.meta){
 				delete dataClone.header.meta;
 			}
 			if(dataClone.header && dataClone.header.id){
 				delete dataClone.header.id;
 			}
-			return JSON.stringify(dataClone) === compareStringWithoutMeta;
-		});
+			if(JSON.stringify(dataClone) === compareStringWithoutMeta){
+				existingReplays.push(d);
+			}
+			// Sleep
+			let resolve;
+			new Promise(r => resolve = r).then(()=>new Promise(r => setTimeout(r, 1000)));
+			registry.register(dataClone, resolve);
+		}
 		let exactReplay = existingReplays.find(o => {
 			let clone = JSON.parse(JSON.stringify(o.data));
 			if(clone.header && clone.header.id){
