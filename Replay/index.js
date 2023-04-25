@@ -1,25 +1,25 @@
 'use strict'
 function a(){
+	const _element_paddingWrapper = document.getElementById('padding-wrapper');
+	const _element_control = document.getElementById('control-container');
+	const _element_viewOptions = document.getElementById('replay-viewers');
+	const _element_previousReplayOptions = document.getElementById('previous-replays');
+	const _element_iframe = document.getElementById('replay-container');
+	const _element_previousReplayContainer = document.getElementById('previous-replay-container');
+	const _element_iframe_failToLoad = document.getElementById('replay-container-failToLoad');
+	const _element_btnLock = document.getElementById('lock');
+	const _element_editor = document.getElementById('editor');
+	const _element_btnClearStoredReplays = document.getElementById('load-previous-replay-clear');
+	const _element_previousReplayRenameInput = document.getElementById('previous-replay-rename-input');
+	const _element_loadPreviousReplayRename = document.getElementById('load-previous-replay-rename');
+	const _element_previousReplayRename = document.getElementById('previous-replay-rename');
+	const _element_previousReplayRenameClose = document.getElementById('previous-replay-rename-cancel');
+	const _element_previousReplayRenameSave = document.getElementById('previous-replay-rename-save');
+	const _element_previousReplaysController = document.getElementById('previous-replays-controller');
+	const _editor = new JSONEditor(_element_editor, {'modes': ['code', 'view'], 'name': 'Replay', 'onChange': onChange, 'onValidate': onValidate});
 	let _replayData;
 	let _previousOption;
 	let _autoStart = false;
-	let _element_paddingWrapper = document.getElementById('padding-wrapper');
-	let _element_control = document.getElementById('control-container');
-	let _element_viewOptions = document.getElementById('replay-viewers');
-	let _element_previousReplayOptions = document.getElementById('previous-replays');
-	let _element_iframe = document.getElementById('replay-container');
-	let _element_previousReplayContainer = document.getElementById('previous-replay-container');
-	let _element_iframe_failToLoad = document.getElementById('replay-container-failToLoad');
-	let _element_btnLock = document.getElementById('lock');
-	let _element_editor = document.getElementById('editor');
-	let _element_btnClearStoredReplays = document.getElementById('load-previous-replay-clear');
-	let _element_previousReplayRenameInput = document.getElementById('previous-replay-rename-input');
-	let _element_loadPreviousReplayRename = document.getElementById('load-previous-replay-rename');
-	let _element_previousReplayRename = document.getElementById('previous-replay-rename');
-	let _element_previousReplayRenameClose = document.getElementById('previous-replay-rename-cancel');
-	let _element_previousReplayRenameSave = document.getElementById('previous-replay-rename-save');
-	let _element_previousReplaysController = document.getElementById('previous-replays-controller');
-	let _editor = new JSONEditor(_element_editor, {'modes': ['code', 'view'], 'name': 'Replay', 'onChange': onChange, 'onValidate': onValidate});
 	fetch('/schemaDefs.json').then(response => response.json()).then(schemaDefs => {
 		_editor.setSchema({
 			type: 'object',
@@ -126,11 +126,36 @@ function a(){
 		}, schemaDefs);
 	});
 	class IndexedDBOperation {
-		static do = call => {
-			let worker = new Worker('indexedDB.js');
+		static do = async call => {
+			async function queue(){
+				let q = localStorage.getItem(queueKey) ?? '';
+				while(0 < q.length && q[0] !== '#'){
+					q = q.substring(1);
+				}
+				if(q === '' || q.startsWith(ticket)){
+					q = q.replace(ticket, '');
+					localStorage.setItem(queueKey, q);
+				}else{
+					const date = new Date(parseInt(q.substring(1,q.indexOf('&'))));
+					const threshold = new Date(Date.now()-1000*60*5);
+					if(date < threshold){
+						q = q.substring(1);
+						while(0 < q.length && q[0] !== '#'){
+							q = q.substring(1);
+						}
+						localStorage.setItem(queueKey, q);
+					}
+					await new Promise(r => setTimeout(r, 1000));
+					return queue();
+				}
+			}
+			const queueKey = 'indexedDB queue';
+			const ticket = '#'+Date.now()+'&'+Math.random();
+			localStorage.setItem(queueKey, localStorage.getItem(queueKey)+ticket);
+			const worker = new Worker('indexedDB.js');
 			let resolve;
 			let reject;
-			let promise = new Promise((_resolve, _reject) => {resolve = _resolve; reject = _reject;});
+			const promise = new Promise((_resolve, _reject) => {resolve = _resolve; reject = _reject;});
 			let awaitingResponse = true;
 			worker.onmessage = m => {
 				if(awaitingResponse){
@@ -148,6 +173,7 @@ function a(){
 					reject(e);
 				}
 			}
+			await queue();
 			worker.postMessage(call);
 			return promise;
 		}
