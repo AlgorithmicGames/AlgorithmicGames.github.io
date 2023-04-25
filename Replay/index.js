@@ -126,11 +126,36 @@ function a(){
 		}, schemaDefs);
 	});
 	class IndexedDBOperation {
-		static do = call => {
-			let worker = new Worker('indexedDB.js');
+		static do = async call => {
+			async function queue(){
+				let q = localStorage.getItem(queueKey) ?? '';
+				while(0 < q.length && q[0] !== '#'){
+					q = q.substring(1);
+				}
+				if(q === '' || q.startsWith(ticket)){
+					q = q.replace(ticket, '');
+					localStorage.setItem(queueKey, q);
+				}else{
+					const date = new Date(parseInt(q.substring(1,q.indexOf('&'))));
+					const threshold = new Date(Date.now()-1000*60*5);
+					if(date < threshold){
+						q = q.substring(1);
+						while(0 < q.length && q[0] !== '#'){
+							q = q.substring(1);
+						}
+						localStorage.setItem(queueKey, q);
+					}
+					await new Promise(r => setTimeout(r, 1000));
+					return queue();
+				}
+			}
+			const queueKey = 'indexedDB queue';
+			const ticket = '#'+Date.now()+'&'+Math.random();
+			localStorage.setItem(queueKey, localStorage.getItem(queueKey)+ticket);
+			const worker = new Worker('indexedDB.js');
 			let resolve;
 			let reject;
-			let promise = new Promise((_resolve, _reject) => {resolve = _resolve; reject = _reject;});
+			const promise = new Promise((_resolve, _reject) => {resolve = _resolve; reject = _reject;});
 			let awaitingResponse = true;
 			worker.onmessage = m => {
 				if(awaitingResponse){
@@ -148,6 +173,7 @@ function a(){
 					reject(e);
 				}
 			}
+			await queue();
 			worker.postMessage(call);
 			return promise;
 		}
