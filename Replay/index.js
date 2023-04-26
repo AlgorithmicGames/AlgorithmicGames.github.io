@@ -127,6 +127,7 @@ function a(){
 	});
 	class IndexedDBOperation {
 		static do = async call => {
+			console.log('// TODO: Convert Worker to SharedWorker to replace `queue()`.');
 			async function queue(){
 				let q = localStorage.getItem(queueKey) ?? '';
 				while(0 < q.length && q[0] !== '#'){
