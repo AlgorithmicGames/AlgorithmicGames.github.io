@@ -67,9 +67,14 @@ let callbacks = {
 		})();
 		let array = await _dexieReplays.data.toArray();
 		const existingReplays = [];
-		const registry = new FinalizationRegistry(resolve => {resolve()});
-		for(let i = 0; i < array.length; i++){
-			const d = array[i];
+		let sleep;
+		const registry = new FinalizationRegistry(() => sleep = new Promise(()=>setTimeout(()=>{sleep = null}, 1000)));
+		let queue = Promise.resolve();
+		array.forEach(d => {
+			queue = queue.then(async() => {
+				if(sleep){
+					await sleep;
+				}
 			const dataClone = JSON.parse(JSON.stringify(d.data));
 			if(dataClone.header && dataClone.header.meta){
 				delete dataClone.header.meta;
@@ -82,9 +87,11 @@ let callbacks = {
 			}
 			// Sleep
 			let resolve;
-			new Promise(r => resolve = r).then(()=>new Promise(r => setTimeout(r, 1000)));
+				new Promise(r => resolve = r);
 			registry.register(dataClone, resolve);
-		}
+			});
+		});
+		await queue;
 		let exactReplay = existingReplays.find(o => {
 			let clone = JSON.parse(JSON.stringify(o.data));
 			if(clone.header && clone.header.id){
