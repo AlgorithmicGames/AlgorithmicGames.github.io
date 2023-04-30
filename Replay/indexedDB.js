@@ -185,7 +185,7 @@ onconnect = async messageEvent => {
 		}else{
 			callbackQueue = callbackQueue.then(async ()=>{
 				await (callbacks[m.data.operation])(m.data.data);
-			}).catch(err => console.error(err)).finally(()=>{_port.postMessage(null);});
+			}).catch(err => answer(err)).finally(()=>{_port.postMessage(null);});
 		}
 	}
 };
