@@ -29,11 +29,11 @@ function setSetting(name, value){
 	return _dexieReplays.settings.get({name: name}).then(s => s ? _dexieReplays.settings.update(s.id, value) : _dexieReplays.settings.put({name: name, value: value}));
 }
 function answer(data){
-	postMessage({result: data})
+	_port.postMessage({result: data})
 }
 let _pendingQuery;
-function query(type, message){
-	postMessage({query: {type: type, message: message}});
+function guiQuery(type, message){
+	_port.postMessage({query: {type: type, message: message}});
 	return new Promise(resolve => _pendingQuery = resolve);
 }
 let callbacks = {
@@ -67,24 +67,31 @@ let callbacks = {
 		})();
 		let array = await _dexieReplays.data.toArray();
 		const existingReplays = [];
-		const registry = new FinalizationRegistry(resolve => {resolve()});
-		for(let i = 0; i < array.length; i++){
-			const d = array[i];
-			const dataClone = JSON.parse(JSON.stringify(d.data));
-			if(dataClone.header && dataClone.header.meta){
-				delete dataClone.header.meta;
-			}
-			if(dataClone.header && dataClone.header.id){
-				delete dataClone.header.id;
-			}
-			if(JSON.stringify(dataClone) === compareStringWithoutMeta){
-				existingReplays.push(d);
-			}
-			// Sleep
-			let resolve;
-			new Promise(r => resolve = r).then(()=>new Promise(r => setTimeout(r, 1000)));
-			registry.register(dataClone, resolve);
-		}
+		let sleep;
+		const registry = new FinalizationRegistry(() => sleep = new Promise(()=>setTimeout(()=>{sleep = null}, 1000)));
+		let queue = Promise.resolve();
+		array.forEach(d => {
+			queue = queue.then(async() => {
+				if(sleep){
+					await sleep;
+				}
+				const dataClone = JSON.parse(JSON.stringify(d.data));
+				if(dataClone.header && dataClone.header.meta){
+					delete dataClone.header.meta;
+				}
+				if(dataClone.header && dataClone.header.id){
+					delete dataClone.header.id;
+				}
+				if(JSON.stringify(dataClone) === compareStringWithoutMeta){
+					existingReplays.push(d);
+				}
+				// Sleep
+				let resolve;
+				new Promise(r => resolve = r);
+				registry.register(dataClone, resolve);
+			});
+		});
+		await queue;
 		let exactReplay = existingReplays.find(o => {
 			let clone = JSON.parse(JSON.stringify(o.data));
 			if(clone.header && clone.header.id){
@@ -108,8 +115,8 @@ let callbacks = {
 						let promises = [];
 						otherMeta.forEach(d => promises.push(_dexieReplays.records.get({id: d.id}).then(r => r.name ?? r.defaultName)));
 						let names = (await Promise.allSettled(promises)).map(r => r.value);
-						doStore = await query('confirm', 'Another replay(s) with the same outcome but with different metadata is already stored (see below). Do you want to store this replay as well?\n'+names.sort().join('\n'));
-						if(await query('confirm', 'Remember choice? '+(doStore ? '(Do store)' : '(Do not store)'))){
+						doStore = await guiQuery('confirm', 'Another replay(s) with the same outcome but with different metadata is already stored (see below). Do you want to store this replay as well?\n'+names.sort().join('\n'));
+						if(await guiQuery('confirm', 'Remember choice? '+(doStore ? '(Do store)' : '(Do not store)'))){
 							await setSetting(settingKey, doStore);
 						}
 					}
@@ -167,11 +174,18 @@ for(const key in callbacks){
 		}
 	}
 }
-onmessage = m => {
-	if(_pendingQuery){
-		_pendingQuery(m.data);
-		_pendingQuery = null;
-	}else{
-		callbacks[m.data.operation](m.data.data).catch(err => console.error(err)).finally(()=>{postMessage(null);close();})
+let _port;
+let callbackQueue = Promise.resolve();
+onconnect = async messageEvent => {
+	_port = messageEvent.ports[0];
+	_port.onmessage = async m => {
+		if(_pendingQuery){
+			_pendingQuery(m.data);
+			_pendingQuery = null;
+		}else{
+			callbackQueue = callbackQueue.then(async ()=>{
+				await (callbacks[m.data.operation])(m.data.data);
+			}).catch(err => answer(err)).finally(()=>{_port.postMessage(null);});
+		}
 	}
 };
