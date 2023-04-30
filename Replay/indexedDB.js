@@ -29,11 +29,11 @@ function setSetting(name, value){
 	return _dexieReplays.settings.get({name: name}).then(s => s ? _dexieReplays.settings.update(s.id, value) : _dexieReplays.settings.put({name: name, value: value}));
 }
 function answer(data){
-	postMessage({result: data})
+	_port.postMessage({result: data})
 }
 let _pendingQuery;
 function guiQuery(type, message){
-	postMessage({query: {type: type, message: message}});
+	_port.postMessage({query: {type: type, message: message}});
 	return new Promise(resolve => _pendingQuery = resolve);
 }
 let callbacks = {
@@ -75,20 +75,20 @@ let callbacks = {
 				if(sleep){
 					await sleep;
 				}
-			const dataClone = JSON.parse(JSON.stringify(d.data));
-			if(dataClone.header && dataClone.header.meta){
-				delete dataClone.header.meta;
-			}
-			if(dataClone.header && dataClone.header.id){
-				delete dataClone.header.id;
-			}
-			if(JSON.stringify(dataClone) === compareStringWithoutMeta){
-				existingReplays.push(d);
-			}
-			// Sleep
-			let resolve;
+				const dataClone = JSON.parse(JSON.stringify(d.data));
+				if(dataClone.header && dataClone.header.meta){
+					delete dataClone.header.meta;
+				}
+				if(dataClone.header && dataClone.header.id){
+					delete dataClone.header.id;
+				}
+				if(JSON.stringify(dataClone) === compareStringWithoutMeta){
+					existingReplays.push(d);
+				}
+				// Sleep
+				let resolve;
 				new Promise(r => resolve = r);
-			registry.register(dataClone, resolve);
+				registry.register(dataClone, resolve);
 			});
 		});
 		await queue;
@@ -174,11 +174,18 @@ for(const key in callbacks){
 		}
 	}
 }
-onmessage = m => {
-	if(_pendingQuery){
-		_pendingQuery(m.data);
-		_pendingQuery = null;
-	}else{
-		callbacks[m.data.operation](m.data.data).catch(err => console.error(err)).finally(()=>{postMessage(null);close();})
+let _port;
+let callbackQueue = Promise.resolve();
+onconnect = async messageEvent => {
+	_port = messageEvent.ports[0];
+	_port.onmessage = async m => {
+		if(_pendingQuery){
+			_pendingQuery(m.data);
+			_pendingQuery = null;
+		}else{
+			callbackQueue = callbackQueue.then(async ()=>{
+				await (callbacks[m.data.operation])(m.data.data);
+			}).catch(err => console.error(err)).finally(()=>{_port.postMessage(null);});
+		}
 	}
 };
