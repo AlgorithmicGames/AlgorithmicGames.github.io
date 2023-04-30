@@ -32,7 +32,7 @@ function answer(data){
 	postMessage({result: data})
 }
 let _pendingQuery;
-function query(type, message){
+function guiQuery(type, message){
 	postMessage({query: {type: type, message: message}});
 	return new Promise(resolve => _pendingQuery = resolve);
 }
@@ -108,8 +108,8 @@ let callbacks = {
 						let promises = [];
 						otherMeta.forEach(d => promises.push(_dexieReplays.records.get({id: d.id}).then(r => r.name ?? r.defaultName)));
 						let names = (await Promise.allSettled(promises)).map(r => r.value);
-						doStore = await query('confirm', 'Another replay(s) with the same outcome but with different metadata is already stored (see below). Do you want to store this replay as well?\n'+names.sort().join('\n'));
-						if(await query('confirm', 'Remember choice? '+(doStore ? '(Do store)' : '(Do not store)'))){
+						doStore = await guiQuery('confirm', 'Another replay(s) with the same outcome but with different metadata is already stored (see below). Do you want to store this replay as well?\n'+names.sort().join('\n'));
+						if(await guiQuery('confirm', 'Remember choice? '+(doStore ? '(Do store)' : '(Do not store)'))){
 							await setSetting(settingKey, doStore);
 						}
 					}
