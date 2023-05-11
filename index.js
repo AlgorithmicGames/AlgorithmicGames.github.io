@@ -81,7 +81,7 @@ function a(){
 	let sourceAvailable = document.getElementById('source-available');
 	sourceAvailable.classList.add('clickable');
 	sourceAvailable.addEventListener('click', ()=>{
-		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments.github.io/master/README.md').then(response => response.text()).then(readme => {
+		fetch('https://raw.githubusercontent.com/AI-Tournaments/.github/main/profile/README.md').then(response => response.text()).then(readme => {
 			let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
 			GitHubApi.formatMarkdown(why, {
 				async: true,

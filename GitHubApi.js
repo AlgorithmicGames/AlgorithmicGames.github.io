@@ -123,16 +123,16 @@ class GitHubApi{
 			`:''}body>*:first-child {
 				margin-top:0
 			}
-			h3, p {
-			}
 			p {
 				white-space: initial;
 			}
-			p:not(:first-child) {
-				margin-top: -.8em;
+			h3 {
+				margin-bottom: 0.2em;
 			}
-			ul {
-				margin-top: -1em;
+			h3, h3+p, h3+ul, p+ul {
+				margin-top: 0;
+			}
+			h3+p:has(+ ul) {
 				margin-bottom: 0;
 			}
 		</style>
