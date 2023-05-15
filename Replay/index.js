@@ -396,71 +396,79 @@ function a(){
 				break;
 		}
 	}
-	_element_btnLock.onclick = mouseEvent=>{
-		_element_btnLock.disabled = true;
-		_editor.setMode('view');
-		IndexedDBOperation.do({operation: 'addReplayToStorage', data: _editor.get()});
-		GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Replay+topic:'+_replayData.body.arena.full_name.replace('/','--')).then(response => response.json()).then(response => {
-			document.getElementById('default-option').value = _replayData.header.defaultReplay;
-			response.items.forEach(repo => {
-				if(repo.has_pages){
-					let cssStar = getComputedStyle(document.documentElement).getPropertyValue('--github-stars').trim();
-					cssStar = cssStar.substring(1,cssStar.length-1);
-					let option = document.createElement('option');
-					option.innerHTML = repo.full_name.replace(/.*\/|-Arena/g, '') + ' ' + cssStar + repo.stars;
-					option.dataset.stars = repo.stars;
-					option.value = 'https://'+repo.owner.login+'.github.io/'+repo.name;
-					if(option.value !== _replayData.header.defaultReplay){
-						_element_viewOptions.appendChild(option);
-					}
-				}
-			});
-
-			let options = [..._element_viewOptions.options];
-			options.sort(function(a, b){
-				if(b.id === 'default-option'){return 1;}
-
-				let aOfficial = a.value.startsWith('https://ai-tournaments.github.io/');
-				let bOfficial = a.value.startsWith('https://ai-tournaments.github.io/');
-				if(aOfficial ? !bOfficial : bOfficial){return 1;}
-
-				if(parseFloat(a.dataset.stars) < parseFloat(b.dataset.stars)){return -1;}
-				if(parseFloat(b.dataset.stars) < parseFloat(a.dataset.stars)){return 1;}
-
-				return a.innerHTML.toLowerCase().localeCompare(b.innerHTML.toLowerCase());
-			});
-			for(let option of options){
-				_element_viewOptions.add(option);
-			}
-			_element_viewOptions.onchange = event => {
-				let option = event.target;
-				if(option){
-					// Load replay.
-					for(const element of _element_control.children){
-						if(!element.classList.contains('sticky')){
-							element.classList.add('hidden');
+	let previousTicket = {done: true};
+	_element_btnLock.onclick = async mouseEvent=>{
+		const ticket = previousTicket;
+		previousTicket = {};
+		await queue(()=>ticket.done);
+		_editor.validate().then(errors => {
+			if(errors.length)return;
+			_element_btnLock.disabled = true;
+			_editor.setMode('view');
+			IndexedDBOperation.do({operation: 'addReplayToStorage', data: _editor.getText()});
+			GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Replay+topic:'+_replayData.body.arena.full_name.replace('/','--')).then(response => response.json()).then(response => {
+				document.getElementById('default-option').value = _replayData.header.defaultReplay;
+				response.items.forEach(repo => {
+					if(repo.has_pages){
+						let cssStar = getComputedStyle(document.documentElement).getPropertyValue('--github-stars').trim();
+						cssStar = cssStar.substring(1,cssStar.length-1);
+						let option = document.createElement('option');
+						option.innerHTML = repo.full_name.replace(/.*\/|-Arena/g, '') + ' ' + cssStar + repo.stars;
+						option.dataset.stars = repo.stars;
+						option.value = 'https://'+repo.owner.login+'.github.io/'+repo.name;
+						if(option.value !== _replayData.header.defaultReplay){
+							_element_viewOptions.appendChild(option);
 						}
 					}
-					let url = option.value;
-					let session = GitHubApi.getSessionStorage();
-					if(!url.startsWith('https://ai-tournaments.github.io/') && !session.externalReplaysAccepted){
-						session.externalReplaysAccepted = 'i accept external replay viewers' === (prompt('External replays are by default blocked for security reasons. do so at your own risk. Only do this to URLs for code that you trust.\n\nWrite "I accept external replays" to allow external replay viewers.')??'').toLowerCase();
-						GitHubApi.setSessionStorage(session);
-					}
-					if(url.startsWith('https://ai-tournaments.github.io/') || session.externalReplaysAccepted){
-						_element_iframe.dataset.arenaResult = JSON.stringify(_replayData.body);
-						_element_iframe.src = url;
-						document.getElementById('open-replay-in-new-tab').addEventListener('click', ()=>{
-							_element_iframe.dataset.wrapped = 'false';
-							window.open(url);
-						});
+				});
+
+				let options = [..._element_viewOptions.options];
+				options.sort(function(a, b){
+					if(b.id === 'default-option'){return 1;}
+
+					let aOfficial = a.value.startsWith('https://ai-tournaments.github.io/');
+					let bOfficial = a.value.startsWith('https://ai-tournaments.github.io/');
+					if(aOfficial ? !bOfficial : bOfficial){return 1;}
+
+					if(parseFloat(a.dataset.stars) < parseFloat(b.dataset.stars)){return -1;}
+					if(parseFloat(b.dataset.stars) < parseFloat(a.dataset.stars)){return 1;}
+
+					return a.innerHTML.toLowerCase().localeCompare(b.innerHTML.toLowerCase());
+				});
+				for(let option of options){
+					_element_viewOptions.add(option);
+				}
+				_element_viewOptions.onchange = event => {
+					let option = event.target;
+					if(option){
+						// Load replay.
+						for(const element of _element_control.children){
+							if(!element.classList.contains('sticky')){
+								element.classList.add('hidden');
+							}
+						}
+						let url = option.value;
+						let session = GitHubApi.getSessionStorage();
+						if(!url.startsWith('https://ai-tournaments.github.io/') && !session.externalReplaysAccepted){
+							session.externalReplaysAccepted = 'i accept external replay viewers' === (prompt('External replays are by default blocked for security reasons. do so at your own risk. Only do this to URLs for code that you trust.\n\nWrite "I accept external replays" to allow external replay viewers.')??'').toLowerCase();
+							GitHubApi.setSessionStorage(session);
+						}
+						if(url.startsWith('https://ai-tournaments.github.io/') || session.externalReplaysAccepted){
+							_element_iframe.dataset.arenaResult = JSON.stringify(_replayData.body);
+							_element_iframe.src = url;
+							document.getElementById('open-replay-in-new-tab').addEventListener('click', ()=>{
+								_element_iframe.dataset.wrapped = 'false';
+								window.open(url);
+							});
+						}
 					}
 				}
-			}
-			if(1 < options.length){
-				_element_viewOptions.classList.remove('hidden');
-			}
-			_element_viewOptions.onchange({target: options[0]});
+				if(1 < options.length){
+					_element_viewOptions.classList.remove('hidden');
+				}
+				_element_viewOptions.onchange({target: options[0]});
+				ticket.done = true;
+			});
 		});
 	};
 	let parent = window.opener ?? window.parent;

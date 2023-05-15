@@ -1,5 +1,5 @@
 'use strict'
-importScripts('https://unpkg.com/dexie@3.0.3/dist/dexie.min.js');
+importScripts('https://unpkg.com/dexie@3.0.3/dist/dexie.min.js', 'https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js');
 
 let _dexieReplays = new Dexie('Replays');
 _dexieReplays.version(2).stores({
@@ -31,14 +31,16 @@ function setSetting(name, value){
 function answer(data){
 	_port.postMessage({result: data})
 }
+let _port;
 let _pendingQuery;
 function guiQuery(type, message){
 	_port.postMessage({query: {type: type, message: message}});
 	return new Promise(resolve => _pendingQuery = resolve);
 }
 let callbacks = {
-	addReplayToStorage: async(replay)=>{
+	addReplayToStorage: async(replayString)=>{
 		async function store(){
+			const replay = JSON.parse(replayString);
 			let now = JSON.parse(JSON.stringify(new Date()));
 			await _dexieReplays.transaction('rw', _dexieReplays.records, _dexieReplays.data, async()=>{
 				_dexieReplays.records.put({
@@ -51,53 +53,61 @@ let callbacks = {
 				});
 			});
 		}
-		let replayString = JSON.stringify(replay);
-		let compareStringWithoutID;
-		let compareStringWithoutMeta;
+		let cloneWithoutID;
+		let cloneWithoutMeta;
 		(()=>{
-			let clone = JSON.parse(replayString);
-			if(clone.header && clone.header.id){
-				delete clone.header.id;
+			cloneWithoutID = JSON.parse(replayString);
+			if(cloneWithoutID.header && cloneWithoutID.header.id){
+				delete cloneWithoutID.header.id;
 			}
-			compareStringWithoutID = JSON.stringify(clone);
-			if(clone.header && clone.header.meta){
-				delete clone.header.meta;
+			cloneWithoutMeta = _.cloneDeep(cloneWithoutID);
+			if(cloneWithoutMeta.header && cloneWithoutMeta.header.meta){
+				delete cloneWithoutMeta.header.meta;
 			}
-			compareStringWithoutMeta = JSON.stringify(clone);
 		})();
 		let array = await _dexieReplays.data.toArray();
 		const existingReplays = [];
 		let sleep;
-		const registry = new FinalizationRegistry(() => sleep = new Promise(()=>setTimeout(()=>{sleep = null}, 1000)));
+		const registry = new FinalizationRegistry(() => sleep = new Promise(r=>setTimeout(r, 3000)));
 		let queue = Promise.resolve();
+		let sleepCounter = 0;
+		console.log('Loop start', array.length);
 		array.forEach(d => {
 			queue = queue.then(async() => {
 				if(sleep){
+					console.log('// Sleep');
 					await sleep;
+					sleep = null;
+					console.log('// Sleep over');
 				}
-				const dataClone = JSON.parse(JSON.stringify(d.data));
+				const dataClone = _.cloneDeep(d.data);
 				if(dataClone.header && dataClone.header.meta){
 					delete dataClone.header.meta;
 				}
 				if(dataClone.header && dataClone.header.id){
 					delete dataClone.header.id;
 				}
-				if(JSON.stringify(dataClone) === compareStringWithoutMeta){
+				if(_.isEqual(dataClone, cloneWithoutMeta)){ // ⚠️ Out of memory here.
 					existingReplays.push(d);
 				}
 				// Sleep
+				if(sleepCounter++%10 === 0){
+					console.debug('Loop sleep. Items left:', array.length-sleepCounter);
+					await new Promise(r => setTimeout(r, 500)); // 👈 TEMP: Until a slow or memory safe JSON.stringify is found.
+				}
 				let resolve;
 				new Promise(r => resolve = r);
 				registry.register(dataClone, resolve);
 			});
 		});
 		await queue;
+		console.log('Loop finished');
 		let exactReplay = existingReplays.find(o => {
-			let clone = JSON.parse(JSON.stringify(o.data));
+			let clone = _.cloneDeep(o.data);
 			if(clone.header && clone.header.id){
 				delete clone.header.id;
 			}
-			return JSON.stringify(clone) === compareStringWithoutID;
+			return _.isEqual(clone, cloneWithoutID);
 		});
 		if(exactReplay){
 			answer(exactReplay.id);
@@ -174,7 +184,6 @@ for(const key in callbacks){
 		}
 	}
 }
-let _port;
 let callbackQueue = Promise.resolve();
 onconnect = async messageEvent => {
 	_port = messageEvent.ports[0];
@@ -184,7 +193,9 @@ onconnect = async messageEvent => {
 			_pendingQuery = null;
 		}else{
 			callbackQueue = callbackQueue.then(async ()=>{
+				console.log('Start', m.data.operation);
 				await (callbacks[m.data.operation])(m.data.data);
+				console.log('Done', m.data.operation);
 			}).catch(err => answer(err)).finally(()=>{_port.postMessage(null);});
 		}
 	}
