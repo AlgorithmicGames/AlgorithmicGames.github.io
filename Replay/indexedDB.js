@@ -41,7 +41,7 @@ let callbacks = {
 	addReplayToStorage: async(replayString)=>{
 		async function store(){
 			const replay = JSON.parse(replayString);
-			let now = JSON.parse(JSON.stringify(new Date()));
+			let now = structuredClone(new Date());
 			await _dexieReplays.transaction('rw', _dexieReplays.records, _dexieReplays.data, async()=>{
 				_dexieReplays.records.put({
 					stored: now,

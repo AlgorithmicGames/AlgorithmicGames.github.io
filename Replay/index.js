@@ -273,11 +273,11 @@ function a(){
 		let html;
 		let replayData;
 		let promiseData = IndexedDBOperation.do({operation: 'getStoredReplayData', data: option.dataset.databaseId}).then(data => {
-			replayData = JSON.parse(JSON.stringify(data));
+			replayData = structuredClone(data);
 			if(!replayData.header.meta.exported){
 				replayData.header.meta.exported = [];
 			}
-			replayData.header.meta.exported.push(JSON.parse(JSON.stringify(new Date())));
+			replayData.header.meta.exported.push(structuredClone(new Date()));
 		});
 		let promiseExportTemplate = fetch('/Replay/ReplayExportTemplate.html').then(response => response.text()).then(text => html = text);
 		Promise.allSettled([promiseData, promiseExportTemplate]).then(()=>{
