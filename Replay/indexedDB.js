@@ -60,7 +60,7 @@ let callbacks = {
 			if(cloneWithoutID.header && cloneWithoutID.header.id){
 				delete cloneWithoutID.header.id;
 			}
-			cloneWithoutMeta = _.cloneDeep(cloneWithoutID);
+			cloneWithoutMeta = structuredClone(cloneWithoutID);
 			if(cloneWithoutMeta.header && cloneWithoutMeta.header.meta){
 				delete cloneWithoutMeta.header.meta;
 			}
@@ -80,7 +80,7 @@ let callbacks = {
 					sleep = null;
 					console.log('// Sleep over');
 				}
-				const dataClone = _.cloneDeep(d.data);
+				const dataClone = structuredClone(d.data);
 				if(dataClone.header && dataClone.header.meta){
 					delete dataClone.header.meta;
 				}
@@ -103,7 +103,7 @@ let callbacks = {
 		await queue;
 		console.log('Loop finished');
 		let exactReplay = existingReplays.find(o => {
-			let clone = _.cloneDeep(o.data);
+			let clone = structuredClone(o.data);
 			if(clone.header && clone.header.id){
 				delete clone.header.id;
 			}
