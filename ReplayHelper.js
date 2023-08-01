@@ -32,6 +32,7 @@ class ReplayHelper{
 				case 'Arena-Result':
 					class Log{
 						#log;
+						get length(){return this.#log.length;}
 						constructor(log){
 							this.#log = log;
 						}
