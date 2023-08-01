@@ -32,8 +32,16 @@ class ReplayHelper{
 				case 'Arena-Result':
 					class Log{
 						#log;
+						get length(){return this.#log.length;}
 						constructor(log){
 							this.#log = log;
+						}
+						get(index){
+							if(index < 0){
+								return this.#log[this.#log.length - index];
+							}else{
+								return this.#log[index];
+							}
 						}
 						filter(condition=log=>true){
 							return this.#log.map(l => {

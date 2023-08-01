@@ -3,7 +3,7 @@ function a(){
 	let _editor;
 	(()=>{
 		let acceptedDev;
-		if(GitHubApi.getSessionStorage().acceptedDev){
+		if(GitHubApi.getSessionStorage()?.acceptedDev){
 			acceptedDev = true;
 		}
 		const defaultSetup = {
@@ -91,7 +91,7 @@ function a(){
 									if(typeof url === 'string'){
 										if(url && (url[0] === '?' || url[0] === '!')){
 											if(acceptedDev === undefined){
-												let session = GitHubApi.getSessionStorage();
+												const session = GitHubApi.getSessionStorage();
 												acceptedDev = 'I accept unsandboxed sources' === (prompt('By having exclamation (!) and question (?) marks first in the URL you side steps all security features and you do so at your own risk. Only do this to URLs for code that you trust.\n\nWrite "I accept unsandboxed sources" to allow unsandboxed sources.')??'').toLowerCase();
 												session.acceptedDev = acceptedDev;
 												GitHubApi.setSessionStorage(session);

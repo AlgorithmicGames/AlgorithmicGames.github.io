@@ -9,9 +9,9 @@ class GitHubApi{
 		return GitHubApi.#CLIENT_ID;
 	}
 	static getSession(){
-		let session = localStorage.getItem(GitHubApi.#SESSION_KEY);
+		const session = localStorage.getItem(GitHubApi.#SESSION_KEY);
 		try{
-			return JSON.parse(session ?? '{}')
+			return JSON.parse(session)
 		}catch(error){}
 		return session;
 	}
