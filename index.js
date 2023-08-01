@@ -182,7 +182,7 @@ function a(){
 		GitHubApi.fetch('graphql', {method: 'POST', body: {query: `{
 			repository(name: "Community", owner: "AI-Tournaments") {
 				discussions(
-					categoryId: "DIC_kwDOF2FhEs4CQX_F"
+					categoryId: "DIC_kwDOKCNqZ84CYRsS"
 					orderBy: {field: CREATED_AT, direction: DESC}
 					last: ${amount}
 				){
