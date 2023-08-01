@@ -6,7 +6,7 @@ function a(){
 		if(GitHubApi.getSessionStorage().acceptedDev){
 			acceptedDev = true;
 		}
-		let defaultSetup = {
+		const defaultSetup = {
 			active: false,
 			comment: '',
 			autoStart: false,
@@ -21,7 +21,7 @@ function a(){
 		};
 		_editor = new JSONEditor(document.getElementById('editor'), {
 			'modes': ['tree', 'code'],
-			'name': 'Setups',
+			'name': 'Test setups',
 			'onChange': ()=>{
 				_editor.validate().then(errors => {
 					if(!errors.length){
@@ -92,7 +92,7 @@ function a(){
 										if(url && (url[0] === '?' || url[0] === '!')){
 											if(acceptedDev === undefined){
 												let session = GitHubApi.getSessionStorage();
-												acceptedDev = 'i accept unsandboxed sources' === (prompt('By having exclamation (!) and question (?) marks first in the URL you side steps all security features and you do so at your own risk. Only do this to URLs for code that you trust.\n\nWrite "I accept unsandboxed sources" to allow unsandboxed sources.')??'').toLowerCase();
+												acceptedDev = 'I accept unsandboxed sources' === (prompt('By having exclamation (!) and question (?) marks first in the URL you side steps all security features and you do so at your own risk. Only do this to URLs for code that you trust.\n\nWrite "I accept unsandboxed sources" to allow unsandboxed sources.')??'').toLowerCase();
 												session.acceptedDev = acceptedDev;
 												GitHubApi.setSessionStorage(session);
 											}
@@ -159,7 +159,7 @@ function a(){
 			}
 		}, schemaDefs);
 	});
-	let mode = localStorage.getItem('LocalDevelopment.Mode');
+	const mode = localStorage.getItem('LocalDevelopment.Mode');
 	if(mode){
 		_editor.setMode(mode);
 	}
