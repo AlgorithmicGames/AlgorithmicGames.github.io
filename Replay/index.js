@@ -20,7 +20,7 @@ function a(){
 	let _replayData;
 	let _previousOption;
 	let _autoStart = false;
-	fetch('/schemaDefs.json').then(response => response.json()).then(schemaDefs => {
+	const schemaDefsPromise = fetch('/schemaDefs.json').then(response => response.json()).then(schemaDefs => {
 		_editor.setSchema({
 			type: 'object',
 			required: ['header', 'body'],
@@ -62,7 +62,7 @@ function a(){
 											type: 'object',
 											required: ['score', 'members', 'team'],
 											properties: {
-												score: {type: 'number'},
+												score: {type: ['number', 'null']},
 												members: {
 													type: 'array',
 													items: {
@@ -70,7 +70,7 @@ function a(){
 														required: ['name', 'bonus'],
 														properties: {
 															name: {type: 'string'},
-															bonus: {type: 'number'}
+															bonus: {type: ['number', 'null']}
 														}
 													}
 												},
@@ -213,7 +213,7 @@ function a(){
 		return errors;
 	}
 	function onChange(){
-		_editor.validate().then(errors => {
+		schemaDefsPromise.then(()=>_editor.validate().then(errors => {
 			let containsError = 0 < errors.length;
 			_element_btnLock.disabled = containsError;
 			document.getElementById('invalid-input').classList[containsError ? 'remove' : 'add']('hidden');
@@ -224,11 +224,13 @@ function a(){
 			}
 			if(_autoStart){
 				_autoStart = false;
-				if(!containsError){
+				if(containsError){
+					console.error('Replay error', errors);
+				}else{
 					_element_btnLock.onclick();
 				}
 			}
-		});
+		}));
 	}
 	function refreshStoredReplays(){
 		while(0 < _element_previousReplayOptions.childElementCount){

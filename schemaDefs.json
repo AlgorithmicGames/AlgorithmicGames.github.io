@@ -12,7 +12,7 @@
 		"type": "object",
 		"required": ["score", "bonusPoints"],
 		"properties": {
-			"score": {"type": "number"},
+			"score": {"type": ["number", "null"]},
 			"bonusPoints": {
 				"type": "array",
 				"items": {
@@ -21,7 +21,7 @@
 					"properties": {
 						"participant": {"type": "string"},
 						"team": {"type": "number"},
-						"bonus": {"type": "number"}
+						"bonus": {"type": ["number", "null"]}
 					}
 				}
 			}
