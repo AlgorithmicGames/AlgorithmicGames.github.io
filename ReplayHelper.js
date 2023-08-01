@@ -35,6 +35,13 @@ class ReplayHelper{
 						constructor(log){
 							this.#log = log;
 						}
+						get(index){
+							if(index < 0){
+								return this.#log[this.#log.length - index];
+							}else{
+								return this.#log[index];
+							}
+						}
 						filter(condition=log=>true){
 							return this.#log.map(l => {
 								const log = typeof l == 'string' ? JSON.parse(l) : l;
