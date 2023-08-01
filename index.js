@@ -23,20 +23,20 @@ function a(){
 	if(GitHubApi.isLoggedIn()){
 		updateUserDisplay();
 		GitHubApi.fetch('user').then(response => response.json()).then(async user => {
-			let sessionStorage = GitHubApi.getSessionStorage();
-			sessionStorage.username = user.login;
-			sessionStorage.avatar_url = user.avatar_url;
+			const sessionStorage = GitHubApi.getSessionStorage();
+			sessionStorage?.username = user.login;
+			sessionStorage?.avatar_url = user.avatar_url;
 			GitHubApi.setSessionStorage(sessionStorage);
 			updateUserDisplay();
 		});
 		GitHubApi.fetch('user/following').then(response => response.json()).then(following => {
-			let sessionStorage = GitHubApi.getSessionStorage();
-			sessionStorage.following = following.map(user => user.login);
+			const sessionStorage = GitHubApi.getSessionStorage();
+			sessionStorage?.following = following.map(user => user.login);
 			GitHubApi.setSessionStorage(sessionStorage);
 		});
 		GitHubApi.fetch('user/followers').then(response => response.json()).then(followers => {
-			let sessionStorage = GitHubApi.getSessionStorage();
-			sessionStorage.followers = followers.map(user => user.login);
+			const sessionStorage = GitHubApi.getSessionStorage();
+			sessionStorage?.followers = followers.map(user => user.login);
 			GitHubApi.setSessionStorage(sessionStorage);
 		});
 	}
@@ -105,11 +105,11 @@ function a(){
 		}
 	}
 	function updateUserDisplay(){
-		let sessionStorage = GitHubApi.getSessionStorage();
-		if(sessionStorage.username){
+		const sessionStorage = GitHubApi.getSessionStorage();
+		if(sessionStorage?.username){
 			[...document.getElementsByClassName('local-username')].forEach(element => element.innerHTML = sessionStorage.username);
 		}
-		if(sessionStorage.avatar_url){
+		if(sessionStorage?.avatar_url){
 			[...document.getElementsByClassName('local-profile-image')].forEach(img => img.src = sessionStorage.avatar_url);
 		}
 	}
@@ -296,11 +296,11 @@ function a(){
 	function openWindow(header='', message='', center=false, maxWidth, displayOnce=false){
 		let isIframe = message.constructor.name === 'HTMLIFrameElement';
 		let combinedMessage = header+'\n'+(isIframe ? isIframe.srcdoc : message);
-		let sessionStorage = GitHubApi.getSessionStorage();
-		if(!sessionStorage.windowMessages){
+		const sessionStorage = GitHubApi.getSessionStorage();
+		if(!sessionStorage?.windowMessages){
 			sessionStorage.windowMessages = {};
 		}
-		if(!sessionStorage.windowMessages[combinedMessage]){
+		if(!sessionStorage?.windowMessages[combinedMessage]){
 			let windowWrapper = document.createElement('div');
 			_content.appendChild(windowWrapper);
 			if(maxWidth !== undefined){
@@ -314,8 +314,8 @@ function a(){
 			cross.classList.add('cross-close');
 			cross.onclick = ()=>{
 				if(displayOnce){
-					let sessionStorage = GitHubApi.getSessionStorage();
-					if(!sessionStorage.windowMessages){
+					const sessionStorage = GitHubApi.getSessionStorage();
+					if(!sessionStorage?.windowMessages){
 						sessionStorage.windowMessages = {};
 					}
 					sessionStorage.windowMessages[combinedMessage] = new Date().toISOString();
