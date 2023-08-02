@@ -24,7 +24,7 @@ class GitHubApi{
 		localStorage.setItem(GitHubApi.#SESSION_KEY, JSON.stringify(session));
 	}
 	static async fetch(path='', init={}){
-		let accessToken = GitHubApi.getSession()?.accessToken;
+		const accessToken = GitHubApi.getSession()?.accessToken;
 		if(accessToken){
 			if(init.headers === undefined){
 				init.headers = {};
@@ -64,7 +64,9 @@ class GitHubApi{
 				return response;
 			}else if(response.status === 401){
 				GitHubApi.logout();
-				throw new Error('Unauthorized GitHub OAuth-Token. Logged out.');
+				if(accessToken){
+					throw new Error('Unauthorized GitHub OAuth-Token. Logged out.');
+				}
 			}else if([403, 429/*Unconfirmed*/].includes(response.status)){
 				let timestamp = 1000*(parseInt(response.headers.get('x-ratelimit-reset'))+1);
 				if(this.isLoggedIn()){
