@@ -202,7 +202,7 @@ class GitHubApi{
 		}
 	}
 	static isLoggedIn(){
-		return !!GitHubApi.getSession().accessToken;
+		return !!GitHubApi.getSession()?.accessToken;
 	}
 	static logout(){
 		localStorage.removeItem(GitHubApi.#SESSION_KEY);
