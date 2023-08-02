@@ -436,12 +436,17 @@ function a(){
 						}
 						let url = option.value;
 						const session = GitHubApi.getSessionStorage();
-						if(!url.startsWith('https://ai-tournaments.github.io/') && url.startsWith('http') && !session?.externalReplaysAccepted){
+						let secureUrl = url.startsWith('https://ai-tournaments.github.io/');
+						if(!secureUrl){
+							const u = url.replace('//', '');
+							secureUrl = u.indexOf('/') < u.indexOf('.');
+						}
+						if(!secureUrl && !session?.externalReplaysAccepted){
 							const passphrase = 'I accept external replay viewers';
 							session.externalReplaysAccepted = (prompt('External replays are by default blocked for security reasons, since they are outside of AI-Tournaments control. So use them at your own risk. Only do this to URLs for code that you trust.\n\nWrite "'+passphrase+'" to allow external replay viewers.')??'').toLowerCase() === passphrase.toLowerCase();
 							GitHubApi.setSessionStorage(session);
 						}
-						if(url.startsWith('https://ai-tournaments.github.io/') || session.externalReplaysAccepted){
+						if(secureUrl || session.externalReplaysAccepted){
 							_element_iframe.dataset.arenaResult = JSON.stringify(_replayData.body);
 							_element_iframe.src = url;
 							document.getElementById('open-replay-in-new-tab').addEventListener('click', ()=>{
