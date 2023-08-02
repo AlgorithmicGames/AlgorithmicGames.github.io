@@ -16,10 +16,10 @@ class GitHubApi{
 		return session;
 	}
 	static getSessionStorage(){
-		return GitHubApi.getSession().storage ?? {};
+		return GitHubApi.getSession()?.storage ?? {};
 	}
 	static setSessionStorage(storage){
-		let session = GitHubApi.getSession();
+		const session = GitHubApi.getSession() ?? {};
 		session.storage = storage;
 		localStorage.setItem(GitHubApi.#SESSION_KEY, JSON.stringify(session));
 	}
