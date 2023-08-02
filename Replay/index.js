@@ -278,6 +278,11 @@ function a(){
 			document.body.removeChild(element);
 		});
 	}
+	function isURLSecure(url){
+		const anchor = document.createElement('a');
+		anchor.href = url;
+		return anchor.host === window.location.host;
+	};
 	document.getElementById('load-previous-replay').addEventListener('click', ()=>{
 		refreshStoredReplays();
 		_element_control.classList.add('hidden');
@@ -436,11 +441,7 @@ function a(){
 						}
 						let url = option.value;
 						const session = GitHubApi.getSessionStorage();
-						let secureUrl = url.startsWith('https://ai-tournaments.github.io/');
-						if(!secureUrl){
-							const u = url.replace('//', '');
-							secureUrl = u.indexOf('/') < u.indexOf('.');
-						}
+						let secureUrl = isURLSecure(url);
 						if(!secureUrl && !session?.externalReplaysAccepted){
 							const passphrase = 'I accept external replay viewers';
 							session.externalReplaysAccepted = (prompt('External replays are by default blocked for security reasons, since they are outside of AI-Tournaments control. So use them at your own risk. Only do this to URLs for code that you trust.\n\nWrite "'+passphrase+'" to allow external replay viewers.')??'').toLowerCase() === passphrase.toLowerCase();
