@@ -429,7 +429,7 @@ function a(){
 					if(b.id === 'default-option'){return 1;}
 
 					let aOfficial = a.value.startsWith('https://ai-tournaments.github.io/');
-					let bOfficial = a.value.startsWith('https://ai-tournaments.github.io/');
+					let bOfficial = b.value.startsWith('https://ai-tournaments.github.io/');
 					if(aOfficial ? !bOfficial : bOfficial){return 1;}
 
 					if(parseFloat(a.dataset.stars) < parseFloat(b.dataset.stars)){return -1;}
@@ -452,7 +452,7 @@ function a(){
 						let url = option.value;
 						const session = GitHubApi.getSessionStorage();
 						if(!url.startsWith('https://ai-tournaments.github.io/') && !session?.externalReplaysAccepted){
-							session.externalReplaysAccepted = 'i accept external replay viewers' === (prompt('External replays are by default blocked for security reasons. do so at your own risk. Only do this to URLs for code that you trust.\n\nWrite "I accept external replays" to allow external replay viewers.')??'').toLowerCase();
+							session.externalReplaysAccepted = 'I accept external replay viewers' === (prompt('External replays are by default blocked for security reasons. do so at your own risk. Only do this to URLs for code that you trust.\n\nWrite "I accept external replays" to allow external replay viewers.')??'').toLowerCase();
 							GitHubApi.setSessionStorage(session);
 						}
 						if(url.startsWith('https://ai-tournaments.github.io/') || session?.externalReplaysAccepted){
