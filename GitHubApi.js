@@ -36,7 +36,7 @@ class GitHubApi{
 		if(typeof init.body === 'object'){
 			init.body = JSON.stringify(init.body);
 		}
-		return await fetch(new Request('https://api.github.com/'+path, init)).then(response => {
+		return await fetch(new Request('https://api.github.com/'+path, init)).then(async response => {
 			if(localStorage.getItem('GitHub API debug') !== null){
 				let a = path.split('/')[0];
 				let reset = localStorage.getItem('_GitHub '+a+' x-ratelimit-reset');
@@ -63,11 +63,12 @@ class GitHubApi{
 			if(response.status === 200){
 				return response;
 			}else if(response.status === 401){
-				GitHubApi.logout();
 				if(accessToken){
+					GitHubApi.logout();
 					throw new Error('Unauthorized GitHub OAuth-Token. Logged out.');
 				}
-				return;
+				console.error('API call requires authorization. Call dropped.', path);
+				return await new Promise(()=>{});
 			}else if([403, 429/*Unconfirmed*/].includes(response.status)){
 				let timestamp = 1000*(parseInt(response.headers.get('x-ratelimit-reset'))+1);
 				if(this.isLoggedIn()){
