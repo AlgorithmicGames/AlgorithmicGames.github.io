@@ -24,7 +24,7 @@ class GitHubApi{
 		localStorage.setItem(GitHubApi.#SESSION_KEY, JSON.stringify(session));
 	}
 	static async fetch(path='', init={}){
-		let accessToken = GitHubApi.getSession().accessToken;
+		let accessToken = GitHubApi.getSession()?.accessToken;
 		if(accessToken){
 			if(init.headers === undefined){
 				init.headers = {};
