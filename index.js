@@ -23,20 +23,20 @@ function a(){
 	if(GitHubApi.isLoggedIn()){
 		updateUserDisplay();
 		GitHubApi.fetch('user').then(response => response.json()).then(async user => {
-			const sessionStorage = GitHubApi.getSessionStorage();
-			sessionStorage?.username = user.login;
-			sessionStorage?.avatar_url = user.avatar_url;
+			const sessionStorage = GitHubApi.getSessionStorage() ?? {};
+			sessionStorage.username = user.login;
+			sessionStorage.avatar_url = user.avatar_url;
 			GitHubApi.setSessionStorage(sessionStorage);
 			updateUserDisplay();
 		});
 		GitHubApi.fetch('user/following').then(response => response.json()).then(following => {
-			const sessionStorage = GitHubApi.getSessionStorage();
-			sessionStorage?.following = following.map(user => user.login);
+			const sessionStorage = GitHubApi.getSessionStorage() ?? {};
+			sessionStorage.following = following.map(user => user.login);
 			GitHubApi.setSessionStorage(sessionStorage);
 		});
 		GitHubApi.fetch('user/followers').then(response => response.json()).then(followers => {
-			const sessionStorage = GitHubApi.getSessionStorage();
-			sessionStorage?.followers = followers.map(user => user.login);
+			const sessionStorage = GitHubApi.getSessionStorage() ?? {};
+			sessionStorage.followers = followers.map(user => user.login);
 			GitHubApi.setSessionStorage(sessionStorage);
 		});
 	}
