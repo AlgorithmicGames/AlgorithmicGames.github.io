@@ -67,6 +67,7 @@ class GitHubApi{
 				if(accessToken){
 					throw new Error('Unauthorized GitHub OAuth-Token. Logged out.');
 				}
+				return;
 			}else if([403, 429/*Unconfirmed*/].includes(response.status)){
 				let timestamp = 1000*(parseInt(response.headers.get('x-ratelimit-reset'))+1);
 				if(this.isLoggedIn()){
