@@ -187,7 +187,7 @@ class GitHubApi{
 		if(0 < location.href.indexOf('?oAuthCode=')){
 			oAuthCode = location.href.substr(location.href.indexOf('=')+1)
 		}
-		if(!GitHubApi.getSession().accessToken){
+		if(!GitHubApi.getSession()?.accessToken){
 			GitHubApi.logout();
 		}
 		if(oAuthCode !== null){
