@@ -16,10 +16,10 @@ class GitHubApi{
 		return session;
 	}
 	static getSessionStorage(){
-		return GitHubApi.getSession().storage ?? {};
+		return GitHubApi.getSession()?.storage ?? {};
 	}
 	static setSessionStorage(storage){
-		let session = GitHubApi.getSession();
+		const session = GitHubApi.getSession() ?? {};
 		session.storage = storage;
 		localStorage.setItem(GitHubApi.#SESSION_KEY, JSON.stringify(session));
 	}
@@ -187,7 +187,7 @@ class GitHubApi{
 		if(0 < location.href.indexOf('?oAuthCode=')){
 			oAuthCode = location.href.substr(location.href.indexOf('=')+1)
 		}
-		if(!GitHubApi.getSession().accessToken){
+		if(!GitHubApi.getSession()?.accessToken){
 			GitHubApi.logout();
 		}
 		if(oAuthCode !== null){
@@ -202,7 +202,7 @@ class GitHubApi{
 		}
 	}
 	static isLoggedIn(){
-		return !!GitHubApi.getSession().accessToken;
+		return !!GitHubApi.getSession()?.accessToken;
 	}
 	static logout(){
 		localStorage.removeItem(GitHubApi.#SESSION_KEY);
