@@ -61,12 +61,6 @@ function a(){
 									message: 'Property "url" is not a URL.'
 								});
 							}
-							if(!isUrl(setup.arena.replay)){
-								errors.push({
-									path: [index_0, 'arena', 'replay'],
-									message: 'Property "replay" is not a URL.'
-								});
-							}
 						}else if(setup.settings){
 							errors.push({
 								path: [index_0, 'settings'],

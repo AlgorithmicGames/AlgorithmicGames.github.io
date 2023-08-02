@@ -188,22 +188,7 @@ function a(){
 		_element_previousReplaysController.classList.remove('hidden');
 	});
 	function onValidate(json){
-		function isUrl(string){
-			let url;
-			try{
-				url = new URL(string);
-			}catch(e){
-				return false;
-			}
-			return url.protocol === 'http:' || url.protocol === 'https:';
-		}
 		let errors = [];
-		if(json.header !== undefined && json.header.defaultReplay !== undefined && !isUrl(json.header.defaultReplay)){
-			errors.push({
-				path: ['header'],
-				message: 'Property "defaultReplay" is not a URL.'
-			});
-		}
 		if(json.body !== undefined && typeof json.body.matchLogs !== 'object'){
 			errors.push({
 				path: ['body'],
