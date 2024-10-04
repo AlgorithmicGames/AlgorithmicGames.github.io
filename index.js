@@ -424,7 +424,7 @@ function a(){
 		return chars;
 	}
 	function checkGitHubStatus(){
-		fetch('https://ai-tournaments.github.io').then(r=>r.text()).then().catch(error => {
+		fetch('https://ai-tournaments.github.io/').then(r=>r.text()).then().catch(error => {
 			postGitHubProblem('GitHub Pages');
 		});
 		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments.github.io/main/index.html').then(r=>r.text()).then().catch(error => {
