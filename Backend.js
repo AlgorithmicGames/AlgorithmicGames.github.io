@@ -18,7 +18,7 @@ class Backend{
 			console.error('Invalid backend');
 		}finally{
 			return {
-				path: 'https://nfegdyrzrdhwvqpujxhj.functions.supabase.co',
+				path: 'https://backend.ai-tournaments.io',
 				headers: {
 					'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzY2MTc3MCwiZXhwIjoxOTU5MjM3NzcwfQ.x_SvsnLkgYNEgpxa7h74Z__aBgGbGIYVmljhwYDJ1Bc'
 				}
