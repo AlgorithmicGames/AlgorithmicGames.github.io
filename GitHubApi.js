@@ -74,7 +74,7 @@ class GitHubApi{
 				if(this.isLoggedIn()){
 					localStorage.setItem('PopupMessage-'+this.#STARTED+timestamp, 'GitHub API rate limit reached\n424px\nWait until the <a href="https://docs.github.com/en/free-pro-team@latest/rest/reference/rate-limit" target="_blank">API rate limit</a> timer resets: <time class="countdown" datetime="'+new Date(timestamp)+'"></time>');
 				}else{
-					localStorage.setItem('PopupMessage-'+this.#STARTED+timestamp, 'GitHub API rate limit reached\n371px\nGitHub has a lower <a href="https://docs.github.com/en/free-pro-team@latest/rest/reference/rate-limit" target="_blank">API rate limit</a> for unsigned requests. <a href="https://ai-tournaments.github.io/login">Login</a> to be able to continue to create matches or wait until the timer resets: <time class="countdown" datetime="'+new Date(timestamp)+'"></time>');
+					localStorage.setItem('PopupMessage-'+this.#STARTED+timestamp, 'GitHub API rate limit reached\n371px\nGitHub has a lower <a href="https://docs.github.com/en/free-pro-team@latest/rest/reference/rate-limit" target="_blank">API rate limit</a> for unsigned requests. <a href="https://ai-tournaments.io/login">Login</a> to be able to continue to create matches or wait until the timer resets: <time class="countdown" datetime="'+new Date(timestamp)+'"></time>');
 				}
 				return this.#waitUntil(timestamp).then(()=>GitHubApi.fetch(path, init));
 			}
@@ -118,7 +118,7 @@ class GitHubApi{
 `<!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" href="https://ai-tournaments.github.io/defaults.css">
+		<link rel="stylesheet" href="https://ai-tournaments/defaults.css">
 		<style>
 			${options.removeBodyMargin?`html, body {
 				margin: 0;
