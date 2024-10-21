@@ -399,7 +399,8 @@ function a(){
 			_editor.setMode('view');
 			IndexedDBOperation.do({operation: 'addReplayToStorage', data: _editor.getText()});
 			GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Replay+topic:'+_replayData.body.arena.full_name.replace('/','--')).then(response => response.json()).then(response => {
-				document.getElementById('default-option').value = _replayData.header.defaultReplay;
+				const officialUrl = 'https://ai-tournaments.github.io/'; // TODO: 👇 Either only allow absolute URL:s or calculate arena origin.
+				document.getElementById('default-option').value = (_replayData.header.defaultReplay[0]==='/'?officialUrl:'')+_replayData.header.defaultReplay;
 				response.items.forEach(repo => {
 					if(repo.has_pages){
 						let cssStar = getComputedStyle(document.documentElement).getPropertyValue('--github-stars').trim();
@@ -418,8 +419,8 @@ function a(){
 				options.sort(function(a, b){
 					if(b.id === 'default-option'){return 1;}
 
-					let aOfficial = a.value.startsWith('https://ai-tournaments.github.io/');
-					let bOfficial = b.value.startsWith('https://ai-tournaments.github.io/');
+					let aOfficial = a.value.startsWith(officialUrl);
+					let bOfficial = b.value.startsWith(officialUrl);
 					if(aOfficial ? !bOfficial : bOfficial){return 1;}
 
 					if(parseFloat(a.dataset.stars) < parseFloat(b.dataset.stars)){return -1;}
