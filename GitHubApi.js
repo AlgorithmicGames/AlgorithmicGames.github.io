@@ -118,7 +118,7 @@ class GitHubApi{
 `<!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" href="https://ai-tournaments/defaults.css">
+		<link rel="stylesheet" href="https://ai-tournaments.io/defaults.css">
 		<style>
 			${options.removeBodyMargin?`html, body {
 				margin: 0;
