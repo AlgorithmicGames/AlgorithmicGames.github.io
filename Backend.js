@@ -2,7 +2,7 @@
 class Backend{
 	static call(module='', data){
 		let backend = Backend.getBackend();
-		return fetch(new Request(backend.path+'/'+module), {
+		return fetch(new Request(backend.path+'/'+module+'/'), {
 			method: 'POST',
 			headers: new Headers(backend.headers),
 			body: JSON.stringify(data)
