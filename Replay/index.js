@@ -399,8 +399,7 @@ function a(){
 			_editor.setMode('view');
 			IndexedDBOperation.do({operation: 'addReplayToStorage', data: _editor.getText()});
 			GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Replay+topic:'+_replayData.body.arena.full_name.replace('/','--')).then(response => response.json()).then(response => {
-				const officialUrl = 'https://ai-tournaments.github.io'; // TODO: 👇 Either only allow absolute URL:s or calculate arena origin.
-				document.getElementById('default-option').value = (_replayData.header.defaultReplay[0]==='/'?officialUrl:'')+_replayData.header.defaultReplay;
+				document.getElementById('default-option').value = _replayData.header.defaultReplay;
 				response.items.forEach(repo => {
 					if(repo.has_pages){
 						let cssStar = getComputedStyle(document.documentElement).getPropertyValue('--github-stars').trim();
