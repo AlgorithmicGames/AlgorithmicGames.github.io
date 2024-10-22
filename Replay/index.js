@@ -415,11 +415,12 @@ function a(){
 				});
 
 				let options = [..._element_viewOptions.options];
+				const officialUrl = 'https://ai-tournaments.github.io/';
 				options.sort(function(a, b){
 					if(b.id === 'default-option'){return 1;}
 
-					let aOfficial = a.value.startsWith(officialUrl+'/');
-					let bOfficial = b.value.startsWith(officialUrl+'/');
+					let aOfficial = a.value.startsWith(officialUrl);
+					let bOfficial = b.value.startsWith(officialUrl);
 					if(aOfficial ? !bOfficial : bOfficial){return 1;}
 
 					if(parseFloat(a.dataset.stars) < parseFloat(b.dataset.stars)){return -1;}
