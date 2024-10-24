@@ -56,7 +56,7 @@ function a(){
 	document.getElementById('login-button').href += '?origin='+encodeURI(location.protocol+'//'+location.host+location.pathname);
 	document.getElementById('logout-button').addEventListener('click', GitHubApi.logout);
 	openWindow(
-		'Welcome to the tournament!','Here you can participate in different games (known as Arenas) for a fun challenge to stay atop of the leaderboards. Read the <a href="https://github.com/AI-Tournaments/AI-Tournaments.github.io#participate" target="_blank">Participate</a> section in the README to get started.\n'+
+		'Welcome to the tournament!','Here you can participate in different games (known as Arenas) for a fun challenge to stay atop of the leaderboards. Read the <a href="https://github.com/AI-Tournaments#participate" target="_blank">Participate</a> section in the README to get started.\n'+
 		'If you want to you can join the community discussions over at the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord server</a>.\n'+
 		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
 	true, '582px', true);
@@ -427,7 +427,7 @@ function a(){
 		fetch('https://ai-tournaments.io/').then(r=>r.text()).then().catch(error => {
 			postGitHubProblem('GitHub Pages');
 		});
-		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments.github.io/main/index.html').then(r=>r.text()).then().catch(error => {
+		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments.io/main/index.html').then(r=>r.text()).then().catch(error => {
 			postGitHubProblem('raw.githubusercontent.com');
 		});
 	}

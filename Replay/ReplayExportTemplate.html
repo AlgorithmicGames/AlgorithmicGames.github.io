@@ -20,14 +20,14 @@
 			function a(){
 				if(Object.keys(DATA).length){
 					let iframe = document.getElementById('iframe');
-					iframe.src = 'https://ai-tournaments.github.io/Replay/';
+					iframe.src = 'https://ai-tournaments.io/Replay/';
 					window.onmessage = messageEvent => {
 						switch(messageEvent.data.type){
 							case 'Replay-Initiated':
 								iframe.contentWindow.postMessage({type: 'Add-External-Replay-Data', name: DATA.name, value: DATA.value}, '*');
 								break;
 							case 'Replay-Store-ID':
-								location.href = 'https://ai-tournaments.github.io/#Replay/#'+messageEvent.data.value;
+								location.href = 'https://ai-tournaments.io/#Replay/#'+messageEvent.data.value;
 								break;
 						}
 					};
