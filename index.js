@@ -56,8 +56,8 @@ function a(){
 	document.getElementById('login-button').href += '?origin='+encodeURI(location.protocol+'//'+location.host+location.pathname);
 	document.getElementById('logout-button').addEventListener('click', GitHubApi.logout);
 	openWindow(
-		'Welcome to the tournament!','Here you can participate in different games (known as Arenas) for a fun challenge to stay atop of the leaderboards. Read the <a href="https://github.com/AI-Tournaments#participate" target="_blank">Participate</a> section in the README to get started.\n'+
-		'If you want to you can join the community discussions over at the <a href="https://discord.gg/jhUJNsN" target="_blank">Discord server</a>.\n'+
+		'Welcome to the tournament!','Here you can participate in different games (known as Arenas) for a fun challenge and try to stay atop on the leaderboards. Read the <a href="https://github.com/AI-Tournaments#participate" target="_blank">Participate</a> section in the README to get started.\n'+
+		'If you want to you join the discussions, head on over to the <a href="https://ai-tournaments.io/Community/Official/" target="_blank">Community handbook</a> and read where we are.\n'+
 		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
 	true, '582px', true);
 	try{
