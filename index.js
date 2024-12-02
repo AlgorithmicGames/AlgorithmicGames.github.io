@@ -434,7 +434,7 @@ function a(){
 	function postGitHubProblem(source){
 		if(!_GitHubProblem){
 			_GitHubProblem = true;
-			openWindow('GitHub not reachable!', source+' is currently not reachable, please try again later. In the meantime see if <a href="https://www.githubstatus.com" target="_blank">GitHub Status</a> can help you.', true, '397px');
+			openWindow('GitHub not reachable!', source+' is currently not reachable, please try again later. In the meantime, please check if <a href="https://www.githubstatus.com" target="_blank">GitHub Status</a> can help you.', true, '397px');
 		}
 	}
 }
