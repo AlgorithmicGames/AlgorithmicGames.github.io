@@ -74,7 +74,7 @@ class GitHubApi{
 				if(this.isLoggedIn()){
 					localStorage.setItem('PopupMessage-'+this.#STARTED+timestamp, 'GitHub API rate limit reached\n424px\nWait until the <a href="https://docs.github.com/en/free-pro-team@latest/rest/reference/rate-limit" target="_blank">API rate limit</a> timer resets: <time class="countdown" datetime="'+new Date(timestamp)+'"></time>');
 				}else{
-					localStorage.setItem('PopupMessage-'+this.#STARTED+timestamp, 'GitHub API rate limit reached\n371px\nGitHub has a lower <a href="https://docs.github.com/en/free-pro-team@latest/rest/reference/rate-limit" target="_blank">API rate limit</a> for unsigned requests. <a href="https://ai-tournaments.io/login">Login</a> to be able to continue to create matches or wait until the timer resets: <time class="countdown" datetime="'+new Date(timestamp)+'"></time>');
+					localStorage.setItem('PopupMessage-'+this.#STARTED+timestamp, 'GitHub API rate limit reached\n371px\nGitHub has a lower <a href="https://docs.github.com/en/free-pro-team@latest/rest/reference/rate-limit" target="_blank">API rate limit</a> for unsigned requests. <a href="https://algorithmic.games/login">Login</a> to be able to continue to create matches or wait until the timer resets: <time class="countdown" datetime="'+new Date(timestamp)+'"></time>');
 				}
 				return this.#waitUntil(timestamp).then(()=>GitHubApi.fetch(path, init));
 			}
@@ -118,7 +118,7 @@ class GitHubApi{
 `<!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" href="https://ai-tournaments.io/defaults.css">
+		<link rel="stylesheet" href="https://algorithmic.games/defaults.css">
 		<style>
 			${options.removeBodyMargin?`html, body {
 				margin: 0;
@@ -150,12 +150,12 @@ class GitHubApi{
 		return options.async ? promise : iframe;
 	}
 	static fetchArenas(){
-		return GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Arena-v'+GitHubApi.#ARENA_VERSION).then(response => response.json()).then(json => {
+		return GitHubApi.fetch('search/repositories?q=topic:Algorithmic-Games+topic:Algorithmic-Games-Arena-v'+GitHubApi.#ARENA_VERSION).then(response => response.json()).then(json => {
 			let arenas = [];
 			let promises = [];
 			json.items.forEach(repo => {
 				let data = {
-					official: repo.owner.login === 'AI-Tournaments',
+					official: repo.owner.login === 'AlgorithmicGames',
 					name: repo.full_name.replace(/.*\/|-Arena/g, ''),
 					raw_url: null,
 					default: 'https://raw.githubusercontent.com/'+repo.full_name+'/'+repo.default_branch+'/',
