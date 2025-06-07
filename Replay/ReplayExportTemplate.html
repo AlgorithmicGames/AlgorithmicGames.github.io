@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>AI-Tournaments Replay Export</title>
+		<title>Algorithmic Games Replay Export</title>
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-TJFMG29186"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-TJFMG29186');</script>
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
 		<meta content="yes" name="mobile-web-app-capable">
@@ -20,14 +20,14 @@
 			function a(){
 				if(Object.keys(DATA).length){
 					let iframe = document.getElementById('iframe');
-					iframe.src = 'https://ai-tournaments.io/Replay/';
+					iframe.src = 'https://algorithmic.games/Replay/';
 					window.onmessage = messageEvent => {
 						switch(messageEvent.data.type){
 							case 'Replay-Initiated':
 								iframe.contentWindow.postMessage({type: 'Add-External-Replay-Data', name: DATA.name, value: DATA.value}, '*');
 								break;
 							case 'Replay-Store-ID':
-								location.href = 'https://ai-tournaments.io/#Replay/#'+messageEvent.data.value;
+								location.href = 'https://algorithmic.games/#Replay/#'+messageEvent.data.value;
 								break;
 						}
 					};

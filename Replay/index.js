@@ -271,7 +271,7 @@ function a(){
 			html = html.replace(/\/\*DATA\/\*\/.*\/\*\/DATA\*\//, JSON.stringify({name: option.dataset.name, value: replayData}));
 			let element = document.createElement('a');
 			element.setAttribute('href', 'data:text/plain;charset=utf-8,'+encodeURIComponent(html));
-			element.setAttribute('download', option.dataset.name+'.AI-Tournaments-Replay.html');
+			element.setAttribute('download', option.dataset.name+'.AlgorithmicGames-Replay.html');
 			element.style.display = 'none';
 			document.body.appendChild(element);
 			element.click();
@@ -398,7 +398,7 @@ function a(){
 			_element_btnLock.disabled = true;
 			_editor.setMode('view');
 			IndexedDBOperation.do({operation: 'addReplayToStorage', data: _editor.getText()});
-			GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Replay+topic:'+_replayData.body.arena.full_name.replace('/','--')).then(response => response.json()).then(response => {
+			GitHubApi.fetch('search/repositories?q=topic:Algorithmic-Games+topic:Algorithmic-Games-Replay+topic:'+_replayData.body.arena.full_name.replace('/','--')).then(response => response.json()).then(response => {
 				document.getElementById('default-option').value = _replayData.header.defaultReplay;
 				response.items.forEach(repo => {
 					if(repo.has_pages){
@@ -415,7 +415,7 @@ function a(){
 				});
 
 				let options = [..._element_viewOptions.options];
-				const officialUrl = 'https://ai-tournaments.github.io/';
+				const officialUrl = 'https://AlgorithmicGames.github.io/';
 				options.sort(function(a, b){
 					if(b.id === 'default-option'){return 1;}
 
@@ -445,7 +445,7 @@ function a(){
 						let secureUrl = isURLSecure(url);
 						if(!secureUrl && !session?.externalReplaysAccepted){
 							const passphrase = 'I accept external replay viewers';
-							session.externalReplaysAccepted = (prompt('External replays are by default blocked for security reasons, since they are outside of AI-Tournaments control. So use them at your own risk. Only do this to URLs for code that you trust.\n\nWrite "'+passphrase+'" to allow external replay viewers.')??'').toLowerCase() === passphrase.toLowerCase();
+							session.externalReplaysAccepted = (prompt('External replays are by default blocked for security reasons, since they are outside of Algorithmic Games\' control. So use them at your own risk. Only do this to URLs for code that you trust.\n\nWrite "'+passphrase+'" to allow external replay viewers.')??'').toLowerCase() === passphrase.toLowerCase();
 							GitHubApi.setSessionStorage(session);
 						}
 						if(secureUrl || session.externalReplaysAccepted){

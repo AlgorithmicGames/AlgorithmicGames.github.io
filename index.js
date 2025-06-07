@@ -12,7 +12,7 @@ function a(){
 	let fakeHeader = document.getElementById('header-title-fake');
 	fakeHeader.classList.add('clickable');
 	fakeHeader.addEventListener('click', ()=>{
-		window.open('https://github.com/AI-Tournaments', '_blank').focus();
+		window.open('https://github.com/AlgorithmicGames', '_blank').focus();
 	});
 	Array.from(document.getElementsByClassName('open-screen')).forEach(element => {
 		element.addEventListener('click', ()=>{openScreen(element.dataset.url)});
@@ -56,9 +56,9 @@ function a(){
 	document.getElementById('login-button').href += '?origin='+encodeURI(location.protocol+'//'+location.host+location.pathname);
 	document.getElementById('logout-button').addEventListener('click', GitHubApi.logout);
 	openWindow(
-		'Welcome to the tournament!','Here you can participate in different games (known as Arenas) for a fun challenge and try to stay atop on the leader boards. Read the <a href="https://github.com/AI-Tournaments#participate" target="_blank">Participate</a> section in the README to get started.\n'+
-		'If you want to you join the discussions, head on over to the <a href="https://ai-tournaments.io/Community/Official/" target="_blank">Community handbook</a> and read where we are.\n'+
-		'<span style="color:var(--secondary-background-color)">- Tournament servant</span>',
+		'Welcome!','Here you can participate in different games (known as Arenas) for a fun challenge and try to stay atop on the leader boards. Read the <a href="https://github.com/AlgorithmicGames#participate" target="_blank">Participate</a> section in the README to get started.\n'+
+		'If you want to you join the discussions, head on over to the <a href="https://algorithmic.games/Community/Official/" target="_blank">Community handbook</a> and read where we are.\n'+
+		'<span style="color:var(--secondary-background-color)">- Algorithmic Games</span>',
 	true, '582px', true);
 	try{
 		if(JSON.parse(localStorage.getItem('LocalDevelopment.Setups')).find(setup => setup.active)){
@@ -81,7 +81,7 @@ function a(){
 	let sourceAvailable = document.getElementById('source-available');
 	sourceAvailable.classList.add('clickable');
 	sourceAvailable.addEventListener('click', ()=>{
-		fetch('https://raw.githubusercontent.com/AI-Tournaments/.github/main/profile/README.md').then(response => response.text()).then(readme => {
+		fetch('https://raw.githubusercontent.com/AlgorithmicGames/.github/main/profile/README.md').then(response => response.text()).then(readme => {
 			let why = readme.replace(/.+?(?=## Why Source Available?)/s, '').replace(/.*\n/,'');
 			GitHubApi.formatMarkdown(why, {
 				async: true,
@@ -180,7 +180,7 @@ function a(){
 	function loadAnnouncements(amount=5){
 		let announcementsContainer = document.getElementById('announcements-dropdown');
 		GitHubApi.fetch('graphql', {method: 'POST', body: {query: `{
-			repository(name: "Community", owner: "AI-Tournaments") {
+			repository(name: "Community", owner: "AlgorithmicGames") {
 				discussions(
 					categoryId: "DIC_kwDOKCNqZ84CYRsS"
 					orderBy: {field: CREATED_AT, direction: DESC}
@@ -208,7 +208,7 @@ function a(){
 				announcementsContainer.appendChild(item);
 			});
 			let item = document.createElement('a');
-			item.href = 'https://github.com/orgs/AI-Tournaments/discussions/categories/1-announcements';
+			item.href = 'https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements';
 			item.target = '_blank';
 			item.innerHTML = '. . .';
 			announcementsContainer.appendChild(item);
@@ -424,10 +424,10 @@ function a(){
 		return chars;
 	}
 	function checkGitHubStatus(){
-		fetch('https://ai-tournaments.io/').then(r=>r.text()).then().catch(error => {
+		fetch('https://algorithmic.games/').then(r=>r.text()).then().catch(error => {
 			postGitHubProblem('GitHub Pages');
 		});
-		fetch('https://raw.githubusercontent.com/AI-Tournaments/AI-Tournaments.io/main/index.html').then(r=>r.text()).then().catch(error => {
+		fetch('https://raw.githubusercontent.com/AlgorithmicGames/algorithmic.games/main/index.html').then(r=>r.text()).then().catch(error => {
 			postGitHubProblem('raw.githubusercontent.com');
 		});
 	}
