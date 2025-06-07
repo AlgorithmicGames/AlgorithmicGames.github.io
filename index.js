@@ -427,7 +427,7 @@ function a(){
 		fetch('https://algorithmic.games/').then(r=>r.text()).then().catch(error => {
 			postGitHubProblem('GitHub Pages');
 		});
-		fetch('https://raw.githubusercontent.com/AlgorithmicGames/algorithmic.games/main/index.html').then(r=>r.text()).then().catch(error => {
+		fetch('https://raw.githubusercontent.com/AlgorithmicGames/algorithmicgames.github.io/main/index.html').then(r=>r.text()).then().catch(error => {
 			postGitHubProblem('raw.githubusercontent.com');
 		});
 	}
