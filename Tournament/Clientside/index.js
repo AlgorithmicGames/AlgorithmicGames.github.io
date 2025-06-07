@@ -147,18 +147,18 @@ function a(){
 	}
 	function getParticipants(arenaFullName=''){
 		let arena = arenaFullName.replace('/','--');
-		let arenaReplace = 'AI-Tournaments-Participant-'+arena.replace(/AI-Tournaments--|-Arena/g, '')+'-';
+		let arenaReplace = 'Algorithmic-Games-Participant-'+arena.replace(/Algorithmic-Games--|-Arena/g, '')+'-';
 		Array.from(document.getElementsByClassName('participants')).forEach(selectElement =>{
 			while(0 < selectElement.length){
 				selectElement.remove(0);
 			}
 		});
 		let promises = [];
-		GitHubApi.fetch('search/repositories?q=topic:AI-Tournaments+topic:AI-Tournaments-Participant+topic:'+arena,{
+		GitHubApi.fetch('search/repositories?q=topic:Algorithmic-Games+topic:Algorithmic-Games-Participant+topic:'+arena,{
 			headers: {Accept: 'application/vnd.github.mercy-preview+json'} // TEMP: Remove when out of preview. https://docs.github.com/en/rest/reference/search#search-topics-preview-notices
 		}).then(response => response.json()).then(response => {
 			response.items.forEach(repo => {
-				if(!repo.topics.includes('ai-tournaments-retired')){
+				if(!repo.topics.includes('Algorithmic-Games-Retired')){
 					promises.push(GitHubApi.fetch('repos/' + repo.full_name + '/git/trees/' + repo.default_branch)
 					.then(response => response.json())
 					.then(data => {

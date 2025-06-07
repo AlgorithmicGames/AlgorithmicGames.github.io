@@ -1,2 +1,2 @@
-# AI-Tournaments
-Please read [here](https://github.com/AI-Tournaments).
+# Algorithmic Games
+Please read [here](https://github.com/AlgorithmicGames).
