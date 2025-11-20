@@ -156,6 +156,7 @@ class GitHubApi{
 			json.items.forEach(repo => {
 				let data = {
 					official: repo.owner.login === 'AlgorithmicGames',
+					name: repo.full_name.replace(/.*\/|-Arena/g, ''),
 					raw_url: null,
 					default: 'https://raw.githubusercontent.com/'+repo.full_name+'/'+repo.default_branch+'/',
 					html_url: repo.html_url,

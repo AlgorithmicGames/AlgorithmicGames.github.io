@@ -56,7 +56,7 @@ function a(){
 	document.getElementById('login-button').href += '?origin='+encodeURI(location.protocol+'//'+location.host+location.pathname);
 	document.getElementById('logout-button').addEventListener('click', GitHubApi.logout);
 	openWindow(
-		'Welcome!','Here you can participate in different games (known as Arenas) for a fun challenge and try to stay atop on the leader boards. Read the <a href="https://github.com/AlgorithmicGames#participate" target="_blank">Participate</a> section in the README to get started.\n'+
+		'Welcome to Algorithmic Games!','Here you can participate in different games (known as Arenas) for a fun challenge and try to stay atop on the leader boards. Read the <a href="https://github.com/AlgorithmicGames#participate" target="_blank">Participate</a> section in the README to get started.\n'+
 		'If you want to you join the discussions, head on over to the <a href="https://algorithmic.games/Community/Official/" target="_blank">Community handbook</a> and read where we are.\n'+
 		'<span style="color:var(--secondary-background-color)">- Algorithmic Games</span>',
 	true, '582px', true);
