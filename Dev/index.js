@@ -1,5 +1,10 @@
 'use strict'
 function a(){
+	document.addEventListener('keydown', keyboardEvent => {
+		if((keyboardEvent.ctrlKey || keyboardEvent.metaKey) && keyboardEvent.key === 's'){ // Prevent the Save dialog to open
+			keyboardEvent.preventDefault();
+		}
+	});
 	let _editor;
 	(()=>{
 		let acceptedDev;

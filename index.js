@@ -230,7 +230,7 @@ function a(){
 			})
 			officialRepos.slice(0,amount).forEach(repo => {
 				let item = document.createElement('div');
-				item.innerHTML = repo.name.replace('-Arena','')
+				item.innerHTML = repo.full_name.replace(/.*\/Arena-/g,'')
 				item.dataset.stars = repo.stars;
 				item.dataset.full_name = repo.full_name;
 				item.classList.add('clickable');
@@ -434,7 +434,7 @@ function a(){
 	function postGitHubProblem(source){
 		if(!_GitHubProblem){
 			_GitHubProblem = true;
-			openWindow('GitHub not reachable!', source+' is currently not reachable, please try again later. In the meantime see if <a href="https://www.githubstatus.com" target="_blank">GitHub Status</a> can help you.', true, '397px');
+			openWindow('GitHub not reachable!', source+' is currently not reachable, please try again later. In the meantime, please check if <a href="https://www.githubstatus.com" target="_blank">GitHub Status</a> can help you.', true, '397px');
 		}
 	}
 }

@@ -405,7 +405,7 @@ function a(){
 						let cssStar = getComputedStyle(document.documentElement).getPropertyValue('--github-stars').trim();
 						cssStar = cssStar.substring(1,cssStar.length-1);
 						let option = document.createElement('option');
-						option.innerHTML = repo.full_name.replace(/.*\/|-Arena/g, '') + ' ' + cssStar + repo.stars;
+						option.innerHTML = repo.full_name.replace(/.*\/Arena-/g, '') + ' ' + cssStar + repo.stars;
 						option.dataset.stars = repo.stars;
 						option.value = 'https://'+repo.owner.login+'.github.io/'+repo.name;
 						if(option.value !== _replayData.header.defaultReplay){
