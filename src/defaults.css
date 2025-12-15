@@ -1,0 +1,45 @@
+:root {
+	--main-color: green;
+	--main-background-color: black;
+	--secondary-background-color: darkgreen;
+	--transparency: rgba(0,0,0,.75);
+	--error-color: red;
+}
+:root, a, select, select>* {
+	color: var(--main-color);
+}
+:root, pre {
+	font-family: consolas, "Courier New", Courier, Monaco, monospace;
+}
+:root, input, select, .jsoneditor, .jsoneditor-menu{
+	border-color: var(--main-color);
+}
+input {
+	color: var(--secondary-background-color);
+	background-color: var(--transparency);
+}
+select {
+	background: transparent;
+}
+.cross-close::after {
+	content: var(--cross-close);
+}
+.hidden {
+	display: none !important;
+}
+/* ace-jsoneditor */
+.jsoneditor>.jsoneditor-menu {
+	background-color: var(--main-color);
+}
+.jsoneditor .jsoneditor-selected {
+	background-color: var(--secondary-background-color) !important;
+}
+.jsoneditor input {
+	background-color: unset;
+}
+/* Disable style if page is not viewed from root. */
+:root.top * {
+	color: unset;
+	background-color: unset;
+	border-color: unset;
+}
