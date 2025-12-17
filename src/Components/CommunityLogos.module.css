@@ -1,0 +1,17 @@
+.discordLogo, .githubLogo {
+	text-decoration: none;
+}
+.discordLogo svg, .githubLogo svg {
+	--size: 24px;
+	height: var(--size);
+	width: var(--size);
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 8px;
+}
+.discordLogo svg, .githubLogo svg {
+	fill: var(--secondary-background-color);
+}
+:hover>.discordLogo svg, :hover>.githubLogo svg {
+	fill: var(--main-color);
+}

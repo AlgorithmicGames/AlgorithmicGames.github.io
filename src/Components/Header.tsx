@@ -1,8 +1,7 @@
 import styles from './Header.module.css'
-import githubLogo from '../assets/github.svg'
-import discordLogo from '../assets/discord.svg'
 import MenuItem from './MenuItem.tsx'
 import LoginButton from './LoginButton.tsx'
+import communityLogosStyles from './CommunityLogos.module.css'
 
 export default function Header() {
 	const headerTitle = 'Algorithmic Games';
@@ -24,10 +23,9 @@ export default function Header() {
 			</MenuItem>
 			<div class={styles.split}></div>
 			<MenuItem title="Community" href="https://algorithmic.games/Community/" target="_blank">
-				<MenuItem title="GitHub" href="https://github.com/orgs/AlgorithmicGames/discussions" imgSrc={githubLogo}/>
-				<MenuItem title="Discord" href="https://discord.gg/jhUJNsN" imgSrc={discordLogo} target="_blank"/>
+				<MenuItem title="GitHub" href="https://github.com/orgs/AlgorithmicGames/discussions" svgSrc='/github.svg' hrefClass={communityLogosStyles.githubLogo}/>
+				<MenuItem title="Discord" href="https://discord.gg/jhUJNsN" svgSrc='/discord.svg' target="_blank" hrefClass={communityLogosStyles.discordLogo}/>
 			</MenuItem>
-			<MenuItem title="Source"/>
 			<LoginButton />
 		</header>
 	</>)

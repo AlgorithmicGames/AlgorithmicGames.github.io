@@ -1,0 +1,38 @@
+.menuItem {
+	display: flex;
+	flex-direction: row;
+	gap: 16px;
+}
+
+.dropdown {
+	position: relative;
+	display: inline-block;
+}
+.dropdownContent {
+	display: none;
+	position: absolute;
+	left: -2px;
+	background-color: var(--transparency);
+	border: 1px solid var(--main-color);
+	border-top: 1px dashed;
+	width: max-content;
+	z-index: 1;
+}
+.dropdownContent>* {
+	padding: 12px 12px;
+	text-decoration: none;
+	display: block;
+	border: 1px solid transparent;
+}
+.dropdownContent a {
+	color: var(--secondary-background-color);
+}
+.dropdownContent>:hover {
+	border-color: var(--main-color);
+}
+.dropdownContent>:hover a {
+	color: var(--main-color);
+}
+.dropdown:hover .dropdownContent {
+	display: block;
+}

@@ -1,22 +1,31 @@
-import { children as childrenFunction, Show } from "solid-js";
+import { children as childrenFunction, Show, createSignal } from "solid-js";
+import styles from './MenuItem.module.css';
 
-type MenuItemProps = { title: string, href?: string, imgSrc?: string, target?: string, children?: any };
+type MenuItemProps = {
+	title: string,
+	href?: string,
+	svgSrc?: string,
+	hrefClass?: string,
+	target?: string,
+	children?: any
+};
 
-export default function MenuItem({ title, href, imgSrc, target, children }: MenuItemProps) {
-	const classList = [];
+export default function MenuItem({ title, href, svgSrc, hrefClass, target, children }: MenuItemProps) {
+	const classList = [styles.menuItem];
 	if(children) {
-		classList.push('dropdown');
+		classList.push(styles.dropdown);
+	}
+	const [svg, setSvg] = createSignal('');
+	if(svgSrc) {
+		fetch(svgSrc).then(response => response.text()).then(text => setSvg(text.replace(/<style>.*<\/style>/, '')))
 	}
 	return (
 		<div class={classList.join(' ')}>
 			<Show when={href} fallback={<div>{title}</div>}>
-				<Show when={imgSrc}>
-					<img src={imgSrc}/>
-				</Show>
-				<a href={href} target={target}>{title}</a>
+				<a href={href} target={target} class={hrefClass} innerHTML={svg()+"<span>"+title+"</span>"}/>
 			</Show>
 			<Show when={children}>
-				<div class="dropdown-content">
+				<div class={styles.dropdownContent}>
 					{ childrenFunction(() => children)() }
 				</div>
 			</Show>
