@@ -6,12 +6,4 @@ body {
 	margin: 0;
 	padding: 0;
 	text-align: center;
-	background-color: aqua;
-}
-
-header {
-	top: 0;
-	margin: 0;
-	width: 100%;
-	position: static;
 }

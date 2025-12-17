@@ -6,8 +6,8 @@ import viteLogo from '../assets/vite.svg'
 export default function Content() {
 	const [count, setCount] = createSignal(0)
 
-	return (<>
-		<div class={styles.root}>
+	return (<div id={styles.root}>
+		<div>
 			<a href="https://vite.dev" target="_blank">
 				<img src={viteLogo} class={styles.logo} alt="Vite logo" />
 			</a>
@@ -27,5 +27,5 @@ export default function Content() {
 		<p class={styles.readTheDocs}>
 			Click on the Vite and Solid logos to learn more
 		</p>
-	</>)
+	</div>)
 }

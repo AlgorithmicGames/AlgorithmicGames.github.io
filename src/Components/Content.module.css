@@ -1,5 +1,5 @@
-.root {
-	background-color: green;
+#root {
+	border: yellow solid 5px;
 }
 
 .logo {

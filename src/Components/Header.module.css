@@ -1,7 +1,9 @@
-.root {
+#root {
 	display: flex;
 	flex-direction: row;
 	gap: 16px;
+	border: var(--window-border);
+	padding: var(--window-padding);
 }
 
 .split {

@@ -4,9 +4,14 @@
 	--secondary-background-color: darkgreen;
 	--transparency: rgba(0,0,0,.75);
 	--error-color: red;
+	--window-border: 2px solid;
+	--window-padding: 7px 13px 7px 13px;
 }
 :root, a, select, select>* {
 	color: var(--main-color);
+}
+:root, body {
+	height: 100%;
 }
 :root, pre {
 	font-family: consolas, "Courier New", Courier, Monaco, monospace;
