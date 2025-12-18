@@ -30,14 +30,11 @@ export default function Header() {
 		<Show when={localDevelopment() || backendDevelopment()}>
 			<MenuItem title="🚧Development🚧">
 				<Show when={localDevelopment()}>
-					<div>
-						<b>Local development</b><br/>
-						Automatic addition of local arena and participants is active.
-					</div>
+					<MenuItem title="<b>Local development</b><div>Automatic addition of local arena and participants is active.</div>" href="/Dev"/>
 				</Show>
 				<Show when={backendDevelopment()}>
-					<div>
-						<b>Backend development</b><br/>
+				<MenuItem title="<b>Backend development</b>" href="/Dev"/>
+					<div class="TEMP">
 						Backend is redirected to <i class="clickable" style="background: var(--secondary-background-color); color: var(--secondary-background-color)" onmouseover="this.style.background=\'var(--main-color)\';this.style.color=\'var(--main-color)\'" onmouseleave="this.style.background=\'var(--secondary-background-color)\';this.style.color=\'var(--secondary-background-color)\'" onclick="this.style.background=\'\';this.style.color=\'\'; this.onmouseover=undefined; this.onmouseleave=undefined;">'+Backend.getBackend().path+'</i>.<br/><br/><button class="clickable" onclick="localStorage.removeItem(\'backend\'); location.reload();">Clear</button>
 					</div>
 				</Show>
