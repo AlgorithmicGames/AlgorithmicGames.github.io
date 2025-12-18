@@ -2,19 +2,29 @@ import styles from './Header.module.css'
 import MenuItem from './MenuItem.tsx'
 import LoginButton from './LoginButton.tsx'
 import communityLogosStyles from './CommunityLogos.module.css'
-import { Show, createSignal } from 'solid-js';
+import { For, Show, Suspense, createSignal } from 'solid-js';
+import { createAsync } from '@solidjs/router';
 
 export default function Header() {
 	const headerTitle = 'Algorithmic Games';
+	
 	const [localDevelopment, setLocalDevelopment] = createSignal(false);
 	const [backendDevelopment, setBackendDevelopment] = createSignal(false);
+	
 	requestAnimationFrame(() => {
 		setLocalDevelopment(false);
 		setBackendDevelopment(false);
 	});
+	const announcements = createAsync(() => fetch("https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements").then(response => response.json()).catch(() => {/* TEMP: Disabled */}));
+	
 	return (<header id={styles.root}>
 		<div class={styles.headerTitle}>{headerTitle}</div>
-		<MenuItem title="Announcements" href="https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements" target="_blank"/>
+		<MenuItem title="Announcements" href="https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements" target="_blank">
+			<Suspense fallback={<div>Loading...</div>}>
+				<For each={announcements()}>{(announcement) => <span>{announcement.title}</span>}</For>
+			</Suspense>
+			<MenuItem title="· · ·" href="https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements" target="_blank"/>
+		</MenuItem>
 		<MenuItem title="Arena"/>
 		<MenuItem title="Replays"/>
 		<Show when={localDevelopment() || backendDevelopment()}>

@@ -25,6 +25,7 @@
 	border: 1px solid transparent;
 }
 .dropdownContent a {
+	text-decoration: none;
 	color: var(--secondary-background-color);
 }
 .dropdownContent>:hover {
