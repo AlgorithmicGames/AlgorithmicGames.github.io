@@ -4,6 +4,7 @@ import LoginButton from './LoginButton.tsx'
 import communityLogosStyles from './CommunityLogos.module.css'
 import { For, Show, Suspense, createSignal } from 'solid-js';
 import { createAsync } from '@solidjs/router';
+import GitHubService from '../GitHubService.tsx';
 
 export default function Header() {
 	const headerTitle = 'Algorithmic Games';
@@ -15,8 +16,10 @@ export default function Header() {
 		setLocalDevelopment(false);
 		setBackendDevelopment(false);
 	});
+
 	const announcements = createAsync(() => fetch("https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements").then(response => response.json()).catch(() => {/* TEMP: Disabled */}));
-	
+	const arenas = createAsync(() => GitHubService.fetchArenas());
+
 	return (<header id={styles.root}>
 		<div class={styles.headerTitle}>{headerTitle}</div>
 		<MenuItem title="Announcements" href="https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements" target="_blank">
@@ -25,7 +28,9 @@ export default function Header() {
 			</Suspense>
 			<MenuItem title="· · ·" href="https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements" target="_blank"/>
 		</MenuItem>
-		<MenuItem title="Arena"/>
+		<MenuItem title="Arena">
+			<For each={arenas()}>{(arena) => <span>{arena.name}</span>}</For>
+		</MenuItem>
 		<MenuItem title="Replays"/>
 		<Show when={localDevelopment() || backendDevelopment()}>
 			<MenuItem title="🚧Development🚧">
