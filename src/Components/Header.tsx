@@ -17,14 +17,19 @@ export default function Header() {
 		setBackendDevelopment(false);
 	});
 
-	const announcements = createAsync(() => fetch("https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements").then(response => response.json()).catch(() => {/* TEMP: Disabled */}));
+	const announcements = createAsync(() => GitHubService.fetchAnnouncements(5).then(response => response.json()));
 	const arenas = createAsync(() => GitHubService.fetchArenas());
 
 	return (<header id={styles.root}>
 		<div class={styles.headerTitle}>{headerTitle}</div>
 		<MenuItem title="Announcements" href="https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements" target="_blank">
-			<Suspense fallback={<div>Loading...</div>}>
-				<For each={announcements()}>{(announcement) => <span>{announcement.title}</span>}</For>
+			<Suspense>
+				<For each={announcements()}>{(announcement) =>
+					<a href={announcement.url} target="_blank">
+						<div>{announcement.title}</div>
+						<time dateTime={announcement.createdAt}>{announcement.createdAt.substring(0,10)}</time>
+					</a>
+				}</For>
 			</Suspense>
 			<MenuItem title="· · ·" href="https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements" target="_blank"/>
 		</MenuItem>

@@ -191,6 +191,23 @@ export default class GitHubService{
 			return Promise.allSettled(promises).then(()=>arenas)
 		})
 	}
+	static fetchAnnouncements(amount: number){
+		return GitHubService.fetch('graphql', {method: 'POST', body: {query: `{
+			repository(name: "Community", owner: "AlgorithmicGames") {
+				discussions(
+					categoryId: "DIC_kwDOKCNqZ84CYRsS"
+					orderBy: {field: CREATED_AT, direction: DESC}
+					last: ${amount}
+				){
+					nodes {
+						title
+						url
+						createdAt
+					}
+				}
+			}
+		}`}})
+	}
 	static login(){
 		let oAuthCode = null
 		if(0 < location.href.indexOf('?oAuthCode=')){
