@@ -1,9 +1,14 @@
 #root {
 	display: flex;
 	flex-direction: row;
-	gap: 16px;
 	border: var(--window-border);
-	padding: var(--window-padding);
+}
+
+#root > * {
+	padding: 7px 12px;
+}
+#root > *:not(:first-child) {
+	border-left: var(--window-border);
 }
 
 .split {

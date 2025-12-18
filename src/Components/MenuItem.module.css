@@ -4,6 +4,10 @@
 	gap: 16px;
 }
 
+.menuItem a {
+	text-decoration: none;
+}
+
 .dropdown {
 	position: relative;
 	display: inline-block;
@@ -20,7 +24,6 @@
 }
 .dropdownContent>* {
 	padding: 12px 12px;
-	text-decoration: none;
 	display: block;
 	border: 1px solid transparent;
 }
