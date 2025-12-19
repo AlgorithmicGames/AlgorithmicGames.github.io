@@ -7,7 +7,8 @@ import { createAsync } from '@solidjs/router';
 import GitHubService from '../GitHubService.tsx';
 
 export default function Header() {
-	const headerTitle = 'Algorithmic Games';
+	const headerTitle = 'Algorithmic.Games';
+	const headerTitleHover = '@ GitHub';
 	
 	const [localDevelopment, setLocalDevelopment] = createSignal(false);
 	const [backendDevelopment, setBackendDevelopment] = createSignal(false);
@@ -21,7 +22,10 @@ export default function Header() {
 	const arenas = createAsync(() => GitHubService.fetchArenas());
 
 	return (<header id={styles.root}>
-		<div class={styles.headerTitle}>{headerTitle}</div>
+		<div class={styles.title}>
+			<div class={styles.titleText}>{headerTitle}</div>
+			<a class={styles.titleHover} href="https://github.com/AlgorithmicGames" target="_blank">{headerTitleHover}</a>
+		</div>
 		<MenuItem title="Announcements" href="https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements" target="_blank">
 			<Suspense>
 				<For each={announcements()}>{(announcement) =>
@@ -34,7 +38,7 @@ export default function Header() {
 			<MenuItem title="· · ·" href="https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements" target="_blank"/>
 		</MenuItem>
 		<MenuItem title="Arena">
-			<For each={arenas()}>{(arena) => <span>{arena.name}</span>}</For>
+			<For each={arenas()}>{(arena) => <div>{arena.name}</div>}</For>
 		</MenuItem>
 		<MenuItem title="Replays"/>
 		<Show when={localDevelopment() || backendDevelopment()}>

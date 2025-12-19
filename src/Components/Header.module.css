@@ -11,6 +11,18 @@
 	border-left: var(--window-border);
 }
 
+.title:not(:hover) .titleHover {
+	display: none;
+}
+.title:hover .titleText {
+	height: 0;
+	visibility: hidden;
+}
+.title:hover .titleHover {
+	display: block;
+	text-decoration: none;
+}
+
 .split {
 	flex-grow: 1;
 }
