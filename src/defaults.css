@@ -1,3 +1,4 @@
+/* Global variables */
 :root {
 	--main-color: green;
 	--main-background-color: black;
@@ -7,11 +8,22 @@
 	--window-border: 2px solid;
 	--window-padding: 7px 13px 7px 13px;
 }
+
+/* Global styles */
+:root {
+	background-color: var(--main-background-color);
+}
 :root, a, select, select>* {
 	color: var(--main-color);
 }
 :root, body {
 	height: 100%;
+}
+body {
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-rows: auto 1fr;
 }
 :root, pre {
 	font-family: consolas, "Courier New", Courier, Monaco, monospace;
