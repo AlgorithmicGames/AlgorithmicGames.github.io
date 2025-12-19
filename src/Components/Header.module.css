@@ -21,6 +21,7 @@
 .title:hover .titleHover {
 	display: block;
 	text-decoration: none;
+	text-align: center;
 }
 
 .split {
