@@ -1,16 +1,24 @@
 import { children as childrenFunction, Show, createSignal } from "solid-js";
 import styles from './MenuItem.module.css';
+import { useNavigate } from '@solidjs/router';
 
 type MenuItemProps = {
 	title: string,
 	href?: string,
 	svgSrc?: string,
-	hrefClass?: string,
+	anchorClass?: string,
 	target?: string,
+	navigate?: string,
 	children?: any
 };
 
-export default function MenuItem({ title, href, svgSrc, hrefClass, target, children }: MenuItemProps) {
+export default function MenuItem({ title, href, svgSrc, anchorClass, target, navigate='', children }: MenuItemProps) {
+	if(href && navigate) {
+		throw new Error('Either href or navigate must be provided, not both');
+	}
+
+	const navigateTo = useNavigate();
+	
 	const classList = [styles.menuItem];
 	if(children) {
 		classList.push(styles.dropdown);
@@ -21,8 +29,8 @@ export default function MenuItem({ title, href, svgSrc, hrefClass, target, child
 	}
 	return (
 		<div class={classList.join(' ')}>
-			<Show when={href} fallback={<div>{title}</div>}>
-				<a href={href} target={target} class={hrefClass} innerHTML={svg()+"<span>"+title+"</span>"}/>
+			<Show when={href || navigate} fallback={<div>{title}</div>}>
+				<a href={href || 'javascript:void(0)'} target={target} class={anchorClass} onclick={() => navigate && navigateTo(navigate)}><span innerHTML={svg()}/>{title}</a>
 			</Show>
 			<Show when={children}>
 				<div class={styles.dropdownContent}>

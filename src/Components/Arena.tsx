@@ -2,11 +2,14 @@ import styles from './Content.module.css'
 import { createSignal } from 'solid-js'
 import solidLogo from '../assets/solid.svg'
 import viteLogo from '../assets/vite.svg'
+import { useParams } from '@solidjs/router'
 
 export default function Content() {
 	const [count, setCount] = createSignal(0)
+	const params = useParams()
 
 	return (<div id={styles.root}>
+		<h1>Arena: {params.author}/{params.arena}</h1>
 		<div>
 			<a href="https://vite.dev" target="_blank">
 				<img src={viteLogo} class={styles.logo} alt="Vite logo" />

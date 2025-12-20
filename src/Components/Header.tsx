@@ -37,8 +37,8 @@ export default function Header() {
 			</Suspense>
 			<MenuItem title="· · ·" href="https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements" target="_blank"/>
 		</MenuItem>
-		<MenuItem title="Arena">
-			<For each={arenas()}>{(arena) => <div>{arena.name}</div>}</For>
+		<MenuItem title="Arena" navigate="/Arena/">
+			<For each={arenas()}>{(arena) => <MenuItem title={arena.name} navigate={"/Arena/"+arena.full_name}/>}</For>
 		</MenuItem>
 		<MenuItem title="Replays"/>
 		<Show when={localDevelopment() || backendDevelopment()}>
@@ -56,8 +56,8 @@ export default function Header() {
 		</Show>
 		<div class={styles.split}></div>
 		<MenuItem title="Community" href="https://algorithmic.games/Community/" target="_blank">
-			<MenuItem title="GitHub" href="https://github.com/orgs/AlgorithmicGames/discussions" svgSrc='/github.svg' hrefClass={communityLogosStyles.githubLogo}/>
-			<MenuItem title="Discord" href="https://discord.gg/jhUJNsN" svgSrc='/discord.svg' target="_blank" hrefClass={communityLogosStyles.discordLogo}/>
+			<MenuItem title="GitHub" href="https://github.com/orgs/AlgorithmicGames/discussions" svgSrc='/github.svg' target="_blank" anchorClass={communityLogosStyles.githubLogo}/>
+			<MenuItem title="Discord" href="https://discord.gg/jhUJNsN" svgSrc='/discord.svg' target="_blank" anchorClass={communityLogosStyles.discordLogo}/>
 		</MenuItem>
 		<LoginButton />
 	</header>)
