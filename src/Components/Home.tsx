@@ -1,11 +1,16 @@
-import styles from './Content.module.css'
-import { createSignal } from 'solid-js'
+import styles from './Home.module.css'
+import { createSignal, Show } from 'solid-js'
 import solidLogo from '../assets/solid.svg'
 import viteLogo from '../assets/vite.svg'
-export default function Content() {
+import { useParams } from '@solidjs/router'
+export default function Home() {
 	const [count, setCount] = createSignal(0)
+	const params = useParams()
 
 	return (<div id={styles.root}>
+		<Show when={params.pageNotfound}>
+			<h1>PageNotFound: {params.pageNotfound}</h1>
+		</Show>
 		<div>
 			<a href="https://vite.dev" target="_blank">
 				<img src={viteLogo} class={styles.logo} alt="Vite logo" />

@@ -4,6 +4,7 @@ import { Route, Router, type RouteSectionProps } from '@solidjs/router'
 import './defaults.css'
 import Header from './Components/Header.tsx'
 import Home from './Components/Home.tsx'
+import Arena from './Components/Arena.tsx'
 import Dev from './Dev.tsx'
 
 const root = (props: RouteSectionProps<unknown>) => (
@@ -15,7 +16,7 @@ const root = (props: RouteSectionProps<unknown>) => (
 
 render(() => <Router root={root}>
 	<Route path="" component={Home} />
+	<Route path="Arena/:author?/:arena?" component={Arena} />
 	<Route path="Dev" component={Dev} />
-	<Route path="*404" component={() => <div>404</div>} />
-	<Route path="*" component={() => <h1>😮</h1>} />
+	<Route path="*pageNotfound" component={Home} />
 </Router>, document.body!)
