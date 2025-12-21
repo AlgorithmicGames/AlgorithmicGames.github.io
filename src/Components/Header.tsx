@@ -7,7 +7,7 @@ import { createAsync } from '@solidjs/router';
 import GitHubService from '../GitHubService.tsx';
 
 export default function Header() {
-	const headerTitle = 'Algorithmic.Games';
+	const headerTitle = 'Algorithmic Games';
 	const headerTitleHover = '@ GitHub';
 	
 	const [localDevelopment, setLocalDevelopment] = createSignal(false);
