@@ -1,7 +1,7 @@
 'use strict'
 class Backend {
 	static call(module='', data) {
-		return fetch(new Request(BackendService.getBackend()+'/'+module), {
+		return fetch(new Request(Backend.getBackend()+'/'+module), {
 			method: 'POST',
 			body: JSON.stringify(data)
 		});
