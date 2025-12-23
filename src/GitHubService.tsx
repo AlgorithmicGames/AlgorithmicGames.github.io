@@ -1,6 +1,6 @@
 import BackendService from './BackendService'
 
-export default class GitHubService{
+export default class GitHubService {
 	static #ARENA_VERSION = 1
 	static #CLIENT_ID = '19698a5006b153e8a671'
 	static #STARTED = sessionStorage.getItem('PageLoaded')

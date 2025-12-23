@@ -1,4 +1,4 @@
-export default class BackendService{
+export default class BackendService {
 	static call(module='', data: any={}): Promise<Response> {
 		return fetch(new Request(BackendService.getBackend()+'/'+module), {
 			method: 'POST',
