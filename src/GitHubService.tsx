@@ -1,3 +1,5 @@
+import BackendService from './BackendService'
+
 export default class GitHubService{
 	static #ARENA_VERSION = 1
 	static #CLIENT_ID = '19698a5006b153e8a671'
@@ -218,13 +220,13 @@ export default class GitHubService{
 		}
 		if(oAuthCode !== null){
 			localStorage.setItem(GitHubService.#SESSION_KEY, '!'+oAuthCode)
-		/*	Backend.call('login', {oAuthCode: oAuthCode, client_id: GitHubService.#CLIENT_ID}).then(response => response.text()).then(accessToken => {
+			BackendService.call('login', {oAuthCode: oAuthCode, client_id: GitHubService.#CLIENT_ID}).then(response => response.text()).then(accessToken => {
 				localStorage.setItem(GitHubService.#SESSION_KEY, JSON.stringify({accessToken}))
 				location.replace(location.protocol+'//'+location.host+location.pathname)
 			}).catch(error => {
 				console.error(error)
 				GitHubService.logout()
-			})*/
+			})
 		}
 	}
 	static isLoggedIn(){
