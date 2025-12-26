@@ -212,9 +212,7 @@ export default class GitHubService {
 	}
 	static login(){
 		let oAuthCode = null
-		if(0 < location.href.indexOf('?oAuthCode=')){
-			oAuthCode = location.href.substr(location.href.indexOf('=')+1)
-		}
+		oAuthCode = location.href.substr(location.href.indexOf('=') + 1)
 		if(!GitHubService.getSession()?.accessToken){
 			GitHubService.logout()
 		}

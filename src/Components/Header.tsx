@@ -1,6 +1,6 @@
 import styles from './Header.module.css'
 import MenuItem from './MenuItem.tsx'
-import LoginButton from './LoginButton.tsx'
+import UserMenu from './UserMenu.tsx'
 import communityLogosStyles from './CommunityLogos.module.css'
 import { For, Show, Suspense, createSignal } from 'solid-js';
 import { createAsync } from '@solidjs/router';
@@ -66,6 +66,6 @@ export default function Header() {
 			<MenuItem href="https://github.com/orgs/AlgorithmicGames/discussions" svgSrc='/github.svg' target="_blank" anchorClass={communityLogosStyles.githubLogo}>GitHub</MenuItem>
 			<MenuItem href="https://discord.gg/jhUJNsN" svgSrc='/discord.svg' target="_blank" anchorClass={communityLogosStyles.discordLogo}>Discord</MenuItem>
 		</MenuItem>
-		<LoginButton />
+		<UserMenu />
 	</header>)
 }

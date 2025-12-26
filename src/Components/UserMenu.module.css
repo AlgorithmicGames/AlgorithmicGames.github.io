@@ -1,0 +1,30 @@
+@keyframes display-login {
+	from {
+		max-width: 0px;
+	}
+	to {
+		max-width: 70px;
+	}
+}
+
+.currentProfileImage {
+	height: 64px;
+}
+
+.logoutButton {
+	cursor: pointer;
+}
+
+.logoutButton {
+	display: block;
+	overflow: hidden;
+	direction: rtl;
+	max-width: 0;
+	float: left;
+}
+:hover > .label .logoutButton {
+	animation-name: display-login;
+	animation-duration: 2s;
+	animation-timing-function: ease-in-out;
+	max-width: unset;
+}

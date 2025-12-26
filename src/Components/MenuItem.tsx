@@ -33,7 +33,7 @@ export default function MenuItem({ href, svgSrc, anchorClass, target, navigate='
 	}
 	return (
 		<div class={classList.join(' ')}>
-			<Show when={href || navigate} fallback={<div>{title}</div>}>
+			<Show when={href || navigate} fallback={title}>
 				<a href={href || 'javascript:void(0)'} target={target} class={anchorClass} onclick={() => navigate && navigateTo(navigate)}><span innerHTML={svg()}/>{title}</a>
 			</Show>
 			<Show when={children}>

@@ -6,6 +6,11 @@ import Header from './Components/Header.tsx'
 import Home from './Components/Home.tsx'
 import Arena from './Components/Arena.tsx'
 import Dev from './Dev.tsx'
+import GitHubService from './GitHubService.tsx'
+
+if(0 < location.href.indexOf('?oAuthCode=')){
+	GitHubService.login()
+}
 
 const root = (props: RouteSectionProps<unknown>) => (
 	<>
