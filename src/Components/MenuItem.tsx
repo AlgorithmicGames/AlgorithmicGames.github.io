@@ -3,7 +3,6 @@ import styles from './MenuItem.module.css';
 import { useNavigate } from '@solidjs/router';
 
 type MenuItemProps = {
-	title: string,
 	href?: string,
 	svgSrc?: string,
 	anchorClass?: string,
@@ -12,13 +11,18 @@ type MenuItemProps = {
 	children?: any
 };
 
-export default function MenuItem({ title, href, svgSrc, anchorClass, target, navigate='', children }: MenuItemProps) {
+export default function MenuItem({ href, svgSrc, anchorClass, target, navigate='', children }: MenuItemProps) {
 	if(href && navigate) {
 		throw new Error('Either href or navigate must be provided, not both');
 	}
 
 	const navigateTo = useNavigate();
 	
+	const title = children.shift ? children.shift() : children
+	if(title === children) {
+		children = null;
+	}
+
 	const classList = [styles.menuItem];
 	if(children) {
 		classList.push(styles.dropdown);

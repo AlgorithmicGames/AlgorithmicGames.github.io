@@ -26,7 +26,8 @@ export default function Header() {
 			<div class={styles.titleText}>{headerTitle}</div>
 			<a class={styles.titleHover} href="https://github.com/AlgorithmicGames" target="_blank">{headerTitleHover}</a>
 		</div>
-		<MenuItem title="Announcements" href="https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements" target="_blank">
+		<MenuItem href="https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements" target="_blank">
+			Announcements
 			<Suspense>
 				<For each={announcements()}>{(announcement) =>
 					<a href={announcement.url} target="_blank">
@@ -35,29 +36,35 @@ export default function Header() {
 					</a>
 				}</For>
 			</Suspense>
-			<MenuItem title="· · ·" href="https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements" target="_blank"/>
+			<MenuItem href="https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements" target="_blank">· · ·</MenuItem>
 		</MenuItem>
-		<MenuItem title="Arena" navigate="/Arena/">
-			<For each={arenas()}>{(arena) => <MenuItem title={arena.name} navigate={"/Arena/"+arena.full_name}/>}</For>
+		<MenuItem navigate="/Arena/">
+			Arena
+			<For each={arenas()}>{(arena) => <MenuItem navigate={"/Arena/"+arena.full_name}>{arena.name}</MenuItem>}</For>
 		</MenuItem>
-		<MenuItem title="Replays"/>
+		<MenuItem>
+			Replays
+		</MenuItem>
 		<Show when={localDevelopment() || backendDevelopment()}>
-			<MenuItem title="🚧Development🚧">
+			<MenuItem>
+				🚧Development🚧
 				<Show when={localDevelopment()}>
-					<MenuItem title="<b>Local development</b><div>Automatic addition of local arena and participants is active.</div>" href="/Dev"/>
+					<MenuItem href="/Dev"><b>Local development</b><div>Automatic addition of local arena and participants is active.</div></MenuItem>
 				</Show>
 				<Show when={backendDevelopment()}>
-				<MenuItem title="<b>Backend development</b>" href="/Dev"/>
-					<div class="TEMP">
-						Backend is redirected to <i class="clickable" style="background: var(--secondary-background-color); color: var(--secondary-background-color)" onmouseover="this.style.background=\'var(--main-color)\';this.style.color=\'var(--main-color)\'" onmouseleave="this.style.background=\'var(--secondary-background-color)\';this.style.color=\'var(--secondary-background-color)\'" onclick="this.style.background=\'\';this.style.color=\'\'; this.onmouseover=undefined; this.onmouseleave=undefined;">'+Backend.getBackend().path+'</i>.<br/><br/><button class="clickable" onclick="localStorage.removeItem(\'backend\'); location.reload();">Clear</button>
-					</div>
+					<MenuItem href="/Dev"><b>Backend development</b>
+						<div class="TEMP">
+							Backend is redirected to <i class="clickable" style="background: var(--secondary-background-color); color: var(--secondary-background-color)" onmouseover="this.style.background=\'var(--main-color)\';this.style.color=\'var(--main-color)\'" onmouseleave="this.style.background=\'var(--secondary-background-color)\';this.style.color=\'var(--secondary-background-color)\'" onclick="this.style.background=\'\';this.style.color=\'\'; this.onmouseover=undefined; this.onmouseleave=undefined;">'+Backend.getBackend().path+'</i>.<br/><br/><button class="clickable" onclick="localStorage.removeItem(\'backend\'); location.reload();">Clear</button>
+						</div>
+					</MenuItem>
 				</Show>
 			</MenuItem>
 		</Show>
 		<div class={styles.split}></div>
-		<MenuItem title="Community" href="https://algorithmic.games/Community/" target="_blank">
-			<MenuItem title="GitHub" href="https://github.com/orgs/AlgorithmicGames/discussions" svgSrc='/github.svg' target="_blank" anchorClass={communityLogosStyles.githubLogo}/>
-			<MenuItem title="Discord" href="https://discord.gg/jhUJNsN" svgSrc='/discord.svg' target="_blank" anchorClass={communityLogosStyles.discordLogo}/>
+		<MenuItem href="https://algorithmic.games/Community/" target="_blank">
+			Community
+			<MenuItem href="https://github.com/orgs/AlgorithmicGames/discussions" svgSrc='/github.svg' target="_blank" anchorClass={communityLogosStyles.githubLogo}>GitHub</MenuItem>
+			<MenuItem href="https://discord.gg/jhUJNsN" svgSrc='/discord.svg' target="_blank" anchorClass={communityLogosStyles.discordLogo}>Discord</MenuItem>
 		</MenuItem>
 		<LoginButton />
 	</header>)
