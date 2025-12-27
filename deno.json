@@ -1,0 +1,23 @@
+{
+	"tasks": {
+		"dev": "vite",
+		"build": "tsc -b && vite build",
+		"preview": "vite preview"
+	},
+	"lint": {
+		"rules": {
+			"tags": [
+				"recommended"
+			]
+		}
+	},
+	"fmt": {
+		"useTabs": true,
+		"semiColons": false,
+		"singleQuote": true,
+		"lineWidth": 1000000,
+		"exclude": [
+			"**/*.svg"
+		]
+	}
+}
