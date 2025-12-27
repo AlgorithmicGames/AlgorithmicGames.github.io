@@ -1,16 +1,16 @@
 {
-  "name": "algorithmic-games",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "dependencies": {
-    "@solidjs/router": "^0.15.4",
-    "solid-js": "^1.9.10"
-  },
-  "devDependencies": {
-    "@types/node": "^24.10.1",
-    "typescript": "~5.9.3",
-    "vite": "^7.2.4",
-    "vite-plugin-solid": "^2.11.10"
-  }
+	"name": "algorithmic-games",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"dependencies": {
+		"@solidjs/router": "^0.15.4",
+		"solid-js": "^1.9.10"
+	},
+	"devDependencies": {
+		"@types/node": "^24.10.1",
+		"typescript": "~5.9.3",
+		"vite": "^7.2.4",
+		"vite-plugin-solid": "^2.11.10"
+	}
 }

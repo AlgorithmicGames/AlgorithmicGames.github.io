@@ -3,7 +3,7 @@
 	--main-color: green;
 	--main-background-color: black;
 	--secondary-background-color: darkgreen;
-	--transparency: rgba(0,0,0,.75);
+	--transparency: rgba(0, 0, 0, 0.75);
 	--error-color: red;
 	--window-border: 2px solid;
 	--window-padding: 7px 13px 7px 13px;
@@ -13,7 +13,7 @@
 :root {
 	background-color: var(--main-background-color);
 }
-:root, a, select, select>* {
+:root, a, select, select > * {
 	color: var(--main-color);
 }
 :root, body {
@@ -26,9 +26,9 @@ body {
 	grid-template-rows: auto 1fr;
 }
 :root, pre {
-	font-family: consolas, "Courier New", Courier, Monaco, monospace;
+	font-family: consolas, 'Courier New', Courier, Monaco, monospace;
 }
-:root, input, select, .jsoneditor, .jsoneditor-menu{
+:root, input, select, .jsoneditor, .jsoneditor-menu {
 	border-color: var(--main-color);
 }
 input {
@@ -45,7 +45,7 @@ select {
 	display: none !important;
 }
 /* ace-jsoneditor */
-.jsoneditor>.jsoneditor-menu {
+.jsoneditor > .jsoneditor-menu {
 	background-color: var(--main-color);
 }
 .jsoneditor .jsoneditor-selected {

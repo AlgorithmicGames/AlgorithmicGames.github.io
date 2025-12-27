@@ -12,6 +12,6 @@
 .discordLogo svg, .githubLogo svg {
 	fill: var(--secondary-background-color);
 }
-:hover>.discordLogo svg, :hover>.githubLogo svg {
+:hover > .discordLogo svg, :hover > .githubLogo svg {
 	fill: var(--main-color);
 }

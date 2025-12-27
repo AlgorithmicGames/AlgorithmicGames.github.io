@@ -22,7 +22,7 @@
 	width: max-content;
 	z-index: 1;
 }
-.dropdownContent>* {
+.dropdownContent > * {
 	padding: 12px 12px;
 	display: block;
 	border: 1px solid transparent;
@@ -31,10 +31,10 @@
 	text-decoration: none;
 	color: var(--secondary-background-color);
 }
-.dropdownContent>:hover {
+.dropdownContent > :hover {
 	border-color: var(--main-color);
 }
-.dropdownContent>:hover a {
+.dropdownContent > :hover a {
 	color: var(--main-color);
 }
 .dropdown:hover .dropdownContent {

@@ -5,15 +5,15 @@ import MenuItem from './MenuItem.tsx'
 
 export default function UserMenu() {
 	const isLoggedIn = GitHubService.isLoggedIn()
-	if(isLoggedIn){
-		GitHubService.fetch('user').then(response => response.json()).then(async user => {
+	if (isLoggedIn) {
+		GitHubService.fetch('user').then((response) => response.json()).then(async (user) => {
 			const sessionStorage = GitHubService.getSessionStorage() ?? {}
 			sessionStorage.username = user.login
 			sessionStorage.avatar_url = user.avatar_url
 			GitHubService.setSessionStorage(sessionStorage)
 		})
 	}
-	
+
 	return (
 		<>
 			<Show when={isLoggedIn}>
@@ -25,13 +25,13 @@ export default function UserMenu() {
 						&nbsp;
 						<span>{GitHubService.getSessionStorage().username}</span>
 					</label>
-					<img class={styles.currentProfileImage} alt="Current user profile image" src={GitHubService.getSessionStorage().avatar_url}></img>
-					<a href="/Dev">Arena setups</a>
+					<img class={styles.currentProfileImage} alt='Current user profile image' src={GitHubService.getSessionStorage().avatar_url}></img>
+					<a href='/Dev'>Arena setups</a>
 				</MenuItem>
 			</Show>
 			<Show when={!isLoggedIn}>
 				<div>
-					<a href={"https://algorithmic.games/login?origin="+encodeURI(location.protocol+'//'+location.host+location.pathname)}>Login</a>
+					<a href={'https://algorithmic.games/login?origin=' + encodeURI(location.protocol + '//' + location.host + location.pathname)}>Login</a>
 				</div>
 			</Show>
 		</>

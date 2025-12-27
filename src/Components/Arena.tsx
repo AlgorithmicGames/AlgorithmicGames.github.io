@@ -5,7 +5,9 @@ export default function Content() {
 	const author = params.author || 'AlgorithmicGames'
 	const arena = params.arena
 
-	return (<div>
-		<h1>Arena: {author}/{arena}</h1>
-	</div>)
+	return (
+		<div>
+			<h1>Arena: {author}/{arena}</h1>
+		</div>
+	)
 }
