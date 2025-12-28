@@ -1,7 +1,7 @@
 import styles from './Home.module.css'
 import { createSignal, Show } from 'solid-js'
-import solidLogo from '../assets/solid.svg'
-import viteLogo from '../assets/vite.svg'
+import solidLogo from './assets/solid.svg'
+import viteLogo from './assets/vite.svg'
 import { useParams } from '@solidjs/router'
 export default function Home() {
 	const [count, setCount] = createSignal(0)
