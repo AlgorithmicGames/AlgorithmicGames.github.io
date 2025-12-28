@@ -60,3 +60,14 @@ select {
 	background-color: unset;
 	border-color: unset;
 }
+
+/* Specifics */
+#content {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	background-color: var(--transparency);
+}
+#content:empty {
+	display: none;
+}
