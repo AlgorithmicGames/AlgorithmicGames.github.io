@@ -20,6 +20,7 @@
 	border: 1px solid var(--main-color);
 	border-top: 1px dashed;
 	width: max-content;
+	min-width: calc(100% + 2px);
 	z-index: 1;
 }
 .dropdownContent > * {
@@ -34,7 +35,7 @@
 .dropdownContent > :hover {
 	border-color: var(--main-color);
 }
-.dropdownContent > :hover a {
+.dropdownContent > :hover, .dropdownContent > :hover a {
 	color: var(--main-color);
 }
 .dropdown:hover .dropdownContent {

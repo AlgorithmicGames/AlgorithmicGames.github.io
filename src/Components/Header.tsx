@@ -39,7 +39,9 @@ export default function Header() {
 						)}
 					</For>
 				</Suspense>
-				<MenuItem href='https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements' target='_blank'>· · ·</MenuItem>
+				<MenuItem href='https://github.com/orgs/AlgorithmicGames/discussions/categories/1-announcements' target='_blank'>
+					<div style='text-align: center'>· · ·</div>
+				</MenuItem>
 			</MenuItem>
 			<MenuItem navigate='/Arena/'>
 				Arena
@@ -48,7 +50,13 @@ export default function Header() {
 			<Show when={false /* True when has replays */}>
 				<MenuItem>
 					Replays
-					<For each={[{ uuid: '1', name: 'Replay1' }]}>{(replay) => <MenuItem navigate={'/Replay/' + replay.uuid}>{replay.name}</MenuItem>}</For>
+					<For each={[{ uuid: '1', name: 'Replay1' }]}>
+						{(replay) => (
+							<MenuItem navigate={'/Replay/' + replay.uuid}>
+								{replay.name}
+							</MenuItem>
+						)}
+					</For>
 				</MenuItem>
 			</Show>
 			<Show when={localDevelopment() || backendDevelopment()}>

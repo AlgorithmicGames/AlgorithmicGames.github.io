@@ -12,6 +12,10 @@
 	border-left: var(--window-border);
 }
 
+#root > * > *:first-child {
+	align-items: center;
+}
+
 .title:not(:hover) .titleHover {
 	display: none;
 }
