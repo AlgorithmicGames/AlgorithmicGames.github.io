@@ -7,6 +7,10 @@
 	}
 }
 
+.label {
+	display: flex;
+}
+
 .currentProfileImage {
 	height: 64px;
 }
@@ -15,14 +19,14 @@
 	cursor: pointer;
 }
 
-.logoutButton {
-	display: block;
+.logoutButtonWrapper {
+	display: flex;
 	overflow: hidden;
 	direction: rtl;
 	max-width: 0;
 	float: left;
 }
-:hover > .label .logoutButton {
+:hover > .label .logoutButtonWrapper {
 	animation-name: display-login;
 	animation-duration: 2s;
 	animation-timing-function: ease-in-out;
