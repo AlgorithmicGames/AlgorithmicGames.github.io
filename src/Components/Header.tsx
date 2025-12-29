@@ -45,9 +45,10 @@ export default function Header() {
 				Arena
 				<For each={arenas()}>{(arena) => <MenuItem navigate={'/Arena/' + arena.full_name}>{arena.name}</MenuItem>}</For>
 			</MenuItem>
-			<Show when={false /* When has replays */}>
+			<Show when={false /* True when has replays */}>
 				<MenuItem>
 					Replays
+					<For each={[{ uuid: '1', name: 'Replay1' }]}>{(replay) => <MenuItem navigate={'/Replay/' + replay.uuid}>{replay.name}</MenuItem>}</For>
 				</MenuItem>
 			</Show>
 			<Show when={localDevelopment() || backendDevelopment()}>
