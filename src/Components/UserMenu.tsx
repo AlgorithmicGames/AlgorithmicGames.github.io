@@ -25,8 +25,9 @@ export default function UserMenu() {
 							</div>
 						</div>
 						<span>{GitHubService.getSessionStorage().username}</span>
+						&nbsp;
+						<img class={styles.currentProfileImage + ' ' + styles.noEffect} alt='Current user profile image' src={GitHubService.getSessionStorage().avatar_url}></img>
 					</label>
-					<img class={styles.currentProfileImage} alt='Current user profile image' src={GitHubService.getSessionStorage().avatar_url}></img>
 					<a href='/Dev'>Arena setups</a>
 				</MenuItem>
 			</Show>

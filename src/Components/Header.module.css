@@ -6,6 +6,7 @@
 
 #root > * {
 	padding: 7px 12px;
+	align-items: center;
 }
 #root > *:not(:first-child) {
 	border-left: var(--window-border);
