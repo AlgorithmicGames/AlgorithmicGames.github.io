@@ -6,7 +6,15 @@ type SVGProps = {
 }
 
 const assets: Record<string, Accessor<string>> = {}
-for (const url of [/*SVG_URL_PLACEHOLDER_START*/'/svg/algorithmic-games.svg', '/svg/discord.svg', '/svg/github.svg'/*SVG_URL_PLACEHOLDER_END*/]) {
+for (
+	const url of [
+		/*SVG_URL_PLACEHOLDER_START*/
+		'/svg/algorithmic-games.svg',
+		'/svg/discord.svg',
+		'/svg/github.svg',
+		/*SVG_URL_PLACEHOLDER_END*/
+	]
+) {
 	const key = url.replace(/\/svg\/|\.svg/g, '')
 	const [svg, setSvg] = createSignal('')
 	assets[key] = svg

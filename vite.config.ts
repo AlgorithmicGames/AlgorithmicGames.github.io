@@ -23,7 +23,7 @@ export default defineConfig({
 		name: 'build-script',
 		buildStart() {
 			const svgService = fs.readFileSync('src/components/SVG.tsx', 'utf8')
-			const svgFiles = findFiles('public/svg', '.svg').map((file) => `'${file}'`).join(', ')
+			const svgFiles = '\n\t\t' + findFiles('public/svg', '.svg').map((file) => `'${file}'`).join(',\n\t\t') + ',\n\t\t'
 			const regex = new RegExp(String.raw`${svgMarkerStart}.*${svgMarkerEnd}`, 'g')
 			fs.writeFileSync('src/components/SVG.tsx', svgService.replace(regex, svgMarkerStart.replaceAll('\\', '') + svgFiles + svgMarkerEnd.replaceAll('\\', '')))
 		},
