@@ -1,4 +1,4 @@
-import { children as childrenFunction, createSignal, Show } from 'solid-js'
+import { children as childrenFunction, Show } from 'solid-js'
 import styles from './MenuItem.module.css'
 import { useNavigate } from '@solidjs/router'
 import SVG from '../components/SVG.tsx'
