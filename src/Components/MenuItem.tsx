@@ -1,17 +1,18 @@
 import { children as childrenFunction, createSignal, Show } from 'solid-js'
 import styles from './MenuItem.module.css'
 import { useNavigate } from '@solidjs/router'
+import SVG from '../components/SVG.tsx'
 
 type MenuItemProps = {
 	href?: string
-	svgSrc?: string
+	svgKey?: string
 	anchorClass?: string
 	target?: string
 	navigate?: string
 	children?: any
 }
 
-export default function MenuItem({ href, svgSrc, anchorClass, target, navigate = '', children }: MenuItemProps) {
+export default function MenuItem({ href, svgKey, anchorClass, target, navigate = '', children }: MenuItemProps) {
 	if (href && navigate) {
 		throw new Error('Either href or navigate must be provided, not both')
 	}
@@ -27,15 +28,13 @@ export default function MenuItem({ href, svgSrc, anchorClass, target, navigate =
 	if (children) {
 		classList.push(styles.dropdown)
 	}
-	const [svg, setSvg] = createSignal('')
-	if (svgSrc) {
-		fetch(svgSrc).then((response) => response.text()).then((text) => setSvg(text.replace(/<style>.*<\/style>/, '')))
-	}
 	return (
 		<div class={classList.join(' ')}>
 			<Show when={href || navigate} fallback={title}>
 				<a href={href || 'javascript:void(0)'} target={target} class={anchorClass} onclick={() => navigate && navigateTo(navigate)}>
-					<span innerHTML={svg()} />
+					<Show when={svgKey}>
+						<SVG key={svgKey!} />
+					</Show>
 					{title}
 				</a>
 			</Show>

@@ -83,8 +83,8 @@ export default function Header() {
 			<div class={styles.split}></div>
 			<MenuItem href='https://algorithmic.games/Community/' target='_blank'>
 				Community
-				<MenuItem href='https://github.com/orgs/AlgorithmicGames/discussions' svgSrc='/github.svg' target='_blank' anchorClass={communityLogosStyles.githubLogo}>GitHub</MenuItem>
-				<MenuItem href='https://discord.gg/jhUJNsN' svgSrc='/discord.svg' target='_blank' anchorClass={communityLogosStyles.discordLogo}>Discord</MenuItem>
+				<MenuItem href='https://github.com/orgs/AlgorithmicGames/discussions' svgKey='github' target='_blank' anchorClass={communityLogosStyles.githubLogo}>GitHub</MenuItem>
+				<MenuItem href='https://discord.gg/jhUJNsN' svgKey='discord' target='_blank' anchorClass={communityLogosStyles.discordLogo}>Discord</MenuItem>
 			</MenuItem>
 			<UserMenu />
 		</header>
