@@ -1,4 +1,5 @@
 import BackendService from './BackendService'
+import type { ArenaInfo } from './types'
 
 export default class GitHubService {
 	static #ARENA_VERSION = 1
@@ -162,12 +163,12 @@ export default class GitHubService {
 		}).catch(reject)
 		return options.async ? promise : iframe
 	}
-	static fetchArenas() {
+	static fetchArenas(): Promise<ArenaInfo[]> {
 		return GitHubService.fetch('search/repositories?q=topic:Algorithmic-Games+topic:Algorithmic-Games-Arena-v' + GitHubService.#ARENA_VERSION).then((response) => response.json()).then((json) => {
-			let arenas: any[] = []
-			let promises: Promise<any>[] = []
+			let arenas: ArenaInfo[] = []
+			let promises: Promise<void>[] = []
 			json.items.forEach((repo: any) => {
-				let data = {
+				let data: ArenaInfo = {
 					official: repo.owner.login === 'AlgorithmicGames',
 					name: repo.full_name.replace(/.*\/|-Arena/g, ''),
 					raw_url: null as string | null,

@@ -1,16 +1,23 @@
 import { useParams } from '@solidjs/router'
-
-function getAuthor() {
-	return useParams().author || 'AlgorithmicGames'
-}
-function getArena() {
-	return useParams().arena
-}
+import ParticipantSelector from './components/ParticipantSelector.tsx'
+import ArenaConfiguration from './components/ArenaConfiguration.tsx'
+import ArenaVisualizer from './components/ArenaVisualizer.tsx'
+import ArenaSelector from './components/ArenaSelector.tsx'
+import { ArenaContextProvider, getContext } from './contexts/Arena.tsx'
 
 export default function Content() {
 	return (
-		<div>
-			<h1>Arena: {getAuthor()}/{getArena()}</h1>
-		</div>
+		<ArenaContextProvider params={useParams()}>
+			<div>
+				<ArenaSelector />
+				<fieldset id='fieldset-arena-readme'>
+					<legend class='clickable'>Readme</legend>
+					<iframe id='arena-readme' sandbox='allow-same-origin'>README.md</iframe>
+				</fieldset>
+				<ParticipantSelector />
+				<ArenaConfiguration />
+				<ArenaVisualizer />
+			</div>
+		</ArenaContextProvider>
 	)
 }

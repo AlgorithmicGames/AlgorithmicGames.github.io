@@ -54,6 +54,21 @@ select {
 .jsoneditor input {
 	background-color: unset;
 }
+/* solid-select */
+.solid-select-container {
+	background-color: var(--main-background-color);
+}
+.solid-select-option {
+	color: var(--secondary-background-color);
+}
+.solid-select-option:hover {
+	background-color: var(--main-background-color) #fa7f25;
+	color: var(--main-color);
+}
+.solid-select-option[data-focused='true'] {
+	background-color: var(--main-background-color);
+	color: var(--main-color);
+}
 /* Disable style if page is not viewed from root. */
 :root.top * {
 	color: unset;

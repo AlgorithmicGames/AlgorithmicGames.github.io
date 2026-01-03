@@ -1,13 +1,15 @@
 /* @refresh reload */
 import { render } from 'solid-js/web'
 import { Route, Router, type RouteSectionProps } from '@solidjs/router'
-import './global.css'
-import Header from './Components/Header.tsx'
+import Header from './components/Header.tsx'
 import Home from './Home.tsx'
 import Arena from './Arena.tsx'
 import Dev from './Dev.tsx'
 import GitHubService from './GitHubService.tsx'
 import Background from './Background.tsx'
+
+import '@thisbeyond/solid-select/style.css'
+import './global.css'
 
 if (0 < location.href.indexOf('?oAuthCode=')) {
 	GitHubService.login()

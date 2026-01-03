@@ -1,0 +1,22 @@
+.readmeLink {
+	text-decoration: none;
+}
+.readmeLink svg {
+	height: 21px;
+	fill: var(--main-color);
+	vertical-align: bottom;
+}
+
+.arenaSelector {
+	width: 50%;
+	display: inline-block;
+}
+
+.arenaItem {
+	display: grid;
+	grid-template-columns: 1fr auto auto;
+}
+
+.arenaItem .official {
+	margin-right: 1em;
+}
