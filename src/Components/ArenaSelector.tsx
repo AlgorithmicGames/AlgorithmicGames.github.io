@@ -3,7 +3,7 @@ import GitHubService from '../GitHubService.tsx'
 import { createAsyncOptions, Select } from '@thisbeyond/solid-select'
 import styles from './ArenaSelector.module.css'
 import SVG from '../components/SVG.tsx'
-import type { ArenaInfo } from '../types.tsx'
+import { ArenaInfo } from '../types.tsx'
 import { createSignal, Show } from 'solid-js'
 
 export default function ArenaSelector() {
@@ -29,7 +29,7 @@ export default function ArenaSelector() {
 	const props = createAsyncOptions(searchArenas, 0)
 
 	function format(arena: ArenaInfo) {
-		if (!arena?.full_name) {
+		if (!(arena instanceof ArenaInfo)) {
 			return arena
 		}
 		return (
@@ -44,7 +44,7 @@ export default function ArenaSelector() {
 	}
 
 	function onChange(value: ArenaInfo) {
-		if (value?.full_name) {
+		if (value instanceof ArenaInfo) {
 			navigate(`/Arena/${value.full_name}`)
 		} else {
 			setInitialValue(initialValue())

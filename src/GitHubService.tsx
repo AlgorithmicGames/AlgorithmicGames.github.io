@@ -1,5 +1,5 @@
-import BackendService from './BackendService'
-import type { ArenaInfo } from './types'
+import BackendService from './BackendService.tsx'
+import { ArenaInfo } from './types.tsx'
 
 export default class GitHubService {
 	static #ARENA_VERSION = 1
@@ -165,22 +165,22 @@ export default class GitHubService {
 	}
 	static fetchArenas(): Promise<ArenaInfo[]> {
 		return GitHubService.fetch('search/repositories?q=topic:Algorithmic-Games+topic:Algorithmic-Games-Arena-v' + GitHubService.#ARENA_VERSION).then((response) => response.json()).then((json) => {
-			let arenas: ArenaInfo[] = []
-			let promises: Promise<void>[] = []
+			const arenas: ArenaInfo[] = []
+			const promises: Promise<void>[] = []
 			json.items.forEach((repo: any) => {
-				let data: ArenaInfo = {
-					official: repo.owner.login === 'AlgorithmicGames',
+				const data = new ArenaInfo({
 					name: repo.full_name.replace(/.*\/|-Arena/g, ''),
-					raw_url: null as string | null,
-					default: 'https://raw.githubusercontent.com/' + repo.full_name + '/' + repo.default_branch + '/',
+					official: repo.owner.login === 'AlgorithmicGames',
+					raw_url: null,
+					defaultBranchURL: 'https://raw.githubusercontent.com/' + repo.full_name + '/' + repo.default_branch + '/',
 					html_url: repo.html_url,
 					full_name: repo.full_name,
 					stars: repo.stargazers_count,
-					commit: null as string | null,
-					version: null as string | null,
-				}
+					commit: null,
+					version: null,
+				})
 				arenas.push(data)
-				let tagPromise = GitHubService.fetch(repo.tags_url.replace('https://api.github.com/', '')).then((response) => response.json())
+				const tagPromise = GitHubService.fetch(repo.tags_url.replace('https://api.github.com/', '')).then((response) => response.json())
 				promises.push(
 					GitHubService.fetch(repo.releases_url.replace(/https:\/\/api.github.com\/|{\/id}/g, '')).then((response) => response.json()).then((releases) => {
 						if (0 < releases.length) {
@@ -189,7 +189,7 @@ export default class GitHubService {
 							promises.push(tagPromise.then((tags) => {
 								let index = 0
 								while (data.commit === null) {
-									let tag = tags[index++]
+									const tag = tags[index++]
 									if (tag.name === data.version) {
 										data.commit = tag.commit.sha
 									}
