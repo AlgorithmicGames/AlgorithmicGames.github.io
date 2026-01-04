@@ -8,11 +8,19 @@ import { createSignal, Show } from 'solid-js'
 
 export default function ArenaSelector() {
 	const navigate = useNavigate()
-	const params = useParams()
-	const [initialValue, setInitialValue] = createSignal(params.author + '/' + params.arena)
+	const [initialValue, setInitialValue] = createSignal<ArenaInfo | string>((() => {
+		const params = useParams()
+		if (!params.author || !params.arena) {
+			return ''
+		}
+		return params.author + '/' + params.arena
+	})())
 	const arenaPromise = GitHubService.fetchArenas()
 	const searchArenas = (inputValue: string): Promise<ArenaInfo[]> => {
-		return arenaPromise.then((arenas) =>
+		return arenaPromise.then((arenas) => {
+			setInitialValue(arenas.find((arena) => arena.full_name === initialValue()) || '')
+			return arenas
+		}).then((arenas) =>
 			arenas.sort((a, b) => {
 				if (a.official && !b.official) {
 					return -1
