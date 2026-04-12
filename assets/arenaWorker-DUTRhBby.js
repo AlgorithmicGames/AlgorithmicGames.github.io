@@ -1,0 +1,1 @@
+var e=`/assets/arenaWorker-DzUgpuCh.js`;export{e as default};

@@ -1,0 +1,108 @@
+/* Global variables */
+:root {
+	--main-color: green;
+	--secondary-color: darkgreen;
+	--main-background-color: black;
+	--transparency: rgba(0, 0, 0, 0.75);
+	--error-color: red;
+	--window-border: 2px solid;
+	--window-padding: 7px 13px 7px 13px;
+}
+
+/* Global styles */
+:root, a, select, select > * {
+	color: var(--main-color);
+}
+:root, body {
+	height: 100%;
+}
+body {
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-rows: auto 1fr;
+	overflow-x: hidden;
+}
+:root, pre {
+	font-family: consolas, 'Courier New', Courier, Monaco, monospace;
+}
+:root, input, select, .jsoneditor, .jsoneditor-menu {
+	border-color: var(--main-color);
+}
+fieldset {
+	border: var(--window-border);
+}
+input {
+	color: var(--secondary-color);
+	background-color: var(--transparency);
+}
+select {
+	background: transparent;
+}
+.cross-close::after {
+	content: var(--cross-close);
+}
+.hidden {
+	display: none !important;
+}
+.highlight {
+	overflow: auto;
+	height: max-content;
+}
+td {
+	vertical-align: top;
+}
+button:not(:disabled) {
+	cursor: pointer;
+}
+/* ace-jsoneditor */
+.jsoneditor-poweredBy {
+	display: none !important;
+}
+.jsoneditor {
+	border: unset !important;
+}
+.jsoneditor > .jsoneditor-menu {
+	background-color: var(--main-color);
+}
+.jsoneditor .jsoneditor-selected {
+	background-color: var(--secondary-color) !important;
+}
+.jsoneditor input {
+	background-color: unset;
+}
+/* solid-select */
+.solid-select-container {
+	background-color: var(--main-background-color);
+}
+.solid-select-option {
+	color: var(--secondary-color);
+}
+.solid-select-option:hover {
+	background-color: var(--main-background-color) #fa7f25;
+	color: var(--main-color);
+}
+.solid-select-option[data-focused='true'] {
+	background-color: var(--main-background-color);
+	color: var(--main-color);
+}
+/* Disable style if page is not viewed from root. */
+:root.top * {
+	color: unset;
+	background-color: unset;
+	border-color: unset;
+}
+
+/* Specifics */
+main {
+	position: relative;
+}
+#content {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	background-color: var(--transparency);
+}
+#content:empty {
+	display: none;
+}
