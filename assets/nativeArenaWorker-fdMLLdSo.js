@@ -1,0 +1,1 @@
+var e=`/assets/nativeArenaWorker-dlgs3TM3.js`;export{e as default};

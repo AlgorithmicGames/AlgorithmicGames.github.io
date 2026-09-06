@@ -1,0 +1,1 @@
+var e=`/assets/arenaWorker-C4pqQ-Kh.js`;export{e as default};
